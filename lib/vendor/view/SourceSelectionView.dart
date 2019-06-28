@@ -145,7 +145,10 @@ class SourceSelectionViewState extends State<SourceSelectionView> {
                       String elapsed = formatTimestamp(stopwatch.elapsed.inMilliseconds);
 
                       return Text(
-                        "${S.of(context).n_sources(sourceList.length.toString())} found in $elapsed",
+                        S.of(context).x_found_in_y(
+                          S.of(context).n_sources(sourceList.length.toString()),
+                          elapsed
+                        ),
                         style: TextStyle(
                             fontFamily: 'GlacialIndifference',
                             fontSize: 16
@@ -234,7 +237,7 @@ class SourceSelectionViewState extends State<SourceSelectionView> {
                           );
                         }));
                       },
-                      actionLabel: "Submit Request",
+                      actionLabel: S.of(context).submit_request,
                     )
                   : ListView(
                     primary: true,

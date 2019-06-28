@@ -556,7 +556,7 @@ class KaminoAppHomeState extends State<KaminoAppHome> {
         if(response == null || response.statusCode != 204) {
           isConnected = false;
         }
-      });
+      }).catchError((error) => isConnected = false);
     });
   }
 

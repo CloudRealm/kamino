@@ -318,5 +318,7 @@
   "real_debrid_n_points": "$points points",
   "real_debrid_convert_points": "Convert Points",
   "converting_realdebrid_fidelity_points": "Converting Real-Debrid fidelity points...",
-  "real_debrid_purchase_premium": "Purchase Premium"
+  "real_debrid_purchase_premium": "Purchase Premium",
+  "x_found_in_y": "$x found in $y",
+  "submit_request": "Submit Request"
 }
