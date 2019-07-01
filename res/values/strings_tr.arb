@@ -312,5 +312,10 @@
   "content_suggestions_description": "Tecrübenizi düzenlenmiş izleme listelerimizle düzenleyin! Düzenlenmiş bir listeyle ilgileniyorsanız,üzerine dokunun.",
   "no_sources_found": "Kaynak bulunamadı.",
   "we_couldnt_find_any_sources_for_content": " '$content için kaynak bulunamadı'.",
-  "your_request_has_been_saved": "İsteğiniz kaydedildi."
+  "your_request_has_been_saved": "İsteğiniz kaydedildi.",
+  "expires": "Süre sonu",
+  "real_debrid_n_points": "$points puan",
+  "real_debrid_convert_points": "Puanları Dönüştür",
+  "converting_realdebrid_fidelity_points": "Real-Debrid sadakat puanları dönüştürülüyor...",
+  "real_debrid_purchase_premium": "Premium Satın Al"
 }

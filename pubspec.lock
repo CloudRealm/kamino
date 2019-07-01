@@ -35,7 +35,7 @@ packages:
       name: auto_orientation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.3"
   auto_size_text:
     dependency: "direct main"
     description:
@@ -240,7 +240,7 @@ packages:
       name: flutter_launcher_icons
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.2"
+    version: "0.7.2+1"
   flutter_localizations:
     dependency: "direct main"
     description: flutter
@@ -385,7 +385,7 @@ packages:
       name: objectdb
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.7"
+    version: "1.0.7+1"
   observable:
     dependency: transitive
     description:
@@ -574,7 +574,7 @@ packages:
       name: sqflite
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.5"
+    version: "1.1.6+1"
   stack_trace:
     dependency: transitive
     description:
@@ -685,7 +685,7 @@ packages:
     description:
       path: "packages/video_player"
       ref: master
-      resolved-ref: "5be4feca4983532ed5a1b85baf05b8fa088546d3"
+      resolved-ref: fc10d444498f15cb084f23f7ec398b8aa9f3b477
       url: "git://github.com/flutter/plugins.git"
     source: git
     version: "0.10.1+3"

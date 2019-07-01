@@ -32,6 +32,7 @@ import 'package:http/http.dart' as http;
 
 const appName = "ApolloTV";
 const appCastID = "6569632D";
+const tvSupportEnabled = false;
 Logger log;
 
 PlatformType currentPlatform;
@@ -58,8 +59,6 @@ Future<void> reportError(error, StackTrace stacktrace, {shouldShowDialog = false
     OverlayState overlay = KaminoApp.navigatorKey.currentState.overlay;
     if(overlay == null || overlay.context == null || !shouldShowDialog) return;
     BuildContext context = overlay.context;
-
-    if(Navigator.of(context).canPop() && !cancelPop) Navigator.of(context).pop();
 
     if(error is SocketException){
       showDialog(context: context, builder: (BuildContext context){
@@ -98,6 +97,16 @@ Future<void> reportError(error, StackTrace stacktrace, {shouldShowDialog = false
 
       return;
     }
+
+    bool shouldShowErrors = false;
+    assert((){
+      shouldShowErrors = true;
+      return true;
+    }());
+    if(!packageInfo.buildNumber.endsWith("2") || !packageInfo.buildNumber.endsWith("3")) shouldShowErrors = true;
+    if(!shouldShowErrors) return;
+
+    if(Navigator.of(context).canPop() && !cancelPop) Navigator.of(context).pop();
 
     String _errorReference;
     try {
@@ -386,7 +395,7 @@ class KaminoAppState extends State<KaminoApp> {
     ErrorWidget.builder = (FlutterErrorDetails error) => _getErrorWidget(error);
 
     StatefulWidget applicationHome;
-    if(currentPlatform == PlatformType.TV) {
+    if(currentPlatform == PlatformType.TV && tvSupportEnabled) {
       applicationHome = KaminoSkyspace();
     }else{
       applicationHome = KaminoAppHome();
@@ -533,7 +542,7 @@ class KaminoAppHomeState extends State<KaminoAppHome> {
 
       // If the initial setup is not complete, show the setup guide.
       if(!await Settings.initialSetupComplete){
-        Navigator.of(context).push(MaterialPageRoute(
+        Navigator.of(context).push(ApolloTransitionRoute(
           builder: (BuildContext context) => KaminoIntro(then: () async {
             setState(() {});
             prepare();

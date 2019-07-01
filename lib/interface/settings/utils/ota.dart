@@ -32,8 +32,6 @@ Future<Map> checkUpdate(BuildContext context, bool dismissSnackbar) async {
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
   String buildNumber = packageInfo.buildNumber;
 
-  String url = "https://houston.apollotv.xyz/ota/download";
-
   // Get latest build info from Apollo Houston
   String versionTrack = ['stable', 'beta', 'development'][(await Settings.releaseVersionTrack)];
   http.Response res = await http.get("https://houston.apollotv.xyz/ota/$versionTrack");
@@ -47,7 +45,7 @@ Future<Map> checkUpdate(BuildContext context, bool dismissSnackbar) async {
       return {
         "title": results["latest"]["title"],
         "build": results["latest"]["buildNumber"],
-        "url": url,
+        "url": "https://houston.apollotv.xyz/ota/download/${results["latest"]["_id"]}",
         "changelog": results["latest"]["changelog"]
       };
     }

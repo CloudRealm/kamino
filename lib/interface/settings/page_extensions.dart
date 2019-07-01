@@ -9,7 +9,6 @@ import 'package:kamino/interface/settings/page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kamino/ui/interface.dart';
 import 'package:kamino/ui/loading.dart';
-import 'package:simple_moment/simple_moment.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class ExtensionsSettingsPage extends SettingsPage {
@@ -189,11 +188,7 @@ class ExtensionsSettingsPageState extends SettingsPageState {
                       Text("${snapshot.data.username} (${S.of(context).real_debrid_n_points(snapshot.data.points.toString())})"),
                       Text(((type) =>
                         "${type[0].toUpperCase()}${type?.substring(1)}" +
-                            (snapshot.data.isPremium() ? " \u2022 ${S.of(context).expires} ${
-                                new Moment.now().from(new DateTime.fromMillisecondsSinceEpoch(
-                                    DateTime.now().millisecondsSinceEpoch + (snapshot.data.premiumSecondsRemaining * 1000).round()
-                                ))
-                            }" : ""))
+                            (snapshot.data.isPremium() ? " \u2022 " + S.of(context).expires_in_x_days(snapshot.data.premiumDaysRemaining.toString()) : ""))
                       (snapshot.data.type))
                     ])
                   ]);

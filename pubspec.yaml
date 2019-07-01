@@ -8,7 +8,7 @@ description: The ApolloTV app for iOS and Android.
 #  I => Minor (xx)
 #  R => Release (xx)
 #  T => Type (0 => Prerelease, 1 => Beta, 2 => Release Candidate, 3 => Stable)
-version: 1.4.6+104063
+version: 1.4.6+104062
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
@@ -102,6 +102,7 @@ flutter:
     - assets/icons/trakt.svg
     - assets/icons/simkl.svg
     - assets/icons/realdebrid.svg
+    - assets/icons/realdebrid-logo.png
 
     - assets/flags/arab_league.png
     - assets/flags/texas.png

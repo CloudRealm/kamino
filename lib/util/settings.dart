@@ -138,6 +138,10 @@ class _Settings {
     // (The sorting method to use.)
     "contentSortSettings": $(type: List, defaultValue: <String>[]),
 
+    // Favorites
+    // (The sorting method to use.)
+    "favoritesSortSettings": $(type: List, defaultValue: <String>[]),
+
     /// INTERNAL APPLICATION SETTINGS ///
 
     // Claws Authentication

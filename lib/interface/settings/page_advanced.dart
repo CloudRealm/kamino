@@ -357,9 +357,10 @@ class AdvancedSettingsPageState extends SettingsPageState {
         Material(
           color: widget.isPartial ? Theme.of(context).cardColor : Theme.of(context).backgroundColor,
           child: ListTile(
+            isThreeLine: true,
             leading: Icon(Icons.error),
             title: TitleText(S.of(context).throw_error),
-            subtitle: Text(S.of(context).intentionally_throws_an_error_to_test_error_handling),
+            subtitle: Text(S.of(context).intentionally_throws_an_error_to_test_error_handling + "\n" + S.of(context).does_nothing_in_release_mode),
             enabled: true,
             onTap: () async {
               throw new Exception(S.of(context).well_dont_say_you_didnt_ask);
@@ -397,16 +398,21 @@ class AdvancedSettingsPageState extends SettingsPageState {
               activeColor: Theme.of(context).primaryColor,
               secondary: Icon(Icons.warning),
               title: TitleText(S.of(context).disable_security_warnings),
-              subtitle: RichText(text: TextSpan(
-                children: [
-                  TextSpan(text: "\n"),
-                  TextSpan(text: S.of(context).this_disables_all_warnings_regarding_potential_security_concerns),
-                  if(!_disableSecurityMessages)
-                    TextSpan(text: "\n\n" + S.of(context).we_recommend_that_you_do_not_enable_this_option_unless, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red))
-                  else
-                    TextSpan(text: "\n\n" + S.of(context).security_warnings_have_been_disabled, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red))
-                ]
-              )),
+              subtitle: Column(children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(top: 5),
+                  child: Text(S.of(context).this_disables_all_warnings_regarding_potential_security_concerns),
+                ),
+
+                RichText(text: TextSpan(
+                    children: [
+                      if(!_disableSecurityMessages)
+                        TextSpan(text: "\n" + S.of(context).we_recommend_that_you_do_not_enable_this_option_unless, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red))
+                      else
+                        TextSpan(text: "\n" + S.of(context).security_warnings_have_been_disabled, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red))
+                    ]
+                ))
+              ]),
               value: _disableSecurityMessages,
               onChanged: (bool value) async {
                 await (Settings.disableSecurityMessages = value);
@@ -416,7 +422,7 @@ class AdvancedSettingsPageState extends SettingsPageState {
 
                     if(!_disableSecurityMessages){
                       _scrollView.animateTo(
-                        _scrollView.offset + 40,
+                        _scrollView.offset + 30,
                         curve: Curves.easeOut,
                         duration: const Duration(milliseconds: 400)
                       );

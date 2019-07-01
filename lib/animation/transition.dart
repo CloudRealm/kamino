@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 ///
 class ApolloTransitionRoute extends PageRouteBuilder {
 
-  Curve get animationCurve => Curves.easeInOutQuad;
+  Curve get animationCurve => Curves.easeInOut;
 
   ApolloTransitionRoute({
     WidgetBuilder builder,
@@ -18,7 +18,7 @@ class ApolloTransitionRoute extends PageRouteBuilder {
         Animation<double> secondaryAnimation
       ) => builder(context),
       settings: settings,
-      transitionDuration: Duration(milliseconds: 500),
+      transitionDuration: Duration(milliseconds: 250),
   );
 
   @override
@@ -32,11 +32,11 @@ class ApolloTransitionRoute extends PageRouteBuilder {
     return new FadeTransition(
         opacity: CurvedAnimation(
             parent: animation,
-            curve: Interval(0.3, 1, curve: animationCurve)
+            curve: Interval(0.3, 0.7, curve: animationCurve)
         ),
         child: ScaleTransition(
             scale: new Tween<double>(
-                begin: 0.95,
+                begin: 0.93,
                 end: 1
             ).animate(CurvedAnimation(
                 parent: animation,

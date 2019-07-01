@@ -37,17 +37,17 @@
 		{
 			"name": "ddivad",
 			"image": "https://cdn.discordapp.com/avatars/394484823944593409/5c0081254e48edc6904179a7ddae90a1.png?size=2048",
-			"color": "#979c9f"
+			"color": "#94cf95"
 		},
 		{
 			"name": "Teekzilla",
 			"image": "https://discordapp.com/assets/0e291f67c9274a1abdddeb3fd919cbaa.png",
-			"color": "#979c9f"
+			"color": "#94cf95"
 		},
 		{
 			"name": "TeamOrange",
 			"image": "https://discordapp.com/assets/1cbd08c76f8af6dddce02c5138971129.png",
-			"color": "#979c9f"
+			"color": "#94cf95"
 		}
 	],
 	"Artists": [
@@ -55,6 +55,13 @@
 			"name": "Sbonhom1",
 			"image": "https://cdn.discordapp.com/avatars/386960681351643137/b4aff34147d52fe5e57d86d339bb0b13.png?size=2048",
 			"color": "#ad1457"
+		}
+	],
+	"VIPs": [
+		{
+			"name": "DesusDhrist",
+			"image": "https://cdn.discordapp.com/avatars/577415219928760320/ef6e690f15aa6eb2ce2017e660493125.png?size=2048",
+			"color": "#f1c40f"
 		}
 	],
 	"Translators": [
@@ -128,6 +135,16 @@
 		{
 			"name": "Gymcap",
 			"image": "https://cdn.discordapp.com/avatars/282841617705074688/b469699e50148c649e7f263e9a96bada.png?size=2048",
+			"color": "#61d8eb"
+		},
+		{
+			"name": "Joshid",
+			"image": "https://cdn.discordapp.com/avatars/241997769789800458/4e066001406d94b673c6aca0ae4a1398.png?size=2048",
+			"color": "#61d8eb"
+		},
+		{
+			"name": "Justxn",
+			"image": "https://cdn.discordapp.com/avatars/585619599140192256/a_44eb65720a4bba577803755045fce93c.gif",
 			"color": "#61d8eb"
 		},
 		{
@@ -218,6 +235,11 @@
 			"color": "#457f9c"
 		},
 		{
+			"name": "KJ36",
+			"image": "https://discordapp.com/assets/1cbd08c76f8af6dddce02c5138971129.png",
+			"color": "#457f9c"
+		},
+		{
 			"name": "om",
 			"image": "https://cdn.discordapp.com/avatars/457757979719106570/36e2e9f72b29acebf0d91a2b517b25a4.png?size=2048",
 			"color": "#457f9c"
@@ -284,7 +306,7 @@
 		},
 		{
 			"name": "Arnas",
-			"image": "https://cdn.discordapp.com/avatars/140475941343330304/c1a3f7432b08a85557b67c63cb6b15e6.png?size=2048",
+			"image": "https://cdn.discordapp.com/avatars/140475941343330304/c09d92cbc4a6fca55e981134369da0a7.png?size=2048",
 			"color": "#457f9c"
 		},
 		{

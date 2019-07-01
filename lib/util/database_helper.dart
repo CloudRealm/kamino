@@ -326,6 +326,12 @@ class DatabaseHelper {
     database.close();
   }
 
+  static Future<void> purgeFavoritesByAuthority(FavoriteAuthority authority) async {
+    ObjectDB database = await openDatabase();
+    await database.remove({"authority": authority.toString()});
+    database.close();
+  }
+
   static Future<Map<String, List<FavoriteDocument>>> getAllFavorites() async {
     return {
       'tv': await getFavoritesByType(ContentType.TV_SHOW),
@@ -412,6 +418,27 @@ class DatabaseHelper {
   }
 }
 
+class FavoriteAuthority {
+  static const LOCAL = const FavoriteAuthority._('local');
+  static const SIMKL = const FavoriteAuthority._('simkl');
+  static const TMDB = const FavoriteAuthority._('tmdb');
+  static const TRAKT = const FavoriteAuthority._('trakt');
+
+  static List<FavoriteAuthority> get values => [LOCAL, SIMKL, TMDB, TRAKT];
+
+  final String value;
+  const FavoriteAuthority._(this.value);
+
+  @override
+  toString(){
+    return value;
+  }
+
+  static valueOf(String value){
+    return values.firstWhere((authority) => authority.value == value, orElse: null);
+  }
+}
+
 class FavoriteDocument {
 
   int tmdbId;
@@ -420,6 +447,7 @@ class FavoriteDocument {
   String imageUrl;
   String year;
   DateTime savedOn;
+  FavoriteAuthority authority;
 
   FavoriteDocument(Map data) :
     tmdbId = data['tmdbID'],
@@ -427,9 +455,10 @@ class FavoriteDocument {
     contentType = data['contentType'] == 'tv' ? ContentType.TV_SHOW : ContentType.MOVIE,
     imageUrl = data['imageUrl'],
     year = data['year'],
-    savedOn = DateTime.parse(data['saved_on']);
+    savedOn = DateTime.parse(data['saved_on']),
+    authority = FavoriteAuthority.valueOf(data['authority']);
 
-  FavoriteDocument.fromModel(ContentModel model) :
+  FavoriteDocument.fromModel(ContentModel model, { FavoriteAuthority authority = FavoriteAuthority.LOCAL }) :
     tmdbId = model.id,
     name = model.title,
     contentType = model.contentType,
@@ -437,7 +466,8 @@ class FavoriteDocument {
     year = model.releaseDate != null && model.releaseDate != ""
         ? DateFormat.y("en_US").format(DateTime.tryParse(model.releaseDate) ?? "1970-01-01")
         : "",
-    savedOn = DateTime.now().toUtc();
+    savedOn = DateTime.now().toUtc(),
+    authority = authority;
 
   Map toMap(){
     return {
@@ -447,7 +477,8 @@ class FavoriteDocument {
       "contentType": getRawContentType(contentType),
       "imageUrl": imageUrl,
       "year": year,
-      "saved_on": savedOn.toString()
+      "saved_on": savedOn.toString(),
+      "authority": authority.toString()
     };
   }
 

@@ -4,6 +4,7 @@ import 'package:cplayer/cplayer.dart';
 import 'package:dart_chromecast/casting/cast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kamino/animation/transition.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/main.dart';
 import 'package:kamino/ui/interface.dart';
@@ -41,7 +42,7 @@ class PlayerHelper {
       // Use CPlayer
       Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) =>
+          ApolloTransitionRoute(builder: (context) =>
             CPlayer(
                   title: title,
                   url: url,

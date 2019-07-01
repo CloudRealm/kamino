@@ -145,37 +145,10 @@ class Trakt {
   static Future<void> synchronize(BuildContext context, { bool silent = false }) async {
     /* SYNCHRONIZE FAVORITES */
 
-    // Step 1 -> Add favorites to Trakt.
-    if(!silent) Interface.showLoadingDialog(context, title: S.of(context).uploading_favorites, canCancel: false);
+    // Pre-Step 1 -> Purge favorites where authority is Trakt.
+    DatabaseHelper.purgeFavoritesByAuthority(FavoriteAuthority.TRAKT);
 
-    Map data = {};
-
-    Map<String, List<FavoriteDocument>> storedFavorites = await DatabaseHelper.getAllFavorites();
-    storedFavorites.forEach((String type, List<FavoriteDocument> documents){
-      String traktMediaType = (type == 'movie') ? "movies" : "shows";
-      data[traktMediaType] = [];
-
-      documents.forEach((FavoriteDocument document){
-        data[traktMediaType].add({
-          'collected_at': document.savedOn.toString(),
-          'title': document.name,
-          'year': document.year,
-          'ids': {
-            'tmdb': document.tmdbId
-          }
-        });
-      });
-    });
-
-    await http.post(
-      TRAKT_SYNC_COLLECTION,
-      headers: await _getAuthHeaders(context),
-      body: json.encode(data)
-    );
-
-    if(!silent) Navigator.of(context).pop();
-
-    // Step 2 -> Fetch favorites and store in array.
+    // Step 1 -> Fetch favorites and store in array.
     if(!silent) Interface.showLoadingDialog(context, title: S.of(context).downloading_trakt_data, canCancel: false);
     
     Stream<String> mediaTypes = Stream.fromIterable(['shows', 'movies']);
@@ -208,6 +181,41 @@ class Trakt {
     }
     if(!silent) Navigator.of(context).pop();
 
+    // Step 2 -> Upload favorites to Trakt.
+    if(!silent) Interface.showLoadingDialog(context, title: S.of(context).uploading_favorites, canCancel: false);
+
+    Map data = {};
+
+    Map<String, List<FavoriteDocument>> storedFavorites = await DatabaseHelper.getAllFavorites();
+    storedFavorites.forEach((String type, List<FavoriteDocument> documents){
+      String traktMediaType = (type == 'movie') ? "movies" : "shows";
+      data[traktMediaType] = [];
+
+      documents.forEach((FavoriteDocument document){
+        // If Trakt was the initial provider of this favorite, ignore it.
+        if(document.authority == FavoriteAuthority.TRAKT) return;
+        // If Trakt already has this as a favorite, ignore it.
+        if(favorites[traktMediaType].contains(document.tmdbId)) return;
+
+        data[traktMediaType].add({
+          'collected_at': document.savedOn.toString(),
+          'title': document.name,
+          'year': document.year,
+          'ids': {
+            'tmdb': document.tmdbId
+          }
+        });
+      });
+    });
+
+    await http.post(
+        TRAKT_SYNC_COLLECTION,
+        headers: await _getAuthHeaders(context),
+        body: json.encode(data)
+    );
+
+    if(!silent) Navigator.of(context).pop();
+
     // Step 3 -> Map IDs to FavoriteDocuments.
     if(!silent) Interface.showLoadingDialog(context, title: S.of(context).saving_content_information, canCancel: false);
     List<Future> favoriteSyncDelegate = new List();
@@ -227,7 +235,7 @@ class Trakt {
               mediaType == 'shows' ? ContentType.TV_SHOW : ContentType.MOVIE,
               id
           );
-          documents.add(new FavoriteDocument.fromModel(model));
+          documents.add(new FavoriteDocument.fromModel(model, authority: FavoriteAuthority.TRAKT));
         }
 
       }
@@ -256,14 +264,16 @@ class Trakt {
       TRAKT_SYNC_COLLECTION,
       headers: await _getAuthHeaders(context),
       body: json.encode({
-        mediaType: {
-          'collected_at': DateTime.now().toUtc().toString(),
-          'title': title,
-          'year': year,
-          'ids': {
-            'tmdb': id
+        mediaType: [
+          {
+            'collected_at': DateTime.now().toUtc().toString(),
+            'title': title,
+            'year': year,
+            'ids': {
+              'tmdb': id
+            }
           }
-        }
+        ]
       })
     );
   }
@@ -278,12 +288,16 @@ class Trakt {
     String mediaType = (type == ContentType.TV_SHOW) ? 'shows' : 'movies';
 
     await http.post(
-      TRAKT_SYNC_COLLECTION,
+      TRAKT_SYNC_COLLECTION + "/remove",
       headers: await _getAuthHeaders(context),
       body: json.encode({
-        mediaType: {
-          'ids': { 'tmdb': id }
-        }
+        mediaType: [
+          {
+            "ids": {
+              "tmdb": id
+            }
+          }
+        ]
       })
     );
   }
