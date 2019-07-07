@@ -8,8 +8,9 @@ import 'package:encrypt/encrypt.dart' as Crypto;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
-import 'package:kamino/api/realdebrid.dart';
-import 'package:kamino/api/tmdb.dart';
+import 'package:kamino/external/ExternalService.dart';
+import 'package:kamino/external/api/realdebrid.dart';
+import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/main.dart';
 import 'package:kamino/models/content.dart';
@@ -49,9 +50,9 @@ class ClawsVendorService extends VendorService {
     if (_webSocket != null) _webSocket.close();
     clearSourceList();
 
-    _userHasRd = await RealDebrid.isAuthenticated();
+    _userHasRd = await Service.get<RealDebrid>().isAuthenticated() && (await Service.get<RealDebrid>().getUserInfo()).isPremium();
     if (_userHasRd) {
-      await RealDebrid.validateToken();
+      await Service.get<RealDebrid>().validateToken();
     }
 
     setStatus(context, VendorServiceStatus.INITIALIZING);
@@ -189,7 +190,7 @@ class ClawsVendorService extends VendorService {
     String data = Convert.jsonEncode({
       "type": "movies",
       "title": title,
-      "titles": [title] + TMDB.getAlternativeTitles(movie),
+      "titles": [title] + Service.get<TMDB>().getAlternativeTitles(movie),
       "year": year,
       "imdb_id": movie.imdbId,
       "hasRD": _userHasRd
@@ -234,7 +235,7 @@ class ClawsVendorService extends VendorService {
     String data = Convert.jsonEncode({
       "type": "tv",
       "title": title,
-      "titles": [title] + TMDB.getAlternativeTitles(show),
+      "titles": [title] + Service.get<TMDB>().getAlternativeTitles(show),
       "year": year,
       "season": seasonNumber,
       "episode": episodeNumber,
@@ -380,7 +381,7 @@ class ClawsVendorService extends VendorService {
           /// Events are separated so it doesn't mess with scrape counter
           ///
           case 'RDScrape':
-            var rdResult = await RealDebrid.unrestrictLink(event['target']);
+            var rdResult = await Service.get<RealDebrid>().unrestrictLink(event['target']);
             SourceModel rdModel = new SourceModel.fromRDJSON(rdResult);
             var splitParts = rdModel.file.data.split('.');
             var fileExtension =  splitParts[splitParts.length - 1].toLowerCase();

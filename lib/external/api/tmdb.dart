@@ -2,6 +2,7 @@ import 'dart:convert' as Convert;
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kamino/external/struct/content_database.dart';
 import 'package:kamino/main.dart';
 import 'package:kamino/models/content.dart';
 import 'package:kamino/models/list.dart';
@@ -9,7 +10,14 @@ import 'package:kamino/models/movie.dart';
 import 'package:kamino/models/tv_show.dart';
 import 'package:kamino/util/database_helper.dart';
 
-class TMDB {
+class TMDB extends ContentDatabaseService {
+
+  TMDBIdentity identity;
+
+  TMDB(TMDBIdentity _identity) : super(
+    "TMDB",
+    isPrimaryService: true
+  ){ identity = _identity; }
 
   static const String ROOT_URL = "https://api.themoviedb.org/3";
   static const String IMAGE_CDN = "https://image.tmdb.org/t/p/original";
@@ -18,10 +26,10 @@ class TMDB {
 
   /// You will need to define the API key in your vendor configuration file.
   /// Check our documentation for more information.
-  static String getDefaultArguments(BuildContext context) {
+  String getDefaultArguments(BuildContext context) {
     try {
       KaminoAppState application = context.ancestorStateOfType(const TypeMatcher<KaminoAppState>());
-      if(application != null) return "?api_key=${application.getPrimaryVendorConfig().getTMDBKey()}&language=en-US";
+      if(application != null) return "?api_key=${identity.key}&language=en-US";
     }catch(ex) {
     }
 
@@ -94,7 +102,7 @@ class TMDB {
   };
 
 
-  static Future<dynamic> getList(BuildContext context, int id, { bool loadFully = false, bool raw = false, bool useCache = false }) async {
+  Future<dynamic> getList(BuildContext context, int id, { bool loadFully = false, bool raw = false, bool useCache = false }) async {
     try {
       if (useCache) {
         if (await DatabaseHelper.playlistInCache(id)) {
@@ -157,7 +165,7 @@ class TMDB {
     }
   }
 
-  static Future<ContentModel> getContentInfo(BuildContext context, ContentType type, int id, { String appendToResponse }) async {
+  Future<ContentModel> getContentInfo(BuildContext context, ContentType type, int id, { String appendToResponse }) async {
     // Get the data from the server.
     http.Response response = await http.get(
         "${TMDB.ROOT_URL}/${getRawContentType(type)}/$id${getDefaultArguments(context)}"
@@ -179,7 +187,7 @@ class TMDB {
     throw new Exception("Invalid content type: $type");
   }
 
-  static List<String> getAlternativeTitles(ContentModel model){
+  List<String> getAlternativeTitles(ContentModel model){
     List<String> result = [];
 
     if(model.alternativeTitles == null || model.alternativeTitles.length == 0)
@@ -206,4 +214,12 @@ class TMDB {
     return result;
   }
 
+}
+
+class TMDBIdentity {
+  final String key;
+
+  TMDBIdentity({
+    @required this.key
+  });
 }

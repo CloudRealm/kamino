@@ -6,7 +6,8 @@ import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kamino/animation/transition.dart';
-import 'package:kamino/api/tmdb.dart';
+import 'package:kamino/external/ExternalService.dart';
+import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/interface/search/search_results.dart';
 import 'package:kamino/interface/content/overview.dart';
@@ -22,7 +23,7 @@ class SmartSearch extends SearchDelegate<String> {
     List<SearchModel> _data = [];
 
     String url = "${TMDB.ROOT_URL}/search/"
-        "multi${TMDB.getDefaultArguments(context)}&"
+        "multi${Service.get<TMDB>().getDefaultArguments(context)}&"
         "query=$criteria&page=1&include_adult=false";
 
     http.Response res = await http.get(url);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kamino/models/movie.dart';
+import 'package:kamino/models/review.dart';
 import 'package:kamino/models/tv_show.dart';
 
 /*  CONTENT TYPE DEFINITIONS  */
@@ -81,6 +82,9 @@ abstract class ContentModel {
 
   // Recommendations
   final List<ContentModel> recommendations;
+  // Reviews
+  final int totalReviews;
+  final List<ReviewModel> reviews;
 
   ContentModel({
     @required this.id,
@@ -103,7 +107,9 @@ abstract class ContentModel {
     this.cast,
     this.crew,
     this.recommendations,
-    this.videos
+    this.videos,
+    this.totalReviews,
+    this.reviews
   });
 
   Map toStoredMap();

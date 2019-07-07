@@ -91,6 +91,7 @@ lib/database_backup.zip
 
 # Android
 android/key.properties
+android/local.properties
 
 # VSCode
 .vscode/*

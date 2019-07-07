@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_parallax/flutter_parallax.dart';
 import 'package:intl/intl.dart';
 import 'package:kamino/animation/transition.dart';
-import 'package:kamino/api/tmdb.dart';
+import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/interface/content/overview.dart';
 import 'package:kamino/models/content.dart';
 import 'package:kamino/models/movie.dart';

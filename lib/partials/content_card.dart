@@ -1,8 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:kamino/api/tmdb.dart';
+import 'package:kamino/external/ExternalService.dart';
+import 'package:kamino/external/api/tmdb.dart';
+import 'package:kamino/external/api/trakt.dart';
 import 'package:kamino/models/content.dart';
 import 'package:flutter/material.dart';
-import 'package:kamino/api/trakt.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/ui/elements.dart';
 import 'package:kamino/util/database_helper.dart';
@@ -195,7 +196,7 @@ class ContentCardState extends State<ContentCard> {
     if (widget.isFavorite) {
       DatabaseHelper.removeFavoriteById(widget.id);
 
-      if(await Trakt.isAuthenticated()) Trakt.removeFavoriteFromTrakt(
+      if(await Service.get<Trakt>().isAuthenticated()) Service.get<Trakt>().removeFavoriteFromTrakt(
         context,
         type: widget.mediaType == 'tv' ? ContentType.TV_SHOW : ContentType.MOVIE,
         id: widget.id
@@ -203,7 +204,7 @@ class ContentCardState extends State<ContentCard> {
     } else {
       DatabaseHelper.saveFavoriteById(context, widget.mediaType == 'tv' ? ContentType.TV_SHOW : ContentType.MOVIE, widget.id);
 
-      if(await Trakt.isAuthenticated()) Trakt.sendFavoriteToTrakt(
+      if(await Service.get<Trakt>().isAuthenticated()) Service.get<Trakt>().sendFavoriteToTrakt(
           context,
           id: widget.id,
           type: widget.mediaType == 'tv' ? ContentType.TV_SHOW : ContentType.MOVIE,

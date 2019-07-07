@@ -12,9 +12,10 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:kamino/api/realdebrid.dart';
-import 'package:kamino/api/tmdb.dart';
-import 'package:kamino/api/trakt.dart';
+import 'package:kamino/external/ExternalService.dart';
+import 'package:kamino/external/api/realdebrid.dart';
+import 'package:kamino/external/api/tmdb.dart';
+import 'package:kamino/external/api/trakt.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/interface/settings/page_appearance.dart';
 import 'package:kamino/interface/settings/page_playback.dart';
@@ -147,8 +148,8 @@ class KaminoIntroState extends State<KaminoIntro> with SingleTickerProviderState
     playerSettings = PlayerSettings.defaultPlayer();
 
     (() async {
-      traktConnected = await Trakt.isAuthenticated();
-      rdConnected = await RealDebrid.isAuthenticated();
+      traktConnected = await Service.get<Trakt>().isAuthenticated();
+      rdConnected = await Service.get<RealDebrid>().isAuthenticated();
       playerSettings = await Settings.playerInfo;
     })();
 
@@ -462,14 +463,14 @@ class KaminoIntroState extends State<KaminoIntro> with SingleTickerProviderState
                             child: ListTile(
                                 onTap: () async {
                                   if(!traktConnected){
-                                    if(await Trakt.authenticate(context)){
-                                      Trakt.synchronize(context, silent: false);
-                                      traktConnected = await Trakt.isAuthenticated();
+                                    if(await Service.get<Trakt>().authenticate(context)){
+                                      Service.get<Trakt>().synchronize(context, silent: false);
+                                      traktConnected = await Service.get<Trakt>().isAuthenticated();
                                       appState.setState(() {});
                                     }
                                   }else{
-                                    await Trakt.deauthenticate(context);
-                                    traktConnected = await Trakt.isAuthenticated();
+                                    await Service.get<Trakt>().deauthenticate(context);
+                                    traktConnected = await Service.get<Trakt>().isAuthenticated();
                                     appState.setState(() {});
                                   }
                                 },
@@ -491,12 +492,12 @@ class KaminoIntroState extends State<KaminoIntro> with SingleTickerProviderState
                             child: ListTile(
                                 onTap: () async {
                                   if(!rdConnected){
-                                    await RealDebrid.authenticate(context);
-                                    rdConnected = await RealDebrid.isAuthenticated();
+                                    await Service.get<RealDebrid>().authenticate(context);
+                                    rdConnected = await Service.get<RealDebrid>().isAuthenticated();
                                     setState(() {});
                                   }else{
-                                    await RealDebrid.deauthenticate(context);
-                                    rdConnected = await RealDebrid.isAuthenticated();
+                                    await Service.get<RealDebrid>().deauthenticate(context);
+                                    rdConnected = await Service.get<RealDebrid>().isAuthenticated();
                                     setState(() {});
                                   }
                                 },
@@ -564,7 +565,7 @@ class KaminoIntroState extends State<KaminoIntro> with SingleTickerProviderState
 
                             return FutureBuilder(
                                 future: _categoryMemoizers[curatedTMDBLists[index]].runOnce(
-                                        () async => { "list": await TMDB.getList(context, int.parse(curatedTMDBLists[index].split("|")[0])), "type": curatedTMDBLists[index].split("|")[1] }
+                                        () async => { "list": await Service.get<TMDB>().getList(context, int.parse(curatedTMDBLists[index].split("|")[0])), "type": curatedTMDBLists[index].split("|")[1] }
                                 ),
                                 builder: (BuildContext context, AsyncSnapshot snapshot){
                                   if(snapshot.hasError){

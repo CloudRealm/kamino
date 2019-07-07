@@ -2,6 +2,9 @@
    EDMovies - ApolloTV fictional vendor configuration.
 */
 
+import 'package:kamino/external/api/realdebrid.dart';
+import 'package:kamino/external/api/tmdb.dart';
+import 'package:kamino/external/api/trakt.dart';
 import 'package:kamino/vendor/services/ClawsVendorService.dart';
 import 'package:kamino/vendor/struct/VendorConfiguration.dart';
 import 'package:kamino/vendor/struct/VendorService.dart';
@@ -13,17 +16,23 @@ class EDMoviesVendorConfiguration extends VendorConfiguration {
       /// use your GitHub name.
       name: "EDMovies",
 
-      /// These next options are not mandatory unless this configuration is the
-      /// primary configuration.
-      tmdbKey: "",
-      traktCredentials: TraktCredentials(
-        id: "",
-        secret: ""
-      )
+      services: [
+        TMDB(TMDBIdentity(key: "")),
+        Trakt(TraktIdentity(
+          id: "",
+          secret: ""
+        )),
+
+        RealDebrid(RealDebridIdentity(
+          // See https://api.real-debrid.com/#api_authentication
+          // ('Authentication for applications' header)
+          clientId: "X245A4XAIBGVM"
+        ))
+      ]
   );
 
   @override
-  Future<VendorService> getService() async {
+  Future<VendorService> getVendorService() async {
     /// If you are using Claws, this is a [ClawsVendorService],
     /// including the port, protocol and trailing slash.
     /// For example: https://claws.edmovies.com/

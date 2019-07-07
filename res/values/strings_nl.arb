@@ -325,11 +325,11 @@
   "content_suggestions_description": "Verbeter uw ervaring met onze samengestelde lijsten! Als u geïntereseerd bent in een lijst, tap erop.",
   "no_sources_found": "Geen bronnen gevonden.",
   "we_couldnt_find_any_sources_for_content": "Wij konden geen bronnen vinden voor '$content'.",
-  "your_request_has_been_saved": "Uw verzoek is opgeslagen."
+  "your_request_has_been_saved": "Uw verzoek is opgeslagen.",
 
   "expires": "Loopt af",
   "real_debrid_n_points": "$points punten",
   "real_debrid_convert_points": "Punten omzetteb",
-  "converting_realdebrid_fidelity_points": "Real-Debrid "trouw" punten omzetten...",
+  "converting_realdebrid_fidelity_points": "Real-Debrid \"trouw\" punten omzetten...",
   "real_debrid_purchase_premium": "Koop Premium"
 }

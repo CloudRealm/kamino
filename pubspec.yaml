@@ -8,7 +8,7 @@ description: The ApolloTV app for iOS and Android.
 #  I => Minor (xx)
 #  R => Release (xx)
 #  T => Type (0 => Prerelease, 1 => Beta, 2 => Release Candidate, 3 => Stable)
-version: 1.4.6+104062
+version: 1.4.7+104073
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
@@ -26,9 +26,6 @@ dependencies:
   # App dependencies
   cplayer:
     path: "cplayer"
-    # git:
-    #  url: git://github.com/ApolloTVofficial/cplayer.git
-    #  ref: v1.4.2
 
   auto_size_text: ^0.2.1
   http: ^0.12.0
@@ -59,19 +56,22 @@ dependencies:
   simple_moment: ^1.0.2
   # pool: ^1.4.0
   dots_indicator: ^0.0.5+1
-  preload_page_view: ^0.1.4
+  # preload_page_view: ^0.1.4
   permission_handler: ^3.1.0
   flutter_mdns_plugin:
     git:
       url: https://github.com/NBTX/flutter_mdns_plugin.git
       ref: master
   dart_chromecast: ^0.1.0
+  carousel_slider: ^1.3.0
 
   flare_flutter:
     git:
       url: git://github.com/2d-inc/Flare-Flutter.git
       ref: dev
       path: flare_flutter
+
+  flutter_markdown: ^0.2.0
 
 # Compile-only dependencies
 dev_dependencies:

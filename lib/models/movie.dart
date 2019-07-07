@@ -1,5 +1,6 @@
 import 'package:kamino/models/content.dart';
 import 'package:kamino/models/crew.dart';
+import 'package:kamino/models/review.dart';
 import 'package:meta/meta.dart';
 
 class MovieContentModel extends ContentModel {
@@ -26,6 +27,8 @@ class MovieContentModel extends ContentModel {
     List crew,
     List<MovieContentModel> recommendations,
     List videos,
+    List reviews,
+    int totalReviews,
 
     // Movie parameters
     this.runtime
@@ -48,7 +51,9 @@ class MovieContentModel extends ContentModel {
     recommendations: recommendations,
     videos: videos,
     originalTitle: originalTitle,
-    originalCountry: originalCountry
+    originalCountry: originalCountry,
+    totalReviews: totalReviews,
+    reviews: reviews
   );
 
   static MovieContentModel fromJSON(Map json){
@@ -63,6 +68,8 @@ class MovieContentModel extends ContentModel {
         ? (json['alternative_titles']['titles'] as List).map(
             (element) => LocalizedTitleModel.fromJSON(element)
     ).toList() : null;
+    int totalReviews = json['reviews'] != null ? json['reviews']['total_results'] : null;
+    List reviews = json['reviews'] != null ? json['reviews']['results'] : null;
 
     return new MovieContentModel(
       // Inherited properties.
@@ -86,6 +93,8 @@ class MovieContentModel extends ContentModel {
       originalCountry: json['production_countries'] != null && json['production_countries'].length > 0
           ? json['production_countries'][0]['iso_3166_1'] : null,
       originalTitle: json['original_title'],
+      totalReviews: totalReviews != null ? totalReviews : null,
+      reviews: reviews != null ? reviews.map((entry) => ReviewModel.fromJSON(entry)).toList() : null,
 
       // Object-specific properties.
       runtime: json["runtime"] != null ? json["runtime"].toDouble() : null
@@ -115,20 +124,20 @@ class MovieContentModel extends ContentModel {
 
   static MovieContentModel fromStoredMap(Map map) {
     return MovieContentModel(
-        id: map['id'],
-        imdbId: map['imdbId'],
-        title: map['title'],
-        overview: map['overview'],
-        releaseDate: map['releaseDate'],
-        homepage: map['homepage'],
-        genres: map['genres'],
-        rating: map['rating'],
-        backdropPath: map['backdropPath'],
-        posterPath: map['posterPath'],
-        voteCount: map['voteCount'],
-        originalTitle: map['originalTitle'],
-        originalCountry: map['originalCountry'],
-        runtime: map['runtime']
+      id: map['id'],
+      imdbId: map['imdbId'],
+      title: map['title'],
+      overview: map['overview'],
+      releaseDate: map['releaseDate'],
+      homepage: map['homepage'],
+      genres: map['genres'],
+      rating: map['rating'],
+      backdropPath: map['backdropPath'],
+      posterPath: map['posterPath'],
+      voteCount: map['voteCount'],
+      originalTitle: map['originalTitle'],
+      originalCountry: map['originalCountry'],
+      runtime: map['runtime']
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
-import 'package:kamino/api/tmdb.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:kamino/external/api/tmdb.dart';
 
 class ResultCard extends StatefulWidget {
 

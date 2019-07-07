@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:kamino/animation/transition.dart';
+import 'package:kamino/external/ExternalService.dart';
+import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/partials/content_card.dart';
 import 'package:kamino/ui/elements.dart';
 import 'package:kamino/ui/loading.dart';
@@ -9,7 +11,6 @@ import 'package:kamino/util/genre.dart' as genre;
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:kamino/api/tmdb.dart';
 import 'package:kamino/models/content.dart';
 import 'package:kamino/partials/content_poster.dart';
 import 'package:kamino/util/database_helper.dart';
@@ -51,7 +52,7 @@ class _SearchResultViewState extends State<SearchResultView> {
     Map _temp;
 
     String url = "${TMDB.ROOT_URL}/search/"
-        "multi${TMDB.getDefaultArguments(context)}&"
+        "multi${Service.get<TMDB>().getDefaultArguments(context)}&"
         "query=${query.replaceAll(" ", "+")}&page=$pageNumber&include_adult=false";
 
     http.Response _res = await http.get(url);

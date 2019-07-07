@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:kamino/animation/transition.dart';
+import 'package:kamino/external/ExternalService.dart';
+import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'dart:async';
 import 'package:kamino/models/content.dart';
 import 'package:kamino/interface/content/overview.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:kamino/api/tmdb.dart';
 import 'package:kamino/partials/content_card.dart';
 import 'package:kamino/util/database_helper.dart';
 import 'package:kamino/util/genre.dart' as genre;
@@ -65,7 +66,7 @@ class _CuratedSearchState extends State<CuratedSearch>{
     List<DiscoverModel> _data = [];
     Map _temp;
 
-    String url = "https://api.themoviedb.org/4/list/$listID${TMDB.getDefaultArguments(context)}&"
+    String url = "https://api.themoviedb.org/4/list/$listID${Service.get<TMDB>().getDefaultArguments(context)}&"
         /*"sort_by=popularity.desc"*/ "&include_adult=false"
         "&include_video=false&page=${_currentPages.toString()}";
 

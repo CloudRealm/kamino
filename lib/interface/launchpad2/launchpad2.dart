@@ -7,15 +7,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:kamino/animation/transition.dart';
-import 'package:kamino/api/tmdb.dart';
-import 'package:kamino/api/trakt.dart';
+import 'package:kamino/external/ExternalService.dart';
+import 'package:kamino/external/api/tmdb.dart';
+import 'package:kamino/external/api/trakt.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/interface/content/overview.dart';
 import 'package:kamino/interface/search/curated_search.dart';
 import 'package:kamino/main.dart';
 import 'package:kamino/models/content.dart';
 import 'package:kamino/models/list.dart';
-import 'package:kamino/partials/carousel.dart';
 import 'package:kamino/partials/carousel_card.dart';
 import 'package:kamino/partials/content_poster.dart';
 import 'package:kamino/ui/elements.dart';
@@ -25,6 +25,7 @@ import 'package:kamino/util/database_helper.dart';
 import 'package:kamino/util/settings.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:simple_moment/simple_moment.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 class Launchpad2 extends KaminoAppPage {
 
@@ -47,7 +48,7 @@ class Launchpad2State extends State<Launchpad2> {
 
   Future<void> load() async {
     return Future.any([
-      TMDB.getList(context, 105604, loadFully: false, useCache: true).then<ContentListModel>((list){
+      Service.get<TMDB>().getList(context, 105604, loadFully: false, useCache: true).then<ContentListModel>((list){
         if(mounted) setState(() => _topPicksList = list.content);
       }),
 
@@ -65,6 +66,14 @@ class Launchpad2State extends State<Launchpad2> {
   }
 
   @override
+  void didChangeDependencies() {
+    _loadTrakt();
+    _loadWatchLists();
+
+    super.didChangeDependencies();
+  }
+
+  @override
   void initState() {
     _watchlistsLoaded = false;
 
@@ -76,8 +85,8 @@ class Launchpad2State extends State<Launchpad2> {
 
 
   Future<void> _loadTrakt() async {
-    if(await Trakt.isAuthenticated()) {
-      await _traktMemoizer.runOnce(() => Trakt.getWatchHistory(context)).then((continueWatchingList){
+    if(await Service.get<Trakt>().isAuthenticated()) {
+      await _traktMemoizer.runOnce(() => Service.get<Trakt>().getWatchHistory(context)).then((continueWatchingList){
         if(_continueWatchingList == null){
           _continueWatchingList = continueWatchingList;
           if(mounted) setState((){});
@@ -101,7 +110,7 @@ class Launchpad2State extends State<Launchpad2> {
         for(String watchlist in watchlists){
           if(!mounted) break;
           try {
-            _loadedWatchlists.add(await TMDB.getList(
+            _loadedWatchlists.add(await Service.get<TMDB>().getList(
                 context, int.parse(watchlist), loadFully: false,
                 useCache: true));
           }catch(ex){}
@@ -118,9 +127,6 @@ class Launchpad2State extends State<Launchpad2> {
 
   @override
   Widget build(BuildContext context) {
-    _loadTrakt();
-    _loadWatchLists();
-
     return FutureBuilder(
       future: _launchpadMemoizer.runOnce(load),
       builder: (BuildContext context, AsyncSnapshot snapshot){

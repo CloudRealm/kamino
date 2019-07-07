@@ -333,5 +333,8 @@
   "expires_in_x_daysOther": "expires in $days days",
   "expires_in_x_daysOne": "expires in $days day",
   "sorts_by_date_added": "Sorts by date added.",
-  "date_added": "Date Added"
+  "date_added": "Date Added",
+
+  "reviews_n": "Reviews ($n)",
+  "reviews": "Reviews"
 }

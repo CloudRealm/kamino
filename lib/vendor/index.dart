@@ -3,6 +3,7 @@
     (Location: /lib/vendor/index.dart)
 */
 
+import 'package:kamino/external/ExternalService.dart';
 import 'package:kamino/vendor/struct/ThemeConfiguration.dart';
 import 'package:kamino/vendor/struct/VendorConfiguration.dart';
 import 'package:kamino/vendor/themes/OfficialVendorThemes.dart';

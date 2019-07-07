@@ -6,11 +6,16 @@ import 'package:flutter/material.dart';
 ///
 class ApolloTransitionRoute extends PageRouteBuilder {
 
+  bool isFullscreenDialog;
+  @override
+  bool get fullscreenDialog => isFullscreenDialog ?? false;
+
   Curve get animationCurve => Curves.easeInOut;
 
   ApolloTransitionRoute({
     WidgetBuilder builder,
-    RouteSettings settings
+    RouteSettings settings,
+    this.isFullscreenDialog
   }) : super(
       pageBuilder: (
         BuildContext context,

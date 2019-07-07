@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/res/bottom_gradient.dart';
 import 'package:kamino/ui/elements.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import 'package:kamino/api/tmdb.dart';
 import 'package:kamino/ui/loading.dart';
 
 class ContentPoster extends StatefulWidget {

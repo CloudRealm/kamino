@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:kamino/external/ExternalService.dart';
+import 'package:kamino/external/struct/paste.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/interface/intro/kamino_intro.dart';
 import 'package:kamino/main.dart';
@@ -278,38 +280,39 @@ class AdvancedSettingsPageState extends SettingsPageState {
               var deviceInfoPlugin = DeviceInfoPlugin();
 
               if(Platform.isAndroid){
-                KaminoAppState application = context.ancestorStateOfType(const TypeMatcher<KaminoAppState>());
                 AndroidDeviceInfo deviceInfo = await deviceInfoPlugin.androidInfo;
 
                 String info = "";
-                info += ("${deviceInfo.manufacturer} ${deviceInfo.model} (${deviceInfo.product})") + "\n";
+                info += ("device: ${deviceInfo.manufacturer} ${deviceInfo.model} (${deviceInfo.product})\n");
                 info += ("\n");
-                info += ("Hardware: ${deviceInfo.hardware} (Bootloader: ${deviceInfo.bootloader})") + "\n";
-                info += ("\t\t--> Supports: ${deviceInfo.supportedAbis.join(',')}") + "\n";
-                info += ("\t\t--> IPD: ${deviceInfo.isPhysicalDevice}") + "\n";
+                info += ("hardware:") + "\n";
+                info += ("    model: ${deviceInfo.hardware}\n");
+                info += ("    bootloader: ${deviceInfo.bootloader})\n");
+                info += ("    supports: ${deviceInfo.supportedAbis.join(',')}\n");
+                info += ("    is_physical_device: ${deviceInfo.isPhysicalDevice}\n");
                 info += ("\n");
-                info += ("Software: Android ${deviceInfo.version.release}, SDK ${deviceInfo.version.sdkInt} (${deviceInfo.version.codename})") + "\n";
-                info += ("\t\t--> Build ${deviceInfo.display} (${deviceInfo.tags})");
+                info += ("software:") + "\n";
+                info += ("    release: Android ${deviceInfo.version.release}\n");
+                info += ("    sdk: ${deviceInfo.version.sdkInt}\n");
+                info += ("    codename: ${deviceInfo.version.codename}\n");
+                info += ("    build:\n");
+                info += ("        number: ${deviceInfo.display}\n");
+                info += ("        tags: ${deviceInfo.tags}\n");
 
                 try {
-                  var response = await http.post("https://api.paste.ee/v1/pastes", body: jsonEncode({
-                    "description": "Device Information | $appName",
-                    "sections": [{
-                      "name": "Device Information",
-                      "syntax": "yaml",
-                      "contents": info
-                    }]
-                  }), headers: {
-                    'Content-Type': 'application/json',
-                    'X-Auth-Token': await application.getPrimaryVendorConfig().execCommand("getDebugPasteToken")
-                  });
-                  String link = jsonDecode(response.body)["link"];
+                  String link = await Service.primaryOfType<PasteService>(ServiceType.PASTE).paste(
+                      info,
+                      title: "Device Information | $appName",
+                      fileFormat: "yaml"
+                  );
 
                   await Clipboard.setData(new ClipboardData(text: link));
                   Interface.showSnackbar(S.of(context).link_copied_to_clipboard, context: context);
                 }catch(ex){
                   if(ex is SocketException || ex is HttpException)
                     Interface.showSnackbar(S.of(context).youre_offline, context: context, backgroundColor: Colors.red);
+
+                  print(ex);
                   Interface.showSnackbar(S.of(context).an_error_occurred, context: context, backgroundColor: Colors.red);
                 }
 

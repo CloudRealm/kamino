@@ -1,5 +1,6 @@
 import 'package:dart_chromecast/casting/cast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:kamino/cast/cast_devices_dialog.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/main.dart';
@@ -140,6 +141,117 @@ class ConcealableTextState extends State<ConcealableText> {
                 : Container()
               )
             ]
+          );
+        })
+      ],
+    );
+  }
+
+}
+
+class ConcealableMarkdownText extends StatefulWidget {
+
+  final MarkdownBody markdown;
+  final String revealLabel;
+  final String concealLabel;
+  final Color revealLabelColor;
+
+  final int maxLines;
+
+  ConcealableMarkdownText(this.markdown, {
+    @required this.revealLabel,
+    @required this.concealLabel,
+    @required this.maxLines,
+    this.revealLabelColor,
+  });
+
+  @override
+  State<StatefulWidget> createState() => ConcealableMarkdownTextState();
+}
+
+class ConcealableMarkdownTextState extends State<ConcealableMarkdownText> {
+
+  bool isConcealed = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        LayoutBuilder(builder: (context, size){
+          var textSpan = TextSpan(
+              text: widget.markdown.data,
+              style: widget.markdown.styleSheet != null ? widget.markdown.styleSheet.p : Theme.of(context).textTheme.body1
+          );
+
+          var textPainter = TextPainter(
+            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+            maxLines: widget.maxLines,
+            textAlign: TextAlign.start,
+            textDirection: Directionality.of(context),
+            text: textSpan,
+          );
+
+          textPainter.layout(maxWidth: size.maxWidth);
+          var exceeded = textPainter.didExceedMaxLines;
+
+          String markdownData = widget.markdown.data;
+          if(isConcealed && exceeded){
+            int splitBoundary = textPainter.getWordBoundary(
+                textPainter.getPositionForOffset(Offset(textPainter.width, (textSpan.style.fontSize != null ? textSpan.style.fontSize : Theme.of(context).textTheme.body1.fontSize) * widget.maxLines))
+            ).start;
+
+            markdownData = markdownData.substring(0, splitBoundary);
+            markdownData = ((){
+              List<String> markdownList = markdownData.split("\n");
+              void _trimLine(){
+                markdownList.last = markdownList.last.replaceAll(RegExp("\.\$"), "");
+                markdownList.last = markdownList.last.replaceAll(RegExp("\r\$"), "");
+                markdownList.last = markdownList.last.replaceAll(RegExp("\n\$"), "");
+                markdownList.last = markdownList.last.replaceAll(RegExp("\s\$"), "");
+                markdownList.last = markdownList.last.trim();
+              }
+              _trimLine();
+
+              if(markdownList.last == "") markdownList.removeLast();
+              _trimLine();
+              return markdownList;
+            }()).join("\n");
+            if(!markdownData.endsWith("\n")) markdownData += "...";
+          }
+
+          return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                MarkdownBody(
+                  data: markdownData,
+                  styleSheet: widget.markdown.styleSheet,
+                  syntaxHighlighter: widget.markdown.syntaxHighlighter,
+                  onTapLink: widget.markdown.onTapLink,
+                  imageDirectory: widget.markdown.imageDirectory
+                ),
+
+                (exceeded ?
+                GestureDetector(
+                  onTap: (){
+                    setState((){
+                      isConcealed = !isConcealed;
+                    });
+                  },
+                  child: Padding(
+                      padding: isConcealed ? EdgeInsets.only(top: 5.0) : EdgeInsets.only(top: 10.0),
+                      child: Text(
+                          isConcealed ? widget.revealLabel : widget.concealLabel,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: widget.revealLabelColor
+                          )
+                      )
+                  ),
+                )
+                    : Container()
+                )
+              ]
           );
         })
       ],

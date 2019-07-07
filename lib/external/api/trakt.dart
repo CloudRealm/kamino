@@ -5,7 +5,9 @@ import 'dart:io';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:kamino/api/tmdb.dart';
+import 'package:kamino/external/ExternalService.dart';
+import 'package:kamino/external/api/tmdb.dart';
+import 'package:kamino/external/struct/content_tracker.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/main.dart';
 import 'package:kamino/models/content.dart';
@@ -14,7 +16,13 @@ import 'package:kamino/ui/interface.dart';
 import 'package:kamino/util/database_helper.dart';
 import 'package:kamino/util/settings.dart';
 
-class Trakt {
+class Trakt extends ContentTrackerService {
+
+  static TraktIdentity identity;
+
+  Trakt(TraktIdentity _identity) : super(
+      "Trakt.tv"
+  ){ identity = _identity; }
 
   /*
 
@@ -31,15 +39,14 @@ class Trakt {
   static const String TRAKT_SYNC_HISTORY = "$TRAKT_API_ENDPOINT/sync/history";
   static const String TRAKT_SYNC_COLLECTION = "$TRAKT_API_ENDPOINT/sync/collection";
 
-  static Future<Map<String, String>> _getAuthHeaders(BuildContext context) async {
-    KaminoAppState appState = context.ancestorStateOfType(const TypeMatcher<KaminoAppState>());
+  Future<Map<String, String>> _getAuthHeaders(BuildContext context) async {
     TraktCredentials traktCredentials = await getTraktSettings();
 
     return {
       HttpHeaders.authorizationHeader: 'Bearer ${traktCredentials.accessToken}',
       HttpHeaders.contentTypeHeader: 'application/json',
       'trakt-api-version': '2',
-      'trakt-api-key': appState.getPrimaryVendorConfig().getTraktCredentials().id
+      'trakt-api-key': Trakt.identity.id
     };
   }
 
@@ -47,7 +54,7 @@ class Trakt {
   /// This acts as a convenient way of getting [Settings.traktCredentials]
   /// as a [TraktCredentials] object.
   ///
-  static Future<TraktCredentials> getTraktSettings() async {
+  Future<TraktCredentials> getTraktSettings() async {
     return await Settings.traktCredentials;
   }
 
@@ -55,7 +62,7 @@ class Trakt {
   /// Returns true if the user has signed into and/or connected Trakt to
   /// ApolloTV.
   ///
-  static Future<bool> isAuthenticated() async {
+  Future<bool> isAuthenticated() async {
     return (await getTraktSettings()).isValid();
   }
 
@@ -63,9 +70,7 @@ class Trakt {
   /// Allows the user to sign in and store their Trakt credentials in the
   /// application settings.
   ///
-  static Future<bool> authenticate(BuildContext context, { bool shouldShowSnackbar = false }) async {
-    KaminoAppState application = context.ancestorStateOfType(const TypeMatcher<KaminoAppState>());
-
+  Future<bool> authenticate(BuildContext context, { bool shouldShowSnackbar = false }) async {
     String authCode = await Navigator.push(context, MaterialPageRoute(
       fullscreenDialog: true,
       builder: (BuildContext context) => TraktAuthenticator(context: context)
@@ -80,8 +85,8 @@ class Trakt {
 
     http.Response response = await http.post(TRAKT_AUTH_GET_TOKEN, body: {
       'code': authCode,
-      'client_id': application.getPrimaryVendorConfig().getTraktCredentials().id,
-      'client_secret': application.getPrimaryVendorConfig().getTraktCredentials().secret,
+      'client_id': Trakt.identity.id,
+      'client_secret': Trakt.identity.secret,
       'redirect_uri': "urn:ietf:wg:oauth:2.0:oob",
       'grant_type': "authorization_code"
     });
@@ -111,14 +116,13 @@ class Trakt {
   /// Revokes the Trakt OAUTH token and clears the trakt credentials from the
   /// application settings.
   ///
-  static Future<bool> deauthenticate(BuildContext context, { bool shouldShowSnackbar = false }) async {
-    KaminoAppState application = context.ancestorStateOfType(const TypeMatcher<KaminoAppState>());
+  Future<bool> deauthenticate(BuildContext context, { bool shouldShowSnackbar = false }) async {
     TraktCredentials traktCredentials = await getTraktSettings();
 
     http.Response response = await http.post(TRAKT_AUTH_REVOKE_TOKEN, body: {
       'token': traktCredentials.accessToken,
-      'client_id': application.getPrimaryVendorConfig().getTraktCredentials().id,
-      'client_secret': application.getPrimaryVendorConfig().getTraktCredentials().secret
+      'client_id': Trakt.identity.id,
+      'client_secret': Trakt.identity.secret
     });
 
     if(response.statusCode == 200){
@@ -142,7 +146,7 @@ class Trakt {
   /// This should ideally be done in the background, every few days and upon
   /// initial setup.
   ///
-  static Future<void> synchronize(BuildContext context, { bool silent = false }) async {
+  Future<void> synchronize(BuildContext context, { bool silent = false }) async {
     /* SYNCHRONIZE FAVORITES */
 
     // Pre-Step 1 -> Purge favorites where authority is Trakt.
@@ -230,7 +234,7 @@ class Trakt {
 
         // Don't bother writing if already a favorite.
         if(!await DatabaseHelper.isFavorite(id)) {
-          ContentModel model = await TMDB.getContentInfo(
+          ContentModel model = await Service.get<TMDB>().getContentInfo(
               context,
               mediaType == 'shows' ? ContentType.TV_SHOW : ContentType.MOVIE,
               id
@@ -252,7 +256,7 @@ class Trakt {
   ///
   /// This adds an item to a user's Trakt favorites.
   ///
-  static Future<void> sendFavoriteToTrakt(BuildContext context, {
+  Future<void> sendFavoriteToTrakt(BuildContext context, {
     @required ContentType type,
     @required int id,
     @required String title,
@@ -281,7 +285,7 @@ class Trakt {
   ///
   /// This removes an item from a user's Trakt favorites.
   ///
-  static Future<void> removeFavoriteFromTrakt(BuildContext context, {
+  Future<void> removeFavoriteFromTrakt(BuildContext context, {
     @required ContentType type,
     @required int id
   }) async {
@@ -302,7 +306,7 @@ class Trakt {
     );
   }
 
-  static Future<void> syncWatchHistory(BuildContext context) async {
+  Future<void> syncWatchHistory(BuildContext context) async {
     // Generate Trakt authentication headers.
     var headers = await _getAuthHeaders(context);
 
@@ -345,7 +349,7 @@ class Trakt {
           int totalDuration = Duration(minutes: jsonDecode((await http.get("$TRAKT_API_ENDPOINT/movies/$slug?extended=full", headers: headers)).body)["runtime"]).inMilliseconds;
 
           DatabaseHelper.setWatchProgress(
-            await TMDB.getContentInfo(context, ContentType.MOVIE, contentId),
+            await Service.get<TMDB>().getContentInfo(context, ContentType.MOVIE, contentId),
             millisecondsWatched: totalDuration,
             totalMilliseconds: totalDuration,
             isFinished: true,
@@ -360,7 +364,7 @@ class Trakt {
 
   }
 
-  static Future<void> syncPlaybackHistory(BuildContext context) async {
+  Future<void> syncPlaybackHistory(BuildContext context) async {
     
   }
 
@@ -368,7 +372,7 @@ class Trakt {
   /// This gets a user's Trakt watch history.
   ///
   @Deprecated("This is no longer used. You should instead syncWatchHistory.")
-  static Future<List<ContentModel>> getWatchHistory(BuildContext context, { bool includeComplete = false }) async {
+  Future<List<ContentModel>> getWatchHistory(BuildContext context, { bool includeComplete = false }) async {
     List<ContentModel> progressData = [];
 
     try {
@@ -383,7 +387,7 @@ class Trakt {
         if(entry["type"] == 'episode'){
           if(progressData.where((_entry) => _entry.id == entry["show"]["ids"]["tmdb"]).length > 0) continue;
 
-          var content = await TMDB.getContentInfo(context, ContentType.TV_SHOW, entry["show"]["ids"]["tmdb"]);
+          var content = await Service.get<TMDB>().getContentInfo(context, ContentType.TV_SHOW, entry["show"]["ids"]["tmdb"]);
 
           var progressResponse = jsonDecode((await http.get("https://api.trakt.tv/shows/${entry["show"]["ids"]["trakt"].toString()}/progress/watched", headers: headers)).body);
           content.progress = (double.parse(progressResponse["completed"].toString()) / double.parse(progressResponse["aired"].toString()));
@@ -436,10 +440,8 @@ class _TraktAuthenticatorState extends State<TraktAuthenticator> {
 
   @override
   Widget build(BuildContext context) {
-    KaminoAppState application = context.ancestorStateOfType(const TypeMatcher<KaminoAppState>());
-
     String _url = "https://trakt.tv/oauth/authorize?response_type=code&"
-        "client_id=${application.getPrimaryVendorConfig().getTraktCredentials().id}&"
+        "client_id=${Trakt.identity.id}&"
         "redirect_uri=urn:ietf:wg:oauth:2.0:oob";
 
     return WebviewScaffold(
@@ -463,4 +465,14 @@ class _TraktAuthenticatorState extends State<TraktAuthenticator> {
     super.dispose();
   }
 
+}
+
+class TraktIdentity {
+  final String id;
+  final String secret;
+
+  TraktIdentity({
+    @required this.id,
+    @required this.secret
+  });
 }

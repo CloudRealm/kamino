@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart';
 import 'package:kamino/animation/transition.dart';
-import 'package:kamino/api/tmdb.dart';
+import 'package:kamino/external/ExternalService.dart';
+import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/interface/search/genre_search.dart';
 import 'package:kamino/main.dart';
@@ -59,7 +60,7 @@ class BrowsePageState extends State<StatefulWidget> {
                     _curatedMemoizers[listID] = new AsyncMemoizer();
 
                   return FutureBuilder(
-                    future: _curatedMemoizers[listID].runOnce(() => TMDB.getList(context, listID)),
+                    future: _curatedMemoizers[listID].runOnce(() => Service.get<TMDB>().getList(context, listID)),
                     builder: (BuildContext context, AsyncSnapshot snapshot){
                       ContentListModel list = snapshot.data;
 
@@ -206,7 +207,7 @@ class BrowsePageState extends State<StatefulWidget> {
 
   Future<List> fetchGenreData(int genreId) async {
     String url = "${TMDB.ROOT_URL}/discover/${getRawContentType(type)}"
-        "${TMDB.getDefaultArguments(context)}&"
+        "${Service.get<TMDB>().getDefaultArguments(context)}&"
         "sort_by=popularity.desc&include_adult=false"
         "&include_video=false&"
         "page=1&with_genres=$genreId";

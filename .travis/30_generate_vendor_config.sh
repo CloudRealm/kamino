@@ -12,6 +12,10 @@ cat <<____HERE
    Travis-CI - ApolloTV automated vendor configuration.
 */
 
+import 'package:kamino/external/api/paste.dart';
+import 'package:kamino/external/api/realdebrid.dart';
+import 'package:kamino/external/api/tmdb.dart';
+import 'package:kamino/external/api/trakt.dart';
 import 'package:kamino/vendor/services/ClawsVendorService.dart';
 import 'package:kamino/vendor/struct/VendorConfiguration.dart';
 import 'package:kamino/vendor/struct/VendorService.dart';
@@ -23,17 +27,30 @@ class OfficialVendorConfiguration extends VendorConfiguration {
       /// use your GitHub name.
       name: "`echo $VENDOR_NAME` (#`echo $TRAVIS_BUILD_NUMBER`)",
 
-      /// These next options are not mandatory unless this configuration is the
-      /// primary configuration.
-      tmdbKey: "`echo $TMDB_KEY`",
-      traktCredentials: TraktCredentials(
-        id: "`echo $TRAKT_ID`",
-        secret: "`echo $TRAKT_SECRET`"
-      )
+      services: [
+        TMDB(TMDBIdentity(
+          key: "`echo $TMDB_KEY`"
+        )),
+
+        Trakt(TraktIdentity(
+          id: "`echo $TRAKT_ID`",
+          secret: "`echo $TRAKT_SECRET`"
+        )),
+
+        RealDebrid(RealDebridIdentity(
+          // See https://api.real-debrid.com/#api_authentication
+          // ('Authentication for applications' header)
+          clientId: "X245A4XAIBGVM"
+        )),
+
+        PasteEE(PasteEEIdentity(
+          token: "`echo $PASTE_TOKEN`"
+        ))
+      ]
   );
 
   @override
-  Future<VendorService> getService() async {
+  Future<VendorService> getVendorService() async {
       return ClawsVendorService(
           server: "`echo $CLAWS_URL_BETA`",
           clawsKey: "`echo $CLAWS_KEY_BETA`",

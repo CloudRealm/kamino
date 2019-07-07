@@ -26,7 +26,7 @@ class SettingsView extends StatefulWidget {
 }
 
 class _SettingsViewState extends State<SettingsView> {
-  
+
   PackageInfo _packageInfo = new PackageInfo(
       appName: 'Unknown',
       packageName: 'Unknown',
@@ -38,6 +38,17 @@ class _SettingsViewState extends State<SettingsView> {
   void initState() {
     (() async {
       PackageInfo info = await SettingsManager.getPackageInfo();
+
+      assert((){
+        info = new PackageInfo(
+          appName: info.appName,
+          packageName: info.packageName,
+          version: info.version,
+          buildNumber: info.buildNumber + "D"
+        );
+        return true;
+      }());
+
       setState(() {
         _packageInfo = info;
       });

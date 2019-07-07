@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:kamino/animation/transition.dart';
-import 'package:kamino/api/realdebrid.dart';
+import 'package:kamino/external/ExternalService.dart';
+import 'package:kamino/external/api/realdebrid.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/main.dart';
 import 'package:kamino/ui/elements.dart';
@@ -15,6 +16,7 @@ import 'package:kamino/util/filesize.dart';
 import 'package:kamino/util/player.dart';
 import 'package:kamino/util/settings.dart';
 import 'package:kamino/vendor/struct/VendorService.dart';
+import 'package:kamino/vendor/view/SubtitleSelectionView.dart';
 
 class SourceSelectionView extends StatefulWidget {
 
@@ -60,7 +62,7 @@ class SourceSelectionViewState extends State<SourceSelectionView> {
   void initState() {
     (() async {
       stopwatch = new Stopwatch()..start();
-      rdEnabled = await RealDebrid.isAuthenticated();
+      rdEnabled = await Service.get<RealDebrid>().isAuthenticated();
 
       List sortingSettings = await Settings.contentSortSettings;
 
@@ -102,6 +104,8 @@ class SourceSelectionViewState extends State<SourceSelectionView> {
     return false;
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     widget.service.sourceList.forEach((model) {
@@ -121,157 +125,169 @@ class SourceSelectionViewState extends State<SourceSelectionView> {
     return WillPopScope(
       onWillPop: _handlePop,
       child: Scaffold(
-          backgroundColor: Theme
-              .of(context)
-              .backgroundColor,
-          appBar: AppBar(
-            backgroundColor: !isShimVendor || _disableSecurityMessages ? Theme.of(context).backgroundColor
+        backgroundColor: Theme
+            .of(context)
+            .backgroundColor,
+        appBar: AppBar(
+          backgroundColor: !isShimVendor || _disableSecurityMessages ? Theme.of(context).backgroundColor
               : Colors.red,
-            title: TitleText(
-                widget.title
+          title: TitleText(
+              widget.title
+          ),
+          centerTitle: false,
+          titleSpacing: NavigationToolbar.kMiddleSpacing,
+          bottom: PreferredSize(
+            preferredSize: Size(
+                double.infinity,
+                SourceSelectionView._kAppBarProgressHeight + 20
             ),
-            centerTitle: false,
-            titleSpacing: NavigationToolbar.kMiddleSpacing,
-            bottom: PreferredSize(
-              preferredSize: Size(
-                  double.infinity,
-                  SourceSelectionView._kAppBarProgressHeight + 20
-              ),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.only(bottom: 10),
-                    child: Builder(builder: (BuildContext context){
-                      String elapsed = formatTimestamp(stopwatch.elapsed.inMilliseconds);
+            child: Column(
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(bottom: 10),
+                  child: Builder(builder: (BuildContext context){
+                    String elapsed = formatTimestamp(stopwatch.elapsed.inMilliseconds);
 
-                      return Text(
-                        S.of(context).x_found_in_y(
+                    return Text(
+                      S.of(context).x_found_in_y(
                           S.of(context).n_sources(sourceList.length.toString()),
                           elapsed
-                        ),
-                        style: TextStyle(
-                            fontFamily: 'GlacialIndifference',
-                            fontSize: 16
-                        ),
-                      );
-                    }),
-                  ),
-                  PreferredSize(
-                      child: (
-                          widget.service.status != VendorServiceStatus.DONE &&
-                              widget.service.status != VendorServiceStatus.IDLE
-                      )
-                          ? Column(
-                        children: <Widget>[
-                          SizedBox(
-                            height: SourceSelectionView._kAppBarProgressHeight,
-                            child: LinearProgressIndicator(
-                              backgroundColor: !isShimVendor || _disableSecurityMessages ? null : Colors.red,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  !isShimVendor || _disableSecurityMessages ? Theme.of(context).primaryColor
-                                      : Colors.white
-                              ),
-                            ),
-                          )
-                        ],
-                      )
-                          : Container(),
-                      preferredSize: Size(
-                          double.infinity, SourceSelectionView._kAppBarProgressHeight)
-                  )
-                ],
-              ),
-            ),
-            actions: <Widget>[
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 5),
-                child: CastButton(),
-              ),
-              IconButton(icon: Icon(Icons.sort), onPressed: () => _showSortingDialog(context))
-            ],
-          ),
-          body: Container(
-              child: NotificationListener<OverscrollIndicatorNotification>(
-                  onNotification: (notification){
-                    if(notification.leading){
-                      notification.disallowGlow();
-                    }
-                  },
-                  child: (widget.service.status == VendorServiceStatus.DONE && sourceList.length == 0) ?
-                    ErrorLoadingMixin(
-                      partialForm: true,
-                      errorTitle: S.of(context).no_sources_found,
-                      errorMessage: S.of(context).we_couldnt_find_any_sources_for_content(widget.title),
-                      action: (){
-                        final FlutterWebviewPlugin webview = FlutterWebviewPlugin();
-                        webview.close();
-
-                        webview.onStateChanged.take(1).listen((_) async {
-                          webview.evalJavascript("window.onselect = window.oncontextmenu = function(event){ event.preventDefault(); return false; }");
-                          webview.evalJavascript("document.head.innerHTML+='<style>*{user-select:none !important;}</style>'");
-
-                          webview.onUrlChanged.listen((data) async {
-                            if(await webview.evalJavascript("document.body.innerHTML.indexOf('Submit another response') > -1") == 'true'){
-                              webview.stopLoading();
-                              webview.dispose();
-                              Navigator.of(context).pop();
-
-                              Interface.showSimpleSuccessDialog(context, message: S.of(context).your_request_has_been_saved);
-                            }
-                          });
-                        });
-
-                        Navigator.push(context, ApolloTransitionRoute(builder: (_){
-                          return WebviewScaffold(
-                            appBar: AppBar(
-                              leading: IconButton(
-                                icon: Icon(Icons.close),
-                                tooltip: "Close",
-                                onPressed: () => Navigator.of(context).pop(),
-                              ),
-                            ),
-                            url: "https://docs.google.com/forms/d/e/1FAIpQLScMfEYwPtmIi3z-pUVnxD8IRjGEwMNLNYwz4lkOVA0Mn9Liuw/viewform",
-                            withJavascript: true,
-                            supportMultipleWindows: false,
-                            allowFileURLs: false
-                          );
-                        }));
-                      },
-                      actionLabel: S.of(context).submit_request,
-                    )
-                  : ListView(
-                    primary: true,
-                    children: <Widget>[
-                      isShimVendor && !_disableSecurityMessages ? Container(
-                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                        color: Colors.red,
-                        child: Text("SECURITY RISK: You are using an unoffical server. Use of unofficial servers is at your own risk. They have not been vetted or inspected by the ApolloTV team and are not guaranteed to be running official code. By connecting to a server on the internet, you are sharing your IP address. If this is a concern, use a VPN or do not use unofficial servers."),
-                      ) : Container(),
-
-                      rdEnabled ? _buildSourceList(
-                          _rdSources,
-                          title: S.of(context).real_debrid_n_sources(_rdSources.length.toString()),
-                          sectionExpanded: rdExpanded,
-                          onToggleExpanded: () => setState((){
-                            rdExpanded = !rdExpanded;
-                          })
-                      ) : Container(),
-                      _buildSourceList(
-                          _sources,
-                          title: rdEnabled
-                              ? S.of(context).standard_n_sources(_sources.length.toString())
-                              : null,
-                          sectionExpanded: generalExpanded,
-                          onToggleExpanded: () => setState((){
-                            generalExpanded = !generalExpanded;
-                          })
                       ),
+                      style: TextStyle(
+                          fontFamily: 'GlacialIndifference',
+                          fontSize: 16
+                      ),
+                    );
+                  }),
+                ),
+                PreferredSize(
+                    child: (
+                        widget.service.status != VendorServiceStatus.DONE &&
+                            widget.service.status != VendorServiceStatus.IDLE
+                    )
+                        ? Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: SourceSelectionView._kAppBarProgressHeight,
+                          child: LinearProgressIndicator(
+                            backgroundColor: !isShimVendor || _disableSecurityMessages ? null : Colors.red,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                !isShimVendor || _disableSecurityMessages ? Theme.of(context).primaryColor
+                                    : Colors.white
+                            ),
+                          ),
+                        )
+                      ],
+                    )
+                        : Container(),
+                    preferredSize: Size(
+                        double.infinity, SourceSelectionView._kAppBarProgressHeight)
+                )
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 5),
+              child: CastButton(),
+            ),
+            IconButton(icon: Icon(Icons.sort), onPressed: () => _showSortingDialog(context))
+          ],
+        ),
+        body: Container(
+            child: NotificationListener<OverscrollIndicatorNotification>(
+                onNotification: (notification){
+                  if(notification.leading){
+                    notification.disallowGlow();
+                  }
+                },
+                child: (widget.service.status == VendorServiceStatus.DONE && sourceList.length == 0) ?
+                ErrorLoadingMixin(
+                  partialForm: true,
+                  errorTitle: S.of(context).no_sources_found,
+                  errorMessage: S.of(context).we_couldnt_find_any_sources_for_content(widget.title),
+                  action: (){
+                    final FlutterWebviewPlugin webview = FlutterWebviewPlugin();
+                    webview.close();
 
-                      Container(margin: EdgeInsets.only(bottom: 15))
-                    ],
-                  )
-              )
-          )
+                    webview.onStateChanged.take(1).listen((_) async {
+                      webview.evalJavascript("window.onselect = window.oncontextmenu = function(event){ event.preventDefault(); return false; }");
+                      webview.evalJavascript("document.head.innerHTML+='<style>*{user-select:none !important;}</style>'");
+
+                      webview.onUrlChanged.listen((data) async {
+                        if(await webview.evalJavascript("document.body.innerHTML.indexOf('Submit another response') > -1") == 'true'){
+                          webview.stopLoading();
+                          webview.dispose();
+                          Navigator.of(context).pop();
+
+                          Interface.showSimpleSuccessDialog(context, message: S.of(context).your_request_has_been_saved);
+                        }
+                      });
+                    });
+
+                    Navigator.push(context, ApolloTransitionRoute(builder: (_){
+                      return WebviewScaffold(
+                          appBar: AppBar(
+                            leading: IconButton(
+                              icon: Icon(Icons.close),
+                              tooltip: "Close",
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                          ),
+                          url: "https://docs.google.com/forms/d/e/1FAIpQLScMfEYwPtmIi3z-pUVnxD8IRjGEwMNLNYwz4lkOVA0Mn9Liuw/viewform",
+                          withJavascript: true,
+                          supportMultipleWindows: false,
+                          allowFileURLs: false
+                      );
+                    }));
+                  },
+                  actionLabel: S.of(context).submit_request,
+                )
+                    : ListView(
+                  primary: true,
+                  children: <Widget>[
+                    isShimVendor && !_disableSecurityMessages ? Container(
+                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                      color: Colors.red,
+                      child: Text("SECURITY RISK: You are using an unoffical server. Use of unofficial servers is at your own risk. They have not been vetted or inspected by the ApolloTV team and are not guaranteed to be running official code. By connecting to a server on the internet, you are sharing your IP address. If this is a concern, use a VPN or do not use unofficial servers."),
+                    ) : Container(),
+
+                    rdEnabled && _rdSources.length > 0 ? _buildSourceList(
+                        _rdSources,
+                        title: S.of(context).real_debrid_n_sources(_rdSources.length.toString()),
+                        sectionExpanded: rdExpanded,
+                        onToggleExpanded: () => setState((){
+                          rdExpanded = !rdExpanded;
+                        })
+                    ) : Container(),
+                    _buildSourceList(
+                        _sources,
+                        title: rdEnabled && _rdSources.length > 0
+                            ? S.of(context).standard_n_sources(_sources.length.toString())
+                            : null,
+                        sectionExpanded: generalExpanded,
+                        onToggleExpanded: () => setState((){
+                          generalExpanded = !generalExpanded;
+                        })
+                    ),
+
+                    Container(margin: EdgeInsets.only(bottom: 15))
+                  ],
+                )
+            )
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+            onPressed: (){
+              Navigator.of(context).push(ApolloTransitionRoute(
+                builder: (BuildContext context) => SubtitleSelectionView(),
+                isFullscreenDialog: true
+              ));
+            },
+            label: TitleText("Subtitles", style: TextStyle(
+              letterSpacing: 0
+            ), fontSize: 18),
+            icon: Icon(Icons.subtitles)
+        ),
       ),
     );
   }
@@ -339,7 +355,7 @@ class SourceSelectionViewState extends State<SourceSelectionView> {
     });
 
     if(this.sortReversed) sourceList = sourceList.reversed.toList();
-    if(mounted) setState(() {});
+    /*if(mounted) setState(() {});*/
 
     return sourceList;
   }

@@ -1,8 +1,9 @@
 import 'package:async/async.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:kamino/api/realdebrid.dart';
-import 'package:kamino/api/trakt.dart';
+import 'package:kamino/external/ExternalService.dart';
+import 'package:kamino/external/api/realdebrid.dart';
+import 'package:kamino/external/api/trakt.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/ui/elements.dart';
 import 'package:kamino/interface/settings/page.dart';
@@ -29,8 +30,8 @@ class ExtensionsSettingsPageState extends SettingsPageState {
   void initState(){
     // Check if the services are authenticated.
     (() async {
-      traktAuthenticated = await Trakt.isAuthenticated();
-      rdAuthenticated = await RealDebrid.isAuthenticated();
+      traktAuthenticated = await Service.get<Trakt>().isAuthenticated();
+      rdAuthenticated = await Service.get<RealDebrid>().isAuthenticated();
       setState(() {});
     })();
 
@@ -74,7 +75,7 @@ class ExtensionsSettingsPageState extends SettingsPageState {
                       onPressed: (traktAuthenticated) ? () async {
                         //Interface.showLoadingDialog(context, title: S.of(context).syncing, canCancel: true);
 
-                        Trakt.synchronize(context, silent: false);
+                        Service.get<Trakt>().synchronize(context, silent: false);
                         //KaminoAppDelegateProxy state = context.ancestorStateOfType(const TypeMatcher<KaminoAppDelegateProxy>());
                         //Trakt.syncWatchHistory(state.context);
 
@@ -87,10 +88,10 @@ class ExtensionsSettingsPageState extends SettingsPageState {
                         textColor: Theme.of(context).primaryTextTheme.body1.color,
                         child: TitleText(S.of(context).connect),
                         onPressed: () async {
-                          await Trakt.authenticate(context, shouldShowSnackbar: true);
-                          traktAuthenticated = await Trakt.isAuthenticated();
+                          await Service.get<Trakt>().authenticate(context, shouldShowSnackbar: true);
+                          traktAuthenticated = await Service.get<Trakt>().isAuthenticated();
 
-                          if(traktAuthenticated) Trakt.synchronize(context, silent: false);
+                          if(traktAuthenticated) Service.get<Trakt>().synchronize(context, silent: false);
                           setState(() {});
                         },
                       ) :
@@ -99,8 +100,8 @@ class ExtensionsSettingsPageState extends SettingsPageState {
                       textColor: Theme.of(context).primaryTextTheme.body1.color,
                       child: TitleText(S.of(context).disconnect),
                       onPressed: () async {
-                        await Trakt.deauthenticate(context, shouldShowSnackbar: true);
-                        this.traktAuthenticated = await Trakt.isAuthenticated();
+                        await Service.get<Trakt>().deauthenticate(context, shouldShowSnackbar: true);
+                        this.traktAuthenticated = await Service.get<Trakt>().isAuthenticated();
                         setState(() {});
                       },
                     ),
@@ -146,7 +147,7 @@ class ExtensionsSettingsPageState extends SettingsPageState {
         SubtitleText(S.of(context).premium_hosts),
 
         FutureBuilder(future: _realDebridUserInfoMemoizer.runOnce(() async {
-          return await RealDebrid.getUserInfo();
+          return await Service.get<RealDebrid>().getUserInfo();
         }), builder: (BuildContext context, AsyncSnapshot<RealDebridUser> snapshot){
           return Card(
             margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
@@ -203,8 +204,8 @@ class ExtensionsSettingsPageState extends SettingsPageState {
                           textColor: Theme.of(context).primaryTextTheme.body1.color,
                           child: TitleText(S.of(context).connect),
                           onPressed: () async {
-                            await RealDebrid.authenticate(context, shouldShowSnackbar: true);
-                            rdAuthenticated = await RealDebrid.isAuthenticated();
+                            await Service.get<RealDebrid>().authenticate(context, shouldShowSnackbar: true);
+                            rdAuthenticated = await Service.get<RealDebrid>().isAuthenticated();
                             _realDebridUserInfoMemoizer = new AsyncMemoizer();
                             setState(() {});
                           }
@@ -241,8 +242,8 @@ class ExtensionsSettingsPageState extends SettingsPageState {
                           textColor: Theme.of(context).primaryTextTheme.body1.color,
                           child: TitleText(S.of(context).disconnect),
                           onPressed: () async {
-                            await RealDebrid.deauthenticate(context, shouldShowSnackbar: true);
-                            rdAuthenticated = await RealDebrid.isAuthenticated();
+                            await Service.get<RealDebrid>().deauthenticate(context, shouldShowSnackbar: true);
+                            rdAuthenticated = await Service.get<RealDebrid>().isAuthenticated();
                             setState(() {});
                           }
                         )

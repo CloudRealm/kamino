@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kamino/animation/transition.dart';
+import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/models/tv_show.dart';
 import 'package:kamino/ui/elements.dart';
 import 'package:kamino/interface/content/episode_picker.dart';
-
-import 'package:kamino/api/tmdb.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class TVShowLayout{

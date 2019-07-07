@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:connectivity/connectivity.dart';
 import 'package:dart_chromecast/casting/cast.dart';
 import 'package:kamino/animation/transition.dart';
+import 'package:kamino/external/ExternalService.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/interface/favorites.dart';
 import 'package:kamino/interface/intro/kamino_intro.dart';
@@ -103,7 +104,7 @@ Future<void> reportError(error, StackTrace stacktrace, {shouldShowDialog = false
       shouldShowErrors = true;
       return true;
     }());
-    if(!packageInfo.buildNumber.endsWith("2") || !packageInfo.buildNumber.endsWith("3")) shouldShowErrors = true;
+    if(!packageInfo.buildNumber.endsWith("2") && !packageInfo.buildNumber.endsWith("3")) shouldShowErrors = true;
     if(!shouldShowErrors) return;
 
     if(Navigator.of(context).canPop() && !cancelPop) Navigator.of(context).pop();
@@ -427,10 +428,10 @@ class KaminoAppState extends State<KaminoApp> {
 
   Future<VendorService> getPrimaryVendorService({ bool excludeShim = false }) async {
     if(!excludeShim && await isShimVendorEnabled()){
-      return ShimVendorConfiguration().getService();
+      return ShimVendorConfiguration().getVendorService();
     }
 
-    return await getPrimaryVendorConfig().getService();
+    return await getPrimaryVendorConfig().getVendorService();
   }
 
   VendorConfiguration getPrimaryVendorConfig(){
@@ -564,6 +565,10 @@ class KaminoAppHomeState extends State<KaminoAppHome> {
       http.head("https://static.apollotv.xyz/generate_204").then((http.Response response){
         if(response == null || response.statusCode != 204) {
           isConnected = false;
+        }else{
+          setState(() {
+            isConnected = true;
+          });
         }
       }).catchError((error) => isConnected = false);
     });

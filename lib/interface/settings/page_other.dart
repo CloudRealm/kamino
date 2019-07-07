@@ -218,7 +218,7 @@ class OtherSettingsPageState extends SettingsPageState {
                                     text: TextSpan(
                                         children: [
                                           TextSpan(
-                                              text: "\u2022 [COMING SOON] Development: ",
+                                              text: "\u2022 Development: ",
                                               style: TextStyle(fontWeight: FontWeight.bold)
                                           ),
                                           TextSpan(

@@ -15,7 +15,7 @@ class ShimVendorConfiguration extends VendorConfiguration {
   );
 
   @override
-  Future<VendorService> getService() async {
+  Future<VendorService> getVendorService() async {
     return ClawsVendorService(
       server: await Settings.serverURLOverride,
       clawsKey: await Settings.serverKeyOverride,

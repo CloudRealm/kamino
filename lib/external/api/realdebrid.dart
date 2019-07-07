@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
+import 'package:kamino/external/ExternalService.dart';
+import 'package:kamino/external/struct/premium_host.dart';
 import 'package:kamino/ui/interface.dart';
 import 'package:kamino/ui/loading.dart';
 import 'package:kamino/util/settings.dart';
@@ -13,20 +15,22 @@ import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/main.dart';
 import 'package:kamino/ui/elements.dart';
 
-class RealDebrid {
+class RealDebrid extends PremiumHostService {
+
+  static RealDebridIdentity identity;
+
+  RealDebrid(RealDebridIdentity _identity) : super(
+    "Real-Debrid"
+  ){ identity = _identity; }
 
   static const REAL_DEBRID_OAUTH_ENDPOINT = "https://api.real-debrid.com/oauth/v2";
   static const REAL_DEBRID_API_ENDPOINT = "https://api.real-debrid.com/rest/1.0";
   static const REAL_DEBRID_REFRESH_OFFSET = 300;
 
-  // See https://api.real-debrid.com/#api_authentication
-  // ('Authentication for applications' header)
-  static const CLIENT_ID = "X245A4XAIBGVM";
-
   ///
   /// This method authenticates the user with the RD API.
   ///
-  static Future<bool> authenticate(BuildContext context, { bool shouldShowSnackbar = false }) async {
+  Future<bool> authenticate(BuildContext context, { bool shouldShowSnackbar = false }) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -54,13 +58,13 @@ class RealDebrid {
   ///
   /// This method removes the user's credentials.
   ///
-  static Future<void> deauthenticate(BuildContext context, { bool shouldShowSnackbar = false }) async {
+  Future<void> deauthenticate(BuildContext context, { bool shouldShowSnackbar = false }) async {
     await Settings.setRdCredentials(RealDebridCredentials.unauthenticated());
     if(shouldShowSnackbar) Interface.showSnackbar(S.of(context).disconnected_real_debrid_account, context: context, backgroundColor: Colors.red);
   }
 
-  static Future<RealDebridUser> getUserInfo() async {
-    await RealDebrid.validateToken();
+  Future<RealDebridUser> getUserInfo() async {
+    await Service.get<RealDebrid>().validateToken();
 
     RealDebridCredentials rdCredentials = await Settings.rdCredentials;
     Map<String, String> userHeader = {'Authorization': 'Bearer ' + rdCredentials.accessToken};
@@ -79,7 +83,7 @@ class RealDebrid {
   }
 
   /// IT SEEMS WE DO NOT HAVE ACCESS TO THIS METHOD.
-  static Future<bool> convertFidelityPoints(BuildContext context, { bool shouldShowSnackbar = true }) async {
+  Future<bool> convertFidelityPoints(BuildContext context, { bool shouldShowSnackbar = true }) async {
     throw new Exception("Unimplemented method. [We do not have access to this API method.]");
     /*await RealDebrid.validateToken();
 
@@ -101,14 +105,14 @@ class RealDebrid {
   /// This will check whether or not a user is authenticated with the
   /// RD API.
   ///
-  static Future<bool> isAuthenticated() async {
+  Future<bool> isAuthenticated() async {
     RealDebridCredentials rdCredentials = await Settings.rdCredentials;
     return rdCredentials != null && rdCredentials.isValid();
   }
 
-  static Future<Map> _getSecret(String device_code) async {
+  Future<Map> _getSecret(String device_code) async {
     String url = REAL_DEBRID_OAUTH_ENDPOINT + "/device"
-        "/credentials?client_id=$CLIENT_ID&code=$device_code";
+        "/credentials?client_id=${RealDebrid.identity.clientId}&code=$device_code";
 
     http.Response res = await http.get(url);
 
@@ -120,7 +124,7 @@ class RealDebrid {
     return data;
   }
 
-  static Future<Map> getToken(String device_code) async {
+  Future<Map> getToken(String device_code) async {
     Map data = await _getSecret(device_code);
 
     if (data["client_id"] != null || data["client_secret"] != null) {
@@ -143,7 +147,7 @@ class RealDebrid {
     return {"access_token": null};
   }
 
-  static Future<bool> _refreshToken() async {
+  Future<bool> _refreshToken() async {
     String url = REAL_DEBRID_OAUTH_ENDPOINT + "/token";
 
     //get rd credentials
@@ -175,7 +179,7 @@ class RealDebrid {
     return false;
   }
 
-  static Future<Map<String, dynamic>> unrestrictLink(String link) async {
+  Future<Map<String, dynamic>> unrestrictLink(String link) async {
     RealDebridCredentials rdCredentials = await Settings.rdCredentials;
     Map<String, String> userHeader = {'Authorization': 'Bearer ' + rdCredentials.accessToken};
 
@@ -190,7 +194,7 @@ class RealDebrid {
     return null;
   }
 
-  static Future<void> validateToken() async {
+  Future<void> validateToken() async {
     RealDebridCredentials rdCredentials = await Settings.rdCredentials;
     bool tokenCheck = DateTime.now().isBefore(DateTime.parse(rdCredentials.expiryDate));
 
@@ -297,7 +301,7 @@ class _RealDebridAuthenticatorState extends State<RealDebridAuthenticator> {
                 onPressed: () async {
                   if(this.context != null && mounted) Navigator.pop(
                       this.context,
-                      await RealDebrid.getToken(oauthData["device_code"])
+                      await Service.get<RealDebrid>().getToken(oauthData["device_code"])
                   );
                 },
               ) : Container()
@@ -344,7 +348,7 @@ class _RealDebridAuthenticatorState extends State<RealDebridAuthenticator> {
                 onPressed: () async {
                   Navigator.pop(
                       this.context,
-                      await RealDebrid.getToken(oauthData["device_code"])
+                      await Service.get<RealDebrid>().getToken(oauthData["device_code"])
                   );
                 },
               ) : Container()
@@ -387,7 +391,7 @@ class _RealDebridAuthenticatorState extends State<RealDebridAuthenticator> {
                     Container(margin: EdgeInsets.symmetric(vertical: 5)),
                     Center(child: Container(
                       child: RaisedButton.icon(onPressed: () async {
-                        if((await RealDebrid.getToken(oauthData["device_code"]))["access_token"] == null){
+                        if((await Service.get<RealDebrid>().getToken(oauthData["device_code"]))["access_token"] == null){
                           Interface.showAlert(
                               context: context,
                               title: TitleText(S.of(context).appname_was_unable_to_authenticate_with_real_debrid(appName), allowOverflow: true),
@@ -408,7 +412,7 @@ class _RealDebridAuthenticatorState extends State<RealDebridAuthenticator> {
 
                         Navigator.pop(
                             this.context,
-                            await RealDebrid.getToken(oauthData["device_code"])
+                            await Service.get<RealDebrid>().getToken(oauthData["device_code"])
                         );
                       }, icon: Icon(Icons.done), label: Text("Done")),
                       margin: EdgeInsets.symmetric(vertical: 10),
@@ -484,7 +488,7 @@ class _RealDebridAuthenticatorState extends State<RealDebridAuthenticator> {
 
   Future<Map> _getOauthData() async {
     // Make a request to the API with the code to get oauth credentials.
-    String url = "${RealDebrid.REAL_DEBRID_OAUTH_ENDPOINT}/device/code?client_id=${RealDebrid.CLIENT_ID}&new_credentials=yes";
+    String url = "${RealDebrid.REAL_DEBRID_OAUTH_ENDPOINT}/device/code?client_id=${RealDebrid.identity.clientId}&new_credentials=yes";
     http.Response response = await http.get(url);
     Map data = json.decode(response.body);
 
@@ -561,4 +565,12 @@ class RealDebridUser {
     ).inDays;
   }
 
+}
+
+class RealDebridIdentity{
+  String clientId;
+
+  RealDebridIdentity({
+    @required this.clientId
+  });
 }
