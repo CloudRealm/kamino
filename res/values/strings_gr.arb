@@ -194,7 +194,7 @@
   "error_loading_launchpad": "Αυτό είναι άβολο... Παρουσιάστηκε σφάλμα κατά τη φόρτωση του εκτυπωτή σας.",
   "error_loading_search": "Αυτό είναι δύσκολο... Παρουσιάστηκε σφάλμα κατά τη φόρτωση των αποτελεσμάτων αναζήτησης.",
   "be_careful_this_option_could_break_the_app_if_you": "Πρόσεχε! Αυτή η επιλογή θα μπορούσε να σπάσει την εφαρμογή αν δεν ξέρετε τι κάνετε.",
-  "the_url_must_be_valid_and_include_a_trailing_": "Η διεύθυνση URL πρέπει να είναι έγκυρη και να περιλαμβάνει ένα τελικό/.",
+  "the_url_must_be_valid_and_include_a_trailing_": "Η διεύθυνση URL πρέπει να είναι έγκυρη και να τελείωνει με το σύμβολο "/".",
   "server_url": "Διεύθυνση URL Server",
   "the_key_must_be_32_characters_in_length": "Το κλειδί πρέπει να έχει μήκος 32 χαρακτήρων.",
   "server_key": "Κλειδί Server",
