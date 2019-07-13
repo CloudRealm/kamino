@@ -11,7 +11,7 @@ import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/external/api/trakt.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/main.dart';
-import 'package:kamino/models/content.dart';
+import 'package:kamino/models/content/content.dart';
 import 'package:kamino/models/crew.dart';
 import 'package:kamino/models/review.dart';
 

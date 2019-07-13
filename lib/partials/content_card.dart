@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:kamino/external/ExternalService.dart';
 import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/external/api/trakt.dart';
-import 'package:kamino/models/content.dart';
+import 'package:kamino/models/content/content.dart';
 import 'package:flutter/material.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/ui/elements.dart';

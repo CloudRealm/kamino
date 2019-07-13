@@ -5,7 +5,7 @@ import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/interface/content/overview.dart';
 import 'package:kamino/interface/search/smart_search.dart';
 import 'package:kamino/main.dart';
-import 'package:kamino/models/content.dart';
+import 'package:kamino/models/content/content.dart';
 import 'package:kamino/ui/elements.dart';
 import 'package:kamino/ui/loading.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -40,6 +40,7 @@ class Interface {
 
   static IconButton generateSearchIcon(BuildContext context) {
     return IconButton(
+      tooltip: S.of(context).search,
       icon: Icon(Icons.search),
       color: Theme.of(context).primaryTextTheme.body1.color,
       onPressed: () => showSearch(context: context, delegate: SmartSearch()),

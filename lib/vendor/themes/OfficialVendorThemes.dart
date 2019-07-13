@@ -8,6 +8,8 @@ class OfficialVendorTheme {
   //static final _LightVendorTheme light = _LightVendorTheme();
   static final _BlackVendorTheme black = _BlackVendorTheme();
 
+  static final _SockTheme sockTheme = _SockTheme();
+
 }
 
 class _DarkVendorTheme extends ThemeConfiguration {
@@ -177,6 +179,57 @@ class _BlackVendorTheme extends ThemeConfiguration {
               color: Colors.grey[400]
           )
       )
+    );
+  }
+
+}
+
+
+class _SockTheme extends ThemeConfiguration {
+
+  static const _primaryColor = const Color(0xFFFF0000);
+
+  _SockTheme(): super(
+    id: "xyz.apollotv.sock",
+    name: "Socks Theme",
+    author: "NBTX",
+    allowsVariants: true,
+    overlayStyle: SystemUiOverlayStyle.dark.copyWith(
+        statusBarBrightness: Brightness.light,
+        systemNavigationBarIconBrightness: Brightness.light
+    ),
+    selectable: false
+  );
+
+  @override
+  ThemeData getThemeData({Color primaryColor : _primaryColor}) {
+    var _highlightColor = primaryColor.withOpacity(0.1490);
+
+    var _backgroundColor = Color(0xFF0000FF);
+    var _cardColor = _backgroundColor;
+
+    return _DarkVendorTheme().getThemeData(primaryColor: _primaryColor).copyWith(
+        primaryColor: primaryColor,
+        accentColor: primaryColor,
+        highlightColor: _highlightColor,
+        backgroundColor: _backgroundColor,
+        cursorColor: primaryColor,
+        textSelectionHandleColor: primaryColor,
+        buttonColor: primaryColor,
+        dialogBackgroundColor: _cardColor,
+        buttonTheme: ButtonThemeData(
+            buttonColor: primaryColor
+        ),
+        cardColor: _cardColor,
+        bottomAppBarColor: _backgroundColor,
+        scaffoldBackgroundColor: _cardColor,
+        canvasColor: _backgroundColor,
+        inputDecorationTheme: InputDecorationTheme(
+            border: OutlineInputBorder(borderSide: BorderSide(color: _primaryColor)),
+            hintStyle: TextStyle(
+                color: Colors.grey[400]
+            )
+        )
     );
   }
 

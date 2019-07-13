@@ -1,6 +1,6 @@
-import 'package:kamino/models/content.dart';
-import 'package:kamino/models/movie.dart';
-import 'package:kamino/models/tv_show.dart';
+import 'package:kamino/models/content/content.dart';
+import 'package:kamino/models/content/movie.dart';
+import 'package:kamino/models/content/tv_show.dart';
 import 'package:meta/meta.dart';
 
 class ContentListModel {

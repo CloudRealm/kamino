@@ -263,7 +263,9 @@ class AdvancedSettingsPageState extends SettingsPageState {
                 KaminoAppState application = context.ancestorStateOfType(
                     const TypeMatcher<KaminoAppState>());
                 application.getPrimaryVendorConfig().execCommand(
-                    'init_debug');
+                    context,
+                    'init_debug'
+                );
               }catch(_){}
             }
           )

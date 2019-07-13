@@ -38,7 +38,7 @@ abstract class VendorConfiguration {
 
   Future<VendorService> getVendorService();
 
-  dynamic execCommand(String command){
+  dynamic execCommand(BuildContext context, String command, [Map arguments]){
     throw new Exception("Feature not implemented.");
   }
 

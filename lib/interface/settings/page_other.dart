@@ -239,9 +239,7 @@ class OtherSettingsPageState extends SettingsPageState {
             )
           ],
 
-        Divider(),
-
-        SubtitleText(S.of(context).localization, padding: EdgeInsets.symmetric(vertical: 30, horizontal: 15).copyWith(bottom: 5)),
+        SubtitleText(S.of(context).localization, padding: EdgeInsets.symmetric(vertical: 45, horizontal: 15).copyWith(bottom: 5)),
         Material(
           color: widget.isPartial ? Theme.of(context).cardColor : Theme.of(context).backgroundColor,
           child: ListTile(

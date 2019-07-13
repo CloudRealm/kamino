@@ -8,7 +8,7 @@ import 'package:kamino/external/ExternalService.dart';
 import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/main.dart';
-import 'package:kamino/models/tv_show.dart';
+import 'package:kamino/models/content/tv_show.dart';
 import 'package:kamino/ui/elements.dart';
 import 'package:kamino/ui/loading.dart';
 

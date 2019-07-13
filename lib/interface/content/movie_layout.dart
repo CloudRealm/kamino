@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/main.dart';
-import 'package:kamino/models/movie.dart';
+import 'package:kamino/models/content/movie.dart';
 
 class MovieLayout {
 

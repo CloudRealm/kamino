@@ -11,7 +11,7 @@ import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/interface/search/genre_search.dart';
 import 'package:kamino/main.dart';
-import 'package:kamino/models/content.dart';
+import 'package:kamino/models/content/content.dart';
 import 'package:kamino/models/list.dart';
 import 'package:kamino/ui/elements.dart';
 import 'package:kamino/util/genre.dart';

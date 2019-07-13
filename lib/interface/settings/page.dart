@@ -43,6 +43,7 @@ abstract class SettingsPagePartialState extends SettingsPageState {
 abstract class SettingsPageState extends State<SettingsPage> {
 
   GlobalKey<ScaffoldState> _scaffoldKey;
+  double _elevation;
 
   ///
   /// A [Widget] containing all of the settings widgets.
@@ -61,6 +62,8 @@ abstract class SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     _scaffoldKey = new GlobalKey();
+    _elevation = 0.0;
+
     super.initState();
   }
 
@@ -74,24 +77,44 @@ abstract class SettingsPageState extends State<SettingsPage> {
       ],
     );
 
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        title: TitleText(widget.title),
-        backgroundColor: Theme.of(context).backgroundColor,
+    return NotificationListener(
+      onNotification: (notification){
+        if(notification is OverscrollIndicatorNotification){
+          if(notification.leading) notification.disallowGlow();
+          return true;
+        }
 
-        // Center title
-        centerTitle: true,
+        if(notification is ScrollNotification){
+          double elevation = _elevation;
 
-        // Page actions
-        actions: actions(context),
+          if(notification.metrics.pixels > 0) elevation = 4;
+          else elevation = 0;
+
+          if(_elevation != elevation) setState(() {
+            _elevation = elevation;
+          });
+        }
+      },
+      child: Scaffold(
+          key: _scaffoldKey,
+          appBar: AppBar(
+            title: TitleText(widget.title),
+            backgroundColor: Theme.of(context).backgroundColor,
+            elevation: _elevation,
+
+            // Center title
+            centerTitle: true,
+
+            // Page actions
+            actions: actions(context),
+          ),
+          body: new Builder(builder: (BuildContext context) {
+            return new Container(
+              color: Theme.of(context).backgroundColor,
+              child: buildPage(context),
+            );
+          })
       ),
-      body: new Builder(builder: (BuildContext context) {
-        return new Container(
-          color: Theme.of(context).backgroundColor,
-          child: buildPage(context),
-        );
-      })
     );
   }
 

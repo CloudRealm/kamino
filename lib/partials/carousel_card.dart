@@ -6,8 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:kamino/animation/transition.dart';
 import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/interface/content/overview.dart';
-import 'package:kamino/models/content.dart';
-import 'package:kamino/models/movie.dart';
+import 'package:kamino/models/content/content.dart';
+import 'package:kamino/models/content/movie.dart';
 
 class CarouselCard extends StatefulWidget {
 

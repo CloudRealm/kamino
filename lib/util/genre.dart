@@ -1,4 +1,4 @@
-import 'package:kamino/models/content.dart';
+import 'package:kamino/models/content/content.dart';
 
 class Genre {
 

@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:connectivity/connectivity.dart';
 import 'package:dart_chromecast/casting/cast.dart';
 import 'package:kamino/animation/transition.dart';
-import 'package:kamino/external/ExternalService.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/interface/favorites.dart';
 import 'package:kamino/interface/intro/kamino_intro.dart';
@@ -443,7 +442,9 @@ class KaminoAppState extends State<KaminoApp> {
   }
 
   List<ThemeConfiguration> getThemeConfigs(){
-    return _themeConfigs;
+    return _themeConfigs
+      .where((ThemeConfiguration themeConfig) => themeConfig.selectable)
+      .toList();
   }
 
   String getActiveTheme(){
@@ -628,27 +629,27 @@ class KaminoAppHomeState extends State<KaminoAppHome> {
                 return [
                   PopupMenuItem<String>(
                     value: 'discord',
-                    child: Container(child: Text(S.of(context).discord), padding: EdgeInsets.only(right: 50)),
+                    child: Container(child: Text(S.of(context).discord), padding: EdgeInsets.only(left: 4, right: 50)),
                   ),
 
                   PopupMenuItem<String>(
                     value: 'blog',
-                    child: Container(child: Text(S.of(context).blog), padding: EdgeInsets.only(right: 50))
+                    child: Container(child: Text(S.of(context).blog), padding: EdgeInsets.only(left: 4, right: 50))
                   ),
 
                   PopupMenuItem<String>(
                     value: 'privacy',
-                    child: Container(child: Text(S.of(context).privacy), padding: EdgeInsets.only(right: 50))
+                    child: Container(child: Text(S.of(context).privacy), padding: EdgeInsets.only(left: 4, right: 50))
                   ),
 
                   PopupMenuItem<String>(
                     value: 'donate',
-                    child: Container(child: Text(S.of(context).donate), padding: EdgeInsets.only(right: 50))
+                    child: Container(child: Text(S.of(context).donate), padding: EdgeInsets.only(left: 4, right: 50))
                   ),
 
                   PopupMenuItem<String>(
                     value: 'settings',
-                    child: Container(child: Text(S.of(context).settings), padding: EdgeInsets.only(right: 50))
+                    child: Container(child: Text(S.of(context).settings), padding: EdgeInsets.only(left: 4, right: 50))
                   )
                 ];
               }

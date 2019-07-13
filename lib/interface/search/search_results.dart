@@ -11,7 +11,7 @@ import 'package:kamino/util/genre.dart' as genre;
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:kamino/models/content.dart';
+import 'package:kamino/models/content/content.dart';
 import 'package:kamino/partials/content_poster.dart';
 import 'package:kamino/util/database_helper.dart';
 import 'package:kamino/interface/content/overview.dart';

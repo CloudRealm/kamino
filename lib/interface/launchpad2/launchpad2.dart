@@ -14,7 +14,7 @@ import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/interface/content/overview.dart';
 import 'package:kamino/interface/search/curated_search.dart';
 import 'package:kamino/main.dart';
-import 'package:kamino/models/content.dart';
+import 'package:kamino/models/content/content.dart';
 import 'package:kamino/models/list.dart';
 import 'package:kamino/partials/carousel_card.dart';
 import 'package:kamino/partials/content_poster.dart';

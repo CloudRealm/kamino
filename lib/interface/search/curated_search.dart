@@ -4,7 +4,7 @@ import 'package:kamino/external/ExternalService.dart';
 import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'dart:async';
-import 'package:kamino/models/content.dart';
+import 'package:kamino/models/content/content.dart';
 import 'package:kamino/interface/content/overview.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;

@@ -20,7 +20,7 @@ import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/interface/settings/page_appearance.dart';
 import 'package:kamino/interface/settings/page_playback.dart';
 import 'package:kamino/main.dart';
-import 'package:kamino/models/content.dart';
+import 'package:kamino/models/content/content.dart';
 import 'package:kamino/models/list.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:kamino/ui/elements.dart';

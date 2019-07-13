@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kamino/external/ExternalService.dart';
 import 'package:kamino/external/api/tmdb.dart';
-import 'package:kamino/models/content.dart';
+import 'package:kamino/models/content/content.dart';
 import 'package:kamino/models/list.dart';
 import 'package:objectdb/objectdb.dart';
 import 'dart:async';

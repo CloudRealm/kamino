@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:kamino/models/movie.dart';
+import 'package:kamino/models/content/movie.dart';
 import 'package:kamino/models/review.dart';
-import 'package:kamino/models/tv_show.dart';
+import 'package:kamino/models/content/tv_show.dart';
 
 /*  CONTENT TYPE DEFINITIONS  */
 enum ContentType { MOVIE, TV_SHOW, MIXED }

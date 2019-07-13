@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/interface/settings/page.dart';
+import 'package:kamino/main.dart';
 import 'package:kamino/ui/elements.dart';
 import 'package:kamino/ui/loading.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -75,32 +76,75 @@ class CreditsSettingsPageState extends SettingsPageState {
 
         String role = _contributors.keys.toList()[index];
         List roleMembers = _contributors[role];
+        roleMembers
+            // Sort alphabetically
+            ..sort((a, b) => a['name'].toUpperCase().compareTo(b['name'].toUpperCase()))
+            // Sort by color
+            ..sort((b, a) => a['color'].compareTo(b['color']));
 
         return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SubtitleText(role),
+            SubtitleText("$role" + (roleMembers.length != 1 ? " (${roleMembers.length})" : "")),
             ListView.builder(
               padding: EdgeInsets.symmetric(vertical: 10).copyWith(bottom: 20),
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: roleMembers.length,
               itemBuilder: (BuildContext context, int index){
-                String image = roleMembers[index]['image'].replaceAll('size=2048', 'size=64');
                 String name = roleMembers[index]['name'];
+
+                Widget image = FadeInImage.memoryNetwork(
+                  placeholder: kTransparentImage,
+                  image: roleMembers[index]['image'].replaceAll('size=2048', 'size=64'),
+                  width: 48,
+                  height: 48,
+                );
                 Color color = Color(int.parse(roleMembers[index]['color'].substring(1, 7), radix: 16) + 0xFF000000);
+                if(name == "NBTX"){
+                  image = Image.asset("assets/images/logo.png", height: 48);
+                  color = Theme.of(context).primaryColor;
+                }
+                if(name == "FailBoat"){
+                  color = Theme.of(context).backgroundColor == const Color(0xFF000000)
+                      ? const Color(0xFFFFFFFF)
+                      : const Color(0xFF000000);
+                }
+
+                Function _handleTap(){
+                  switch(name){
+                    case "FailBoat":
+                      return (){
+                        (() async {
+                          showDialog(context: context, builder: (BuildContext context){
+                            return WillPopScope(
+                              onWillPop: () async => false,
+                              child: AlertDialog(
+                                title: TitleText("DARKNESS"),
+                              ),
+                            );
+                          }, barrierDismissible: false);
+                          await Future.delayed(Duration(seconds: 3));
+                          Navigator.of(context).pop();
+
+                          KaminoAppState application = context.ancestorStateOfType(const TypeMatcher<KaminoAppState>());
+                          application.setActiveTheme("xyz.apollotv.black");
+                        })();
+                      };
+
+                    default:
+                      return null;
+                  }
+                }
 
                 return Container(
                   padding: EdgeInsets.symmetric(vertical: 5),
                   child: ListTile(
+                    onTap: _handleTap(),
                     leading: ClipRRect(
                       clipBehavior: Clip.antiAlias,
                       borderRadius: BorderRadius.circular(100),
-                      child: FadeInImage.memoryNetwork(
-                        placeholder: kTransparentImage,
-                        image: image,
-                        width: 48,
-                        height: 48,
-                      ),
+                      child: image,
                     ),
                     title: TitleText(name, textColor: color),
                   ),

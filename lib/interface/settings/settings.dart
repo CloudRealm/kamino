@@ -128,28 +128,6 @@ class _SettingsViewState extends State<SettingsView> {
 
                     Container(padding: EdgeInsets.symmetric(vertical: 10)),
 
-                    /*Material(
-                    color: Theme.of(context).backgroundColor,
-                    child: ListTile(
-                      title: TitleText("About $appName"),
-                      leading: new Image.asset("assets/images/logo.png", width: 36, height: 36),
-                      enabled: true,
-                      subtitle: Text("v${_packageInfo.version} (Build  "),
-                      onTap: (){
-                        _tapCount++;
-
-                        if(_tapCount == 10){
-                          Scaffold.of(context).showSnackBar(SnackBar(
-                            //content: Text('"Every pair of jeans are skinny jeans if you\'re thicc enough" - Gagnef 12,016HE')
-                            content: Text("(\\xE2\\x9D\\xA4) E.D.")
-                          ));
-
-                          _tapCount = 0;
-                        }
-                      }
-                    ),
-                  ),*/
-
                     Container(
                       margin: EdgeInsets.only(top: 5, bottom: 5, left: 15, right: 15),
                       child: Column(
@@ -216,6 +194,16 @@ class _SettingsViewState extends State<SettingsView> {
                             )
                           ],
                         )
+                    ),
+
+                    Material(
+                      color: Theme.of(context).backgroundColor,
+                      child: ListTile(
+                        title: TitleText("ApolloTV Houston"),
+                        subtitle: Text("Manage services offered by ApolloTV."),
+                        leading: Icon(IconData(0xE90F, fontFamily: "apollotv-icons")),
+                        enabled: false
+                      ),
                     ),
 
                     Material(
@@ -314,9 +302,11 @@ class _SettingsViewState extends State<SettingsView> {
   }
 
   String _getBuildType(){
-    int buildType = int.tryParse(_packageInfo.buildNumber.split('').last);
+    int buildType = int.tryParse(_packageInfo.buildNumber.split('').last, radix: 16);
 
-    if(buildType != null) return SettingsManager.buildTypes[buildType];
+    List<String> buildTypes = new List(16)..setAll(0, SettingsManager.buildTypes);
+    buildTypes[0xD] = "Debug";
+    if(buildType != null) return buildTypes[buildType];
     return S.of(context).unknown;
   }
 

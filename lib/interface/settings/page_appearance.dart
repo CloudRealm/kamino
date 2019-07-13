@@ -127,6 +127,8 @@ void showThemeChoice(BuildContext context, KaminoAppState appState){
       context: context,
       barrierDismissible: true,
       builder: (BuildContext dialog){
+        int _counter = 0;
+
         return AlertDialog(
           // Title Row
           title: Row(
@@ -134,7 +136,18 @@ void showThemeChoice(BuildContext context, KaminoAppState appState){
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  Icon(Icons.palette),
+                  GestureDetector(
+                    child: Icon(Icons.palette),
+                    onTap: (){
+                      _counter++;
+
+                      if(_counter == 5){
+                        appState.setActiveTheme("xyz.apollotv.sock");
+                        appState.setPrimaryColorOverride(const Color(0xFFFF0000));
+                        Navigator.of(context).pop();
+                      }
+                    },
+                  ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 15),
                     child: TitleText(S.of(context).change_theme),

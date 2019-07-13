@@ -11,7 +11,8 @@ import 'package:kamino/vendor/struct/VendorService.dart';
 class ShimVendorConfiguration extends VendorConfiguration {
 
   ShimVendorConfiguration() : super(
-    name: "UserCustomizableShimVendor"
+    name: "UserCustomizableShimVendor",
+    services: []
   );
 
   @override

@@ -86,8 +86,11 @@ fabric.properties
 # Vendor Configuration
 lib/vendor/.git
 lib/vendor/dist/*
+    # ShimVendorConfiguration is not private.
+    # It is a secondary configuration used when the user has selected their own server.
 !lib/vendor/dist/ShimVendorConfiguration.dart
 lib/database_backup.zip
+lib/vendor/propietary
 
 # Android
 android/key.properties

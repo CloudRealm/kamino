@@ -32,7 +32,10 @@ class ApolloVendor {
       // The rest are secondary theme configurations.
       // They can be chosen by the user.
       //OfficialVendorTheme.light,
-      OfficialVendorTheme.black
+      OfficialVendorTheme.black,
+
+      // Easter egg theme.
+      OfficialVendorTheme.sockTheme
     ];
   }
 

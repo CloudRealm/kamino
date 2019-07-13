@@ -11,6 +11,7 @@ abstract class ThemeConfiguration {
   final String author;
 
   final SystemUiOverlayStyle overlayStyle;
+  final bool selectable;
 
   ThemeConfiguration(
     {
@@ -19,7 +20,8 @@ abstract class ThemeConfiguration {
       @required this.overlayStyle,
 
       @required this.name,
-      @required this.author
+      @required this.author,
+      this.selectable = true
     }
   );
 
@@ -43,6 +45,10 @@ abstract class ThemeConfiguration {
 
   bool doesAllowVariants(){
     return this.allowsVariants;
+  }
+
+  bool isSelectable(){
+    return this.selectable;
   }
 
 }

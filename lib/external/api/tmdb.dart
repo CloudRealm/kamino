@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kamino/external/struct/content_database.dart';
 import 'package:kamino/main.dart';
-import 'package:kamino/models/content.dart';
+import 'package:kamino/models/content/content.dart';
 import 'package:kamino/models/list.dart';
-import 'package:kamino/models/movie.dart';
-import 'package:kamino/models/tv_show.dart';
+import 'package:kamino/models/content/movie.dart';
+import 'package:kamino/models/content/tv_show.dart';
 import 'package:kamino/util/database_helper.dart';
 
 class TMDB extends ContentDatabaseService {

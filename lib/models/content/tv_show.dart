@@ -1,13 +1,18 @@
-import 'package:kamino/models/content.dart';
+import 'package:kamino/models/content/content.dart';
 import 'package:kamino/models/crew.dart';
 import 'package:kamino/models/review.dart';
 import 'package:meta/meta.dart';
 
-class MovieContentModel extends ContentModel {
+class TVShowContentModel extends ContentModel {
 
-  final double runtime;
+  final List createdBy;
+  final List episodeRuntime;
+  final List seasons;
+  final List networks;
+  final String status;
+  final double popularity;
 
-  MovieContentModel({
+  TVShowContentModel({
     // Content model inherited parameters
     @required int id,
     @required String title,
@@ -23,21 +28,28 @@ class MovieContentModel extends ContentModel {
     String backdropPath,
     String posterPath,
     int voteCount,
+    //double progress,
+    //String lastWatched,
     List cast,
     List crew,
-    List<MovieContentModel> recommendations,
+    List<TVShowContentModel> recommendations,
     List videos,
     List reviews,
     int totalReviews,
 
-    // Movie parameters
-    this.runtime
+    // TV Show parameters
+    this.createdBy,
+    this.episodeRuntime,
+    this.seasons,
+    this.networks,
+    this.status,
+    this.popularity
   }) : super( // Call the parent constructor...
     id: id,
     imdbId: imdbId,
     title: title,
     alternativeTitles: alternativeTitles,
-    contentType: ContentType.MOVIE,
+    contentType: ContentType.TV_SHOW,
     overview: overview,
     releaseDate: releaseDate,
     homepage: homepage,
@@ -56,48 +68,53 @@ class MovieContentModel extends ContentModel {
     reviews: reviews
   );
 
-  static MovieContentModel fromJSON(Map json){
+  static TVShowContentModel fromJSON(Map json){
     Map credits = json['credits'] != null ? json['credits'] : {'cast': null, 'crew': null};
     List videos = json['videos'] != null ? json['videos']['results'] : null;
-    List<MovieContentModel> recommendations = json['recommendations'] != null
-      ? (json['recommendations']['results'] as List).map(
-          (element) => MovieContentModel.fromJSON(element)
-        ).toList()
-      : null;
+    List<TVShowContentModel> recommendations = json['recommendations'] != null
+        ? (json['recommendations']['results'] as List).map(
+            (element) => TVShowContentModel.fromJSON(element)
+    ).toList()
+        : null;
     List<LocalizedTitleModel> alternativeTitles = json['alternative_titles'] != null
-        ? (json['alternative_titles']['titles'] as List).map(
-            (element) => LocalizedTitleModel.fromJSON(element)
+      ? (json['alternative_titles']['results'] as List).map(
+        (element) => LocalizedTitleModel.fromJSON(element)
     ).toList() : null;
     int totalReviews = json['reviews'] != null ? json['reviews']['total_results'] : null;
     List reviews = json['reviews'] != null ? json['reviews']['results'] : null;
 
-    return new MovieContentModel(
+    return new TVShowContentModel(
       // Inherited properties.
-      // (Copy-paste these to other models.)
+      // (Copy-paste these to other models - it is fine to make small changes.)
       id: json["id"],
-      imdbId: json["imdb_id"],
-      title: json["title"],
+      imdbId: json["external_ids"] != null ? json["external_ids"]["imdb_id"] : null,
+      title: json["name"] == null ? json["original_name"] : json["name"],
       overview: json["overview"],
-      releaseDate: json["release_date"],
+      releaseDate: json["first_air_date"],
       homepage: json["homepage"],
       genres: json["genres"],
       rating: json["vote_average"] != null ? json["vote_average"].toDouble() : -1.0,
       backdropPath: json["backdrop_path"],
       posterPath: json["poster_path"],
-      voteCount: json.containsKey("vote_count") ? json["vote_count"] : 0,
+      voteCount: json["vote_count"] != null ? json["vote_count"] : 0,
       cast: credits['cast'] != null ? (credits['cast'] as List).map((entry) => CastMemberModel.fromJSON(entry)).toList() : null,
       crew: credits['crew'] != null ? (credits['crew'] as List).map((entry) => CrewMemberModel.fromJSON(entry)).toList() : null,
       recommendations: recommendations,
       videos: videos,
       alternativeTitles: alternativeTitles,
-      originalCountry: json['production_countries'] != null && json['production_countries'].length > 0
-          ? json['production_countries'][0]['iso_3166_1'] : null,
-      originalTitle: json['original_title'],
+      originalCountry: json['origin_country'] != null && json['origin_country'].length > 0
+          ? json['origin_country'][0] : null,
+      originalTitle: json['original_name'],
       totalReviews: totalReviews != null ? totalReviews : null,
       reviews: reviews != null ? reviews.map((entry) => ReviewModel.fromJSON(entry)).toList() : null,
 
       // Object-specific properties.
-      runtime: json["runtime"] != null ? json["runtime"].toDouble() : null
+      createdBy: json["created_by"],
+      episodeRuntime: json["episode_run_time"],
+      seasons: json["seasons"],
+      networks: json["networks"],
+      status: json["status"],
+      popularity: json["popularity"] != null ? json["popularity"].toDouble() : 0.0,
     );
   }
 
@@ -107,7 +124,7 @@ class MovieContentModel extends ContentModel {
       "id": id,
       "imdbId": imdbId,
       "title": title,
-      "contentType": getRawContentType(ContentType.MOVIE),
+      "contentType": getRawContentType(ContentType.TV_SHOW),
       "overview": overview,
       "releaseDate": releaseDate,
       "homepage": homepage,
@@ -118,12 +135,13 @@ class MovieContentModel extends ContentModel {
       "voteCount": voteCount,
       "originalTitle": originalTitle,
       "originalCountry": originalCountry,
-      "runtime": runtime
+      "status": status,
+      "popularity": popularity
     };
   }
 
-  static MovieContentModel fromStoredMap(Map map) {
-    return MovieContentModel(
+  static TVShowContentModel fromStoredMap(Map map) {
+    return TVShowContentModel(
       id: map['id'],
       imdbId: map['imdbId'],
       title: map['title'],
@@ -137,7 +155,9 @@ class MovieContentModel extends ContentModel {
       voteCount: map['voteCount'],
       originalTitle: map['originalTitle'],
       originalCountry: map['originalCountry'],
-      runtime: map['runtime']
+      status: map['status'],
+      popularity: map['popularity']
     );
   }
+
 }

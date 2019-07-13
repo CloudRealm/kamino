@@ -13,7 +13,7 @@ import 'package:kamino/interface/search/search_results.dart';
 import 'package:kamino/interface/content/overview.dart';
 import 'package:kamino/ui/elements.dart';
 import 'package:kamino/util/database_helper.dart';
-import 'package:kamino/models/content.dart';
+import 'package:kamino/models/content/content.dart';
 
 class SmartSearch extends SearchDelegate<String> {
 
