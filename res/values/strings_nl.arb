@@ -298,7 +298,7 @@
 
   "security": "Veiligheid",
   "disable_security_warnings": "Schakel Veiligheidswaarschuwingingen Uit",
-  "this_disables_all_warnings_regarding_potential_security_concerns": "Dit schakelt alle waarschuwingen uit over potentiële zorgen over veiligheid.",
+  "this_disables_all_warnings_regarding_potential_security_concerns": "Dit schakelt alle veligheids waarschuwingen uit.",
   "we_recommend_that_you_do_not_enable_this_option_unless": "Wij bevelen aan dat u deze optie niet inschakeld tenzij u positief bent dat u weet wat u aan het doen ben.",
   "security_warnings_have_been_disabled": "Veiligheidswaarschuwingen zijn uitgezet!",
   "security_risk": "VEILIGHEIDSRISICO:",
