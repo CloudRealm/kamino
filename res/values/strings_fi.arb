@@ -220,7 +220,7 @@
   "trakttv": "Trakt.tv",
   "select_player": "Valitse mediatoistin...",
   "version_x": "Versio $version",
-  "apollotv_builtin_player": "ApolloTV sisäänrakennettu mediatoistin.",
+  "apollotv_builtin_player": "ApolloTV:n sisäänrakennettu mediatoistin.",
   "cast_settings": "Cast-asetukset",
   "an_error_occurred_whilst_loading_this_page": "Tapahtui virhe sivua ladattaessa.",
   "success": "Onnistui!",
