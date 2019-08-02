@@ -513,3 +513,168 @@ class CastButtonState extends State<CastButton> {
   }
 
 }
+
+class SearchFieldWidget extends StatefulWidget {
+
+  final Widget leading;
+  final bool disableClearButton;
+  final Function(BuildContext, String) child;
+
+  final Function(String) onUpdate;
+  final Function(String) onSubmit;
+
+  final TextEditingController controller;
+
+  SearchFieldWidget({
+    this.leading,
+    this.disableClearButton = false,
+    this.child,
+
+    this.onUpdate,
+    this.onSubmit,
+
+    this.controller
+  });
+
+  @override
+  State<StatefulWidget> createState() => SearchFieldWidgetState();
+
+}
+
+class SearchFieldWidgetState extends State<SearchFieldWidget> with SingleTickerProviderStateMixin {
+
+  TextEditingController inputController;
+  FocusNode inputFocusNode;
+  bool clearButtonVisible = false;
+
+  List<Function> registeredListeners = new List();
+
+  @override
+  void initState() {
+    inputFocusNode = new FocusNode();
+
+    if(widget.controller != null)
+      this.inputController = widget.controller;
+    else inputController = new TextEditingController();
+
+    if(!widget.disableClearButton){
+      var disableClearButtonListener = (){
+        setState(() {
+          clearButtonVisible = inputController.text.length > 0;
+        });
+      };
+      registeredListeners.add(disableClearButtonListener);
+      inputController.addListener(disableClearButtonListener);
+    }
+
+    if(widget.onUpdate != null){
+      var onUpdateListener = (){
+        widget.onUpdate(inputController.text);
+      };
+
+      registeredListeners.add(onUpdateListener);
+      inputController.addListener(onUpdateListener);
+    };
+
+    print("#onSubmit not implemented!!!");
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    for(var listener in registeredListeners){
+      inputController.removeListener(listener);
+    }
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget child = widget.child != null && inputFocusNode.hasPrimaryFocus
+        ? widget.child(context, inputController.text) ?? null
+        : null;
+
+    return Container(
+        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15).copyWith(top: 20),
+        child: Material(
+          elevation: 4,
+          clipBehavior: Clip.antiAlias,
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(10),
+          child: AnimatedSize(
+            vsync: this,
+            duration: Duration(milliseconds: 100),
+            alignment: Alignment.topCenter,
+            child: Column(children: <Widget>[
+              Stack(
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.only(bottom: child != null ? 10 : 0),
+                    child: TextField(
+                      focusNode: inputFocusNode,
+                      controller: inputController,
+                      decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15)
+                              .copyWith(
+                              left: widget.leading != null ? 50 : null,
+                              top: 16,
+                              right: clearButtonVisible ? 45 : null
+                          ),
+                          border: InputBorder.none,
+                          fillColor: Theme.of(context).cardColor,
+                          hintText: "Search People, Movies and Shows...",
+                          hintStyle: TextStyle(
+                              fontSize: 16,
+                              height: 1
+                          )
+                      ),
+                      style: TextStyle(
+                          fontSize: 16
+                      ),
+                    ),
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      widget.leading ?? Container(),
+
+                      IgnorePointer(
+                        ignoring: !clearButtonVisible,
+                        child: AnimatedOpacity(
+                          opacity: clearButtonVisible ? 1 : 0,
+                          duration: Duration(milliseconds: 100),
+                          child: IconButton(
+                            tooltip: S.of(context).clear,
+                            highlightColor: Colors.transparent,
+                            splashColor: Colors.transparent,
+                            icon: Icon(Icons.clear),
+                            onPressed: (){
+                              inputController.text = "";
+                            },
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+
+                  if(child != null) Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Divider(),
+                  ),
+                ],
+              ),
+
+              if(child != null)
+                child ?? Container()
+            ]),
+          ),
+        )
+    );
+  }
+
+}

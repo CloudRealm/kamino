@@ -98,7 +98,7 @@
 
   "source_autoplay": "Käytä lähteen automaattitoistoa",
   "source_autoplay_description": "Valitsee automaattisesti toistettavan lähteen eikä näytä lähdelistausta.",
- 
+
   "clear_search_history": "Tyhjennä hakuhistoria",
   "clear_search_history_description": "Poistaa aikasempiin hakuihin perustuvat hakuehdotukset.",
   "search_history_cleared": "Hakuhistoria tyhjennetty.",
@@ -129,13 +129,13 @@
   "take_screenshot_report_apollotv_discord": "Ole hyvä ja ota ruutukaappaus tästä viestistä ja ota yhteyttä ylläpitäjään ApolloTV Discord-palvelimella.",
   "an_error_occurred": "Tapahtui virhe.",
   "cast_and_crew": "Tekijät",
- 
+
   "welcome_to_appname": "Tervetuloa $appName:hen",
   "app_tagline": "Yhteisön kehittämä suoratoistosovellus, yhteisölle.",
   "lets_go": "ALOITETAAN",
- 
+
   "create_profile": "Luo profiili",
-  "customize_appearance": "Muokkaa ulkoasua",
+  "customize_appearance": "Mukauta ulkoasua",
   "customize_appearance_description": "$appName rakastaa mukautuvuutta. Aloitetaan valitsemalla lempiteemasi!",
   "choose_n_categoriesOther": "Valitse $n kategoriaa...",
   "choose_n_categoriesOne": "Valitse $n kategoria...",
@@ -160,7 +160,7 @@
   "appname_failed_to_connect_to_the_internet": "$appName ei pystynyt yhdistämään verkkoon. Tarkista yhteys.",
   "playback": "Toisto",
   "change_content_playback_settings": "Muuta toistoasetuksia.",
- 
+
   "up_to_date": "Uusin versio käytössä. Tarkista uudelleen 1-3 viikon päästä.",
   "no_favorites_header": "Ei suosikkeja!",
   "no_favorites_description": "Voit lisätä kohteen suosikkeihin koskettamalla sydänkuvaketta sisällön esittelysivulla.",
@@ -174,15 +174,15 @@
   "appname_was_unable_to_authenticate_with_real_debrid": "$appName:n Real-Debrid-todentaminen epäonnistui.",
   "connected_real_debrid_account": "Yhdistetty Real-Debrid-tiliin.",
   "disconnected_real_debrid_account": "Katkaistu yhteys Real-Debrid-tiliin.",
-  "real_debrid_authenticator": "Real-Debrid-todentaja",
- 
+  "real_debrid_authenticator": "Real-Debrid-todennus",
+
   "real_debrid_n_sourcesOne": "Real-Debrid ($n lähde)",
   "real_debrid_n_sourcesOther": "Real-Debrid ($n lähdettä)",
   "standard_n_sourcesOne": "Standard ($n lähde)",
   "standard_n_sourcesOther": "Standard ($n lähdettä)",
   "disconnect_your_realdebrid_account": "Katkaise yhteys Real-Debrid-tiliin",
   "connect_your_realdebrid_account": "Yhdistä Real-Debrid-tili",
- 
+
   "extensions_description": "Jos käytät näitä kolmannen osapuolen palveluja, voit yhdistää ne $appName:hen.",
   "choose_player": "Valitse mediatoistin...",
   "change_player": "Mediatoistinta",
@@ -291,7 +291,7 @@
   "we_recommend_that_you_do_not_enable_this_option_unless": "Emme suosittele tätä ellet ole täysin varma siitä mitä olet tekemässä.",
   "security_warnings_have_been_disabled": "Turvallisuusvaroitukset on poistettu käytöstä!",
   "security_risk": "TURVALLISUUSRISKI:",
-  "using_unofficial_servers_can_expose_your_ip_address": "Epävirallisten palvelimien käyttö voi paljastaa IP-osoitteesi. Jos tämä ei käy, ota käyttöön VPN.",
+  "using_unofficial_servers_can_expose_your_ip_address": "Epävirallisten palvelimien käyttö voi paljastaa IP-osoitteesi. Jos et hyväksy sitä, ota käyttöön VPN.",
   "discord": "Discord",
   "privacy": "Yksityisyys",
   "welcome_to_apollo_skyspace": "Tervetuloa Apollo Skyspaceen!",
@@ -303,14 +303,38 @@
   "throw_error": "Luo virhe",
   "intentionally_throws_an_error_to_test_error_handling": "Luo virheen tarkoituksellisesti virheenkäsittelyä varten.",
   "well_dont_say_you_didnt_ask": "No, itsehän pyysit!",
-  "content_trackers": "Sisältölähteet",
+  "content_trackers": "Sisällön seuranta",
   "premium_hosts": "Premium-palvelut",
   "simkl_description": "Kaikki suosikkisi TV-sarjoista, animist ja elokuvista - yhdessä paikassa. Lopeta etsiminen ja korvamerkintä. Aloita katsominen.",
   "hex": "Hex",
   "chooser": "Poimija",
   "content_suggestions": "Sisältösuosituksia",
-  "content_suggestions_description": "Räätälöi kokemustasi koostetuilla listoillamme! Napauta kiinnostavaa listaa.",
+  "content_suggestions_description": "Räätälöi käyttökokemuksesi valmiiksi koostetuilla listoillamme! Napauta kiinnostavaa listaa.",
   "no_sources_found": "Lähteitä ei löytynyt.",
   "we_couldnt_find_any_sources_for_content": "Emme löytänyt lähteitä kohteelle '$content'.",
-  "your_request_has_been_saved": "Pyyntösi on tallennettu."
+  "your_request_has_been_saved": "Pyyntösi on tallennettu.",
+
+  "real_debrid_n_points": "$points pistettä",
+  "real_debrid_convert_points": "Muunna pisteitä",
+  "converting_realdebrid_fidelity_points": "Muunnetaan Real-Debrid fidelity-pisteitä...",
+  "real_debrid_purchase_premium": "Osta Premium",
+  "x_found_in_y": "$x löytynyt ajassa $y",
+  "submit_request": "Lähetä pyyntö",
+  "code_x": "Koodi: $code",
+  "you_can_log_into_realdebrid_in_two_ways": "Voit kirjautua Real-Debridiin kahdella tavalla:",
+  "if_youre_not_sure_what_these_options_are_just_use_login": "Jos et ole varma näistä vaihtoehdoista, valitse KIRJAUDU.",
+  "use_code": "Käytä koodia",
+  "login": "Kirjaudu",
+  "or": "tai",
+  "enter_the_following_code": "Syötä seuraava koodi:",
+  "visit_the_following_url_in_your_browser": "Avaa seuraava osoite nettiselaimessa:",
+  "does_nothing_in_release_mode": "Ei tee mitään julkaisutilassa.",
+  "please_follow_the_instructions_shown_to_log_in_via_your_browser": "Ole hyvä ja seuraa annettuja ohjeita kirjautuaksesi selaimella.",
+  "expires_in_x_daysOther": "tilaus päättyy $days päivän päästä",
+  "expires_in_x_daysOne": "tilaus päättyy $days päivän päästä",
+  "sorts_by_date_added": "Lajittele lisäyspäivämäärän mukaan.",
+  "date_added": "Päiväys",
+
+  "reviews_n": "Arviot ($n)",
+  "reviews": "Arviot"
 }

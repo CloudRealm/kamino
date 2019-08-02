@@ -173,6 +173,11 @@ flutter:
           weight: 700
         - asset: fonts/GlacialIndifference-Italic.otf
           style: italic
+    - family: Futura
+      fonts:
+        - asset: fonts/futura.ttf
+        - asset: fonts/futura-light.ttf
+          weight: 200
     - family: apollotv-icons
       fonts:
         - asset: fonts/apollotv-icons.woff

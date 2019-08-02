@@ -35,6 +35,7 @@ class _DarkVendorTheme extends ThemeConfiguration {
     var _cardColor = Color(0xFF2F3136);
 
     return ThemeData(
+      fontFamily: 'Futura',
       brightness: Brightness.dark,
       primaryColorBrightness: Brightness.dark,
       primaryColor: primaryColor,
@@ -151,6 +152,7 @@ class _BlackVendorTheme extends ThemeConfiguration {
     var _cardColor = _backgroundColor;
 
     return ThemeData(
+      fontFamily: 'Futura',
       brightness: Brightness.dark,
       primaryColorBrightness: Brightness.dark,
       primaryColor: primaryColor,

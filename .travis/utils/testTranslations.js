@@ -36,7 +36,7 @@ try {
 
   if(missingKeys.length > 0){
     // This translation is missing keys.
-    console.error(`${targetLangName} is missing the folllowing translations:`);
+    console.error(`${targetLangName} is missing the following translations:`);
     console.error(`They should be added to the bottom of the file.`);
     console.error("");
     console.log(JSON.stringify(asObject(missingKeys), null, '\t')

@@ -2,12 +2,15 @@ import 'dart:convert' as Convert;
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kamino/external/ExternalService.dart';
 import 'package:kamino/external/struct/content_database.dart';
 import 'package:kamino/main.dart';
 import 'package:kamino/models/content/content.dart';
+import 'package:kamino/models/crew.dart';
 import 'package:kamino/models/list.dart';
 import 'package:kamino/models/content/movie.dart';
 import 'package:kamino/models/content/tv_show.dart';
+import 'package:kamino/models/person.dart';
 import 'package:kamino/util/database_helper.dart';
 
 class TMDB extends ContentDatabaseService {
@@ -59,8 +62,10 @@ class TMDB extends ContentDatabaseService {
       "110825",
       // Other Exclusives
       "109260",
+      // Season Premieres
+      "117689",
       // TV Top Picks
-      "107032"
+      "107032",
     ],
 
     ContentType.MOVIE: [
@@ -212,6 +217,39 @@ class TMDB extends ContentDatabaseService {
     if(!result.contains(model.originalTitle))
       result = [model.originalTitle] + result;
     return result;
+  }
+
+  Future<SearchResults> search(BuildContext context, String query, { bool isAutoComplete }) async {
+    final String url = "${TMDB.ROOT_URL}/search/multi"
+        "${getDefaultArguments(context)}"
+        "&query=$query"
+        "&page=1"
+        "&include_adult=false";
+
+    Map json = Convert.jsonDecode((await http.get(url)).body);
+    List results = json['results'] as List;
+    
+    List<PersonModel> people = new List();
+    List<MovieContentModel> movies = new List();
+    List<TVShowContentModel> shows = new List();
+
+    results?.where((result) => result['media_type'] == 'person')?.forEach((person){
+      people.add(PersonModel.fromJSON(person));
+    });
+
+    results?.where((result) => result['media_type'] == getRawContentType(ContentType.TV_SHOW))?.forEach((show){
+      shows.add(TVShowContentModel.fromJSON(show));
+    });
+
+    results?.where((result) => result['media_type'] == getRawContentType(ContentType.MOVIE))?.forEach((movie){
+      movies.add(MovieContentModel.fromJSON(movie));
+    });
+    
+    return SearchResults(
+      people: people,
+      movies: movies,
+      shows: shows
+    );
   }
 
 }

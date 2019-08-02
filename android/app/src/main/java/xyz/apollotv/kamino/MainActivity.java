@@ -20,8 +20,13 @@ import android.util.Base64;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -196,6 +201,7 @@ public class MainActivity extends FlutterActivity {
                         activity.activityInfo.applicationInfo.packageName,
                         0
                     ).versionName);
+                    infoObject.put("description", activity.activityInfo.loadLabel(getPackageManager()));
                     infoObject.put("isDefault", activity.isDefault);
 
                     // Convert app icon to bitmap

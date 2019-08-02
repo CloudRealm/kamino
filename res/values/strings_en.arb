@@ -336,5 +336,8 @@
   "date_added": "Date Added",
 
   "reviews_n": "Reviews ($n)",
-  "reviews": "Reviews"
+  "reviews": "Reviews",
+  "this_may_take_up_to_n_seconds": "This may take up to $n seconds.",
+  "downloading_content_suggestions_index": "Downloading content suggestions index.",
+  "people": "People"
 }

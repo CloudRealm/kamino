@@ -107,6 +107,7 @@ class S implements WidgetsLocalizations {
   String get does_nothing_in_release_mode => "Does nothing in release mode.";
   String get donate => "Donate";
   String get done => "Done";
+  String get downloading_content_suggestions_index => "Downloading content suggestions index.";
   String get downloading_trakt_data => "Downloading Trakt data...";
   String get downloading_update_file => "Downloading update file...";
   String get dump_database => "Dump Database";
@@ -168,6 +169,7 @@ class S implements WidgetsLocalizations {
   String get or => "or";
   String get order => "ORDER";
   String get other_ => "Other";
+  String get people => "People";
   String get permission_denied => "Permission denied.";
   String get ping => "Ping";
   String get play_episode => "Play Episode";
@@ -316,6 +318,7 @@ class S implements WidgetsLocalizations {
   String reviews_n(String n) => "Reviews ($n)";
   String seasons_n(String n) => "Seasons ($n)";
   String the_appname_server_is_currently_offline_for_server_upgrades(String appName) => "The $appName server is currently offline for server upgrades.";
+  String this_may_take_up_to_n_seconds(String n) => "This may take up to $n seconds.";
   String this_x_has_no_synopsis_available(String x) => "This $x has no synopsis available.";
   String unknown_x(String x) => "Unknown $x";
   String version_x(String version) => "Version $version";
@@ -1471,6 +1474,8 @@ class fi extends S {
   @override
   String get play_movie => "Toista elokuva";
   @override
+  String get converting_realdebrid_fidelity_points => "Muunnetaan Real-Debrid fidelity-pisteitä...";
+  @override
   String get ongoing => "Menossa parhaillaan";
   @override
   String get not_yet_implemented => "Ei vielä toteutettu...";
@@ -1502,6 +1507,8 @@ class fi extends S {
   String get debug_only_logs_the_application_preferences_in_the_console => "(Vain vianmääritykseen) Vedostaa sovelluksen asetukset konsoliin.";
   @override
   String get quality => "Laatu";
+  @override
+  String get date_added => "Päiväys";
   @override
   String get extensions => "Lisäosat";
   @override
@@ -1581,6 +1588,8 @@ class fi extends S {
   @override
   String get disable_security_warnings => "Poista turvallisuusvaroitukset käytöstä";
   @override
+  String get does_nothing_in_release_mode => "Ei tee mitään julkaisutilassa.";
+  @override
   String get removed_from_favorites => "Poistettu suosikeista";
   @override
   String get change_theme => "Vaihda teemaa...";
@@ -1609,9 +1618,13 @@ class fi extends S {
   @override
   String get editors_choice => "Toimittajan valinta";
   @override
+  String get visit_the_following_url_in_your_browser => "Avaa seuraava osoite nettiselaimessa:";
+  @override
   String get sync => "Synkronoi";
   @override
   String get downloading_trakt_data => "Ladataan tietoja Trakt:sta...";
+  @override
+  String get if_youre_not_sure_what_these_options_are_just_use_login => "Jos et ole varma näistä vaihtoehdoista, valitse KIRJAUDU.";
   @override
   String get other_ => "Muuta";
   @override
@@ -1623,13 +1636,17 @@ class fi extends S {
   @override
   String get name => "Nimi";
   @override
-  String get content_trackers => "Sisältölähteet";
+  String get content_trackers => "Sisällön seuranta";
   @override
   String get copy_to_clipboard => "Kopioi leikepöydälle";
+  @override
+  String get use_code => "Käytä koodia";
   @override
   String get if_this_problem_persists_please_contact_a_member_of_staff => "Jos tämä ongelma toistuu, ole yhteydessä sovelluskehittäjiin Discordissa.";
   @override
   String get next => "SEURAAVA";
+  @override
+  String get real_debrid_convert_points => "Muunna pisteitä";
   @override
   String get cast_settings => "Cast-asetukset";
   @override
@@ -1643,7 +1660,7 @@ class fi extends S {
   @override
   String get updates => "Päivitykset";
   @override
-  String get using_unofficial_servers_can_expose_your_ip_address => "Epävirallisten palvelimien käyttö voi paljastaa IP-osoitteesi. Jos tämä ei käy, ota käyttöön VPN.";
+  String get using_unofficial_servers_can_expose_your_ip_address => "Epävirallisten palvelimien käyttö voi paljastaa IP-osoitteesi. Jos et hyväksy sitä, ota käyttöön VPN.";
   @override
   String get trakt_renewal_failure_detailed => "Trakt-avaimen uusiminen epäonnistui. Tarkista tiedot.";
   @override
@@ -1657,7 +1674,7 @@ class fi extends S {
   @override
   String get choose_n_categories_description => "Lopuksi personoidaan sisältöä. Valitse vähintään 3 kategoriaa saadaksesi sisältösuosituksia!";
   @override
-  String get real_debrid_authenticator => "Real-Debrid-todentaja";
+  String get real_debrid_authenticator => "Real-Debrid-todennus";
   @override
   String get hide_partial_unreleased_content_description => "Suodattaa sisällön, jolla on puutteelliset tiedot tai jota ei ole vielä julkaistu.";
   @override
@@ -1669,7 +1686,7 @@ class fi extends S {
   @override
   String get clear_search_history_description => "Poistaa aikasempiin hakuihin perustuvat hakuehdotukset.";
   @override
-  String get customize_appearance => "Muokkaa ulkoasua";
+  String get customize_appearance => "Mukauta ulkoasua";
   @override
   String get gathers_useful_information_for_debugging => "Kerää tarpeellista tietoa virheenkorjausta varten.";
   @override
@@ -1739,11 +1756,13 @@ class fi extends S {
   @override
   String get order => "JÄRJESTYS";
   @override
+  String get real_debrid_purchase_premium => "Osta Premium";
+  @override
   String get okay => "OK";
   @override
   String get dismiss => "Hylkää";
   @override
-  String get content_suggestions_description => "Räätälöi kokemustasi koostetuilla listoillamme! Napauta kiinnostavaa listaa.";
+  String get content_suggestions_description => "Räätälöi käyttökokemuksesi valmiiksi koostetuilla listoillamme! Napauta kiinnostavaa listaa.";
   @override
   String get loading => "Ladataan...";
   @override
@@ -1782,6 +1801,8 @@ class fi extends S {
   String get change_player => "Mediatoistinta";
   @override
   String get customize_the_theme_and_primary_colors => "Mukauta teemaa ja päävärejä.";
+  @override
+  String get login => "Kirjaudu";
   @override
   String get authentication_failed => "Todentaminen epäonnistui...";
   @override
@@ -1823,6 +1844,8 @@ class fi extends S {
   @override
   String get file_size => "Tiedostokoko";
   @override
+  String get sorts_by_date_added => "Lajittele lisäyspäivämäärän mukaan.";
+  @override
   String get app_tagline => "Yhteisön kehittämä suoratoistosovellus, yhteisölle.";
   @override
   String get debug_only_logs_the_application_database_in_the_console => "(Vain vianmääritykseen) Vedostaa sovelluksen tietokannan konsoliin.";
@@ -1833,6 +1856,8 @@ class fi extends S {
   @override
   String get curated => "Koostetut";
   @override
+  String get please_follow_the_instructions_shown_to_log_in_via_your_browser => "Ole hyvä ja seuraa annettuja ohjeita kirjautuaksesi selaimella.";
+  @override
   String get connected_real_debrid_account => "Yhdistetty Real-Debrid-tiliin.";
   @override
   String get apollotv_builtin_player => "ApolloTV sisäänrakennettu mediatoistin.";
@@ -1842,6 +1867,8 @@ class fi extends S {
   String get rd_description => "Real-Debrid on rajoittamaton lataaja joka mahdollistaa nopean internetissä tarjottujen tiedostojen lataamisen.";
   @override
   String get connecting => "Yhdistetään...";
+  @override
+  String get you_can_log_into_realdebrid_in_two_ways => "Voit kirjautua Real-Debridiin kahdella tavalla:";
   @override
   String get google_cast_prompt => "Suoratoista";
   @override
@@ -1861,6 +1888,8 @@ class fi extends S {
   @override
   String get your_request_has_been_saved => "Pyyntösi on tallennettu.";
   @override
+  String get submit_request => "Lähetä pyyntö";
+  @override
   String get descending => "Laskeva";
   @override
   String get sorts_by_source_quality => "Lajittelee lähteen laadun mukaan.";
@@ -1868,6 +1897,8 @@ class fi extends S {
   String get run_command => "Suorita komento ";
   @override
   String get updating => "Päivitetään...";
+  @override
+  String get reviews => "Arviot";
   @override
   String get uploading_favorites => "Lähetetään suosikkeja...";
   @override
@@ -1917,6 +1948,8 @@ class fi extends S {
   @override
   String get launchpad => "Laukaisualusta";
   @override
+  String get enter_the_following_code => "Syötä seuraava koodi:";
+  @override
   String get restore_defaults => "Palauta oletusasetukset";
   @override
   String get connect_your_realdebrid_account => "Yhdistä Real-Debrid-tili";
@@ -1949,6 +1982,8 @@ class fi extends S {
   @override
   String get update_failed_please_try_again_later => "Päivitys epäonnistui. Yritä myöhemmin uudelleen.";
   @override
+  String get or => "tai";
+  @override
   String get no_results_found => "Ei hakutuloksia.";
   @override
   String get clear => "Tyhjennä";
@@ -1975,6 +2010,8 @@ class fi extends S {
   @override
   String the_appname_server_is_currently_offline_for_server_upgrades(String appName) => "$appName-palvelin on tällä hetkellä offline-tilassa palvelimen päivityksen vuoksi.";
   @override
+  String reviews_n(String n) => "Arviot ($n)";
+  @override
   String appname_has_successfully_authenticated_with_trakttv(String appName) => "$appName on todennettu Trakt.tv:n kanssa!";
   @override
   String welcome_to_appname(String appName) => "Tervetuloa $appName:hen";
@@ -1995,6 +2032,8 @@ class fi extends S {
   @override
   String this_x_has_no_synopsis_available(String x) => "Ei tiivistelmää kohteelle $x.";
   @override
+  String x_found_in_y(String x, String y) => "$x löytynyt ajassa $y";
+  @override
   String disconnected_from_device(String device) => "Yhteys laitteeseen $device katkaistu";
   @override
   String seasons_n(String n) => "Kaudet ($n)";
@@ -2002,6 +2041,8 @@ class fi extends S {
   String unknown_x(String x) => "Tuntematon $x";
   @override
   String n_sources(String n) => "$n lähdettä";
+  @override
+  String code_x(String code) => "Koodi: $code";
   @override
   String n_episodes(String n) => "$n jaksoa";
   @override
@@ -2016,6 +2057,8 @@ class fi extends S {
   String now_connected_to_device(String device) => "Yhdistetty laitteeseen $device";
   @override
   String an_error_occurred_whilst_deauthenticating_with_trakttv(String errorCode) => "Tapahtui virhe Trakt-todennuksen purun yhyteydessä. ($errorCode)";
+  @override
+  String real_debrid_n_points(String points) => "$points pistettä";
   @override
   String real_debrid_n_sources(String n) {
     switch (n) {
@@ -2032,6 +2075,15 @@ class fi extends S {
         return "Standard ($n lähde)";
       default:
         return "Standard ($n lähdettä)";
+    }
+  }
+  @override
+  String expires_in_x_days(String days) {
+    switch (days) {
+      case "1":
+        return "tilaus päättyy $days päivän päästä";
+      default:
+        return "tilaus päättyy $days päivän päästä";
     }
   }
   @override

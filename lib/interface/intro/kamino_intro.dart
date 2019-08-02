@@ -1,9 +1,9 @@
+import 'package:async/async.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 import 'dart:ui';
 
-import 'package:async/async.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
@@ -44,93 +44,19 @@ class KaminoIntroState extends State<KaminoIntro> with SingleTickerProviderState
 
   KaminoAppState appState;
 
+  AsyncMemoizer<Map<ContentListModel, String>> _contentSuggestionsMemoizer;
   Map<String, bool> _selectedCategories = {};
 
   bool traktConnected;
   bool rdConnected;
   PlayerSettings playerSettings;
 
-  final Map<String, AsyncMemoizer> _categoryMemoizers = {};
   final _fadeInTween = Tween<double>(begin: 0, end: 1);
   AnimationController _animationController;
   Animation<double> _fadeInAnimation;
 
   PageController _controller;
   bool _detailedLayoutType;
-
-  bool _handleKeyEvent(FocusNode node, RawKeyEvent event){
-    const KEY_ENTER = 1108101562391;
-
-    if(event.logicalKey != null && event.logicalKey.keyId == KEY_ENTER){
-      final renderObject = context.findRenderObject();
-      if(renderObject is RenderBox){
-        // Get the currently focused node.
-        FocusNode focusedNode = node.enclosingScope.children.first.children.where((node) => node.hasFocus).first;
-
-        // Get a list of elements at the focused node's coordinates
-        BoxHitTestResult result = BoxHitTestResult();
-        renderObject.hitTest(result, position: focusedNode.rect.center);
-
-        // Generate the appropriate pointer event.
-        PointerEvent pointerEvent;
-        if(event is RawKeyDownEvent) pointerEvent = PointerDownEvent(
-          timeStamp: new DateTime.now().timeZoneOffset,
-          device: 0,
-          kind: PointerDeviceKind.touch,
-          //pointer: 1,
-          buttons: kPrimaryButton,
-          position: focusedNode.rect.center,
-          size: 0.1
-        );
-
-        if(event is RawKeyUpEvent) pointerEvent = PointerUpEvent(
-          timeStamp: new DateTime.now().timeZoneOffset,
-          device: 0,
-          kind: PointerDeviceKind.touch,
-          //pointer: 1,
-          pressure: 0,
-          position: focusedNode.rect.center,
-          size: 0
-        );
-
-        // Call handleEvent on that pointer event.
-        result.path.forEach((entry){
-          print(entry.target.runtimeType);
-
-          if(entry.target is RenderSemanticsGestureHandler){
-            var target = entry.target as RenderSemanticsGestureHandler;
-            if(pointerEvent is PointerDownEvent) target.onTap();
-          }
-        });
-
-      }
-      return true;
-    }
-
-    if(event is RawKeyDownEvent){
-      if(event.logicalKey == LogicalKeyboardKey.arrowUp){
-        node.focusInDirection(TraversalDirection.up);
-        return true;
-      }
-
-      if(event.logicalKey == LogicalKeyboardKey.arrowDown){
-        node.focusInDirection(TraversalDirection.down);
-        return true;
-      }
-
-      if(event.logicalKey == LogicalKeyboardKey.arrowLeft){
-        node.focusInDirection(TraversalDirection.left);
-        return true;
-      }
-
-      if(event.logicalKey == LogicalKeyboardKey.arrowRight){
-        node.focusInDirection(TraversalDirection.right);
-        return true;
-      }
-    }
-
-    return false;
-  }
 
   @override
   void initState() {
@@ -153,6 +79,8 @@ class KaminoIntroState extends State<KaminoIntro> with SingleTickerProviderState
       playerSettings = await Settings.playerInfo;
     })();
 
+    _contentSuggestionsMemoizer = new AsyncMemoizer();
+
     // Initialize controller.
     _controller = PageController();
     _controller.addListener(() => setState((){}));
@@ -168,6 +96,28 @@ class KaminoIntroState extends State<KaminoIntro> with SingleTickerProviderState
         parent: _animationController,
         curve: Interval(0.9, 1.0, curve: Curves.easeIn)
     );
+    _fadeInAnimation.addListener((){
+      if(_fadeInAnimation.isCompleted){
+        // Preemptively load content suggestions when animations are done.
+        _contentSuggestionsMemoizer.runOnce(() async {
+          Map<ContentListModel, String> curatedLists = new Map();
+
+          for(MapEntry<ContentType, List<String>> curatedTMDBList in TMDB.curatedTMDBLists.entries){
+            ContentType type = curatedTMDBList.key;
+            List<String> lists = curatedTMDBList.value;
+
+            for (String list in lists){
+              curatedLists[await Service.get<TMDB>().getList(
+                  context,
+                  int.parse(list)
+              )] = getPrettyContentType(type, plural: true);
+            }
+          }
+
+          return curatedLists;
+        });
+      }
+    });
 
     // Wait a second for the application to catch up.
     if(!widget.skipAnimation) Future.delayed(Duration(milliseconds: 500), () => _animationController.forward());
@@ -537,119 +487,133 @@ class KaminoIntroState extends State<KaminoIntro> with SingleTickerProviderState
                       margin: EdgeInsets.symmetric(vertical: 20),
                     ),
 
-                    LayoutBuilder(
-                      builder: (BuildContext context, BoxConstraints constraints){
-                        double idealWidth = 200;
-                        double spacing = 10.0;
+                    FutureBuilder(
+                      future: _contentSuggestionsMemoizer.runOnce(() async {
+                        Map<ContentListModel, String> curatedLists = new Map();
 
-                        List<String> curatedTMDBLists = [];
-                        TMDB.curatedTMDBLists.forEach((ContentType type, List<String> typeCuratedLists){
-                          typeCuratedLists.forEach((String entry){
-                            curatedTMDBLists.add("$entry|${getPrettyContentType(type, plural: true)}");
-                          });
-                        });
+                        for(MapEntry<ContentType, List<String>> curatedTMDBList in TMDB.curatedTMDBLists.entries){
+                          ContentType type = curatedTMDBList.key;
+                          List<String> lists = curatedTMDBList.value;
 
-                        return GridView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: (constraints.maxWidth / idealWidth).round(),
-                              childAspectRatio: 2,
-                              mainAxisSpacing: spacing,
-                              crossAxisSpacing: spacing
-                          ),
-                          itemCount: curatedTMDBLists.length,
-                          itemBuilder: (BuildContext context, int index){
-                            if(!_categoryMemoizers.containsKey(curatedTMDBLists[index]))
-                              _categoryMemoizers[curatedTMDBLists[index]] = new AsyncMemoizer();
+                          for (String list in lists){
+                            curatedLists[await Service.get<TMDB>().getList(
+                                context,
+                                int.parse(list)
+                            )] = getPrettyContentType(type, plural: true);
+                          }
+                        }
 
-                            return FutureBuilder(
-                                future: _categoryMemoizers[curatedTMDBLists[index]].runOnce(
-                                        () async => { "list": await Service.get<TMDB>().getList(context, int.parse(curatedTMDBLists[index].split("|")[0])), "type": curatedTMDBLists[index].split("|")[1] }
-                                ),
-                                builder: (BuildContext context, AsyncSnapshot snapshot){
-                                  if(snapshot.hasError){
-                                    print("Error loading list: ${curatedTMDBLists[index]}");
-                                    return Container();
-                                  }
+                        return curatedLists;
+                      }),
+                      builder: (BuildContext context, AsyncSnapshot snapshot){
+                        if(snapshot.connectionState != ConnectionState.done || snapshot.hasError){
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              ApolloLoadingSpinner(),
+                              Container(
+                                margin: EdgeInsets.only(top: 20),
+                                child: Text(S.of(context).downloading_content_suggestions_index),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(top: 5),
+                                child: Text(S.of(context).this_may_take_up_to_n_seconds("10")),
+                              )
+                            ],
+                          );
+                        }
 
-                                  switch(snapshot.connectionState){
-                                    case ConnectionState.none:
-                                    case ConnectionState.waiting:
-                                    case ConnectionState.active:
-                                      return Center(
-                                        child: ApolloLoadingSpinner(),
-                                      );
+                        return LayoutBuilder(
+                          builder: (BuildContext context, BoxConstraints constraints){
+                            double idealWidth = 200;
+                            double spacing = 10.0;
 
-                                    case ConnectionState.done:
-                                      ContentListModel list = snapshot.data['list'];
-                                      String type = snapshot.data['type'];
+                            List<MapEntry<ContentListModel, String>> gridItems = snapshot.data.entries.toList();
+                            gridItems.sort((a, b){
+                              return a.key.name.toLowerCase().compareTo(
+                                b.key.name.toLowerCase()
+                              );
+                            });
 
-                                      return Material(
-                                        type: MaterialType.card,
-                                        borderRadius: BorderRadius.circular(5),
-                                        clipBehavior: Clip.antiAlias,
-                                        child: Stack(
-                                          fit: StackFit.expand,
-                                          alignment: Alignment.center,
-                                          children: <Widget>[
-                                            CachedNetworkImage(
-                                              imageUrl: TMDB.IMAGE_CDN_LOWRES + list.backdrop,
-                                              fit: BoxFit.cover,
-                                            ),
+                            return GridView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: (constraints.maxWidth / idealWidth).round(),
+                                  childAspectRatio: 2,
+                                  mainAxisSpacing: spacing,
+                                  crossAxisSpacing: spacing
+                              ),
+                              itemCount: gridItems.length,
+                              itemBuilder: (BuildContext context, int index){
+                                ContentListModel list = gridItems[index].key;
+                                String type = gridItems[index].value;
 
-                                            Container(
-                                              color: const Color(0x7F000000),
-                                              child: Center(child: Padding(
-                                                padding: EdgeInsets.symmetric(horizontal: 5),
-                                                child: Column(
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  children: <Widget>[
-                                                    AutoSizeText(
-                                                      list.name,
-                                                      style: TextStyle(
-                                                          fontSize: 18,
-                                                          fontFamily: 'GlacialIndifference'
-                                                      ),
-                                                      softWrap: true,
-                                                      maxLines: 1,
-                                                      maxFontSize: 18,
-                                                      textAlign: TextAlign.center,
-                                                    ),
+                                return Material(
+                                  type: MaterialType.card,
+                                  borderRadius: BorderRadius.circular(5),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: Stack(
+                                    fit: StackFit.expand,
+                                    alignment: Alignment.center,
+                                    children: <Widget>[
+                                      CachedNetworkImage(
+                                        imageUrl: TMDB.IMAGE_CDN_LOWRES + list.backdrop,
+                                        fit: BoxFit.cover,
+                                      ),
 
-                                                    Text(type)
-                                                  ],
+                                      Container(
+                                        color: const Color(0x7F000000),
+                                        child: Center(child: Padding(
+                                          padding: EdgeInsets.symmetric(horizontal: 5),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                              AutoSizeText(
+                                                list.name,
+                                                style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontFamily: 'GlacialIndifference'
                                                 ),
-                                              )),
-                                            ),
-
-                                            AnimatedOpacity(child: Container(
-                                              color: const Color(0x9F000000),
-                                              child: Center(
-                                                child: Icon(Icons.check),
+                                                softWrap: true,
+                                                maxLines: 1,
+                                                maxFontSize: 18,
+                                                textAlign: TextAlign.center,
                                               ),
-                                            ), opacity: _selectedCategories.containsKey(list.id.toString()) ? 1 : 0,
-                                                duration: Duration(milliseconds: 300)),
 
-                                            Material(
-                                              color: Colors.transparent,
-                                              child: InkWell(
-                                                onTap: () => setState((){
-                                                  _selectedCategories.containsKey(list.id.toString())
-                                                      ? _selectedCategories.remove(list.id.toString())
-                                                      : _selectedCategories[list.id.toString()] = true;
-                                                }),
-                                              ),
-                                            )
-                                          ],
+                                              Text(type)
+                                            ],
+                                          ),
+                                        )),
+                                      ),
+
+                                      AnimatedOpacity(child: Container(
+                                        color: const Color(0x9F000000),
+                                        child: Center(
+                                          child: Icon(Icons.check),
                                         ),
-                                      );
-                                  }
-                                }
+                                      ), opacity: _selectedCategories.containsKey(list.id.toString()) ? 1 : 0,
+                                          duration: Duration(milliseconds: 300)),
+
+                                      Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () => setState((){
+                                            _selectedCategories.containsKey(list.id.toString())
+                                                ? _selectedCategories.remove(list.id.toString())
+                                                : _selectedCategories[list.id.toString()] = true;
+                                          }),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              },
                             );
                           },
                         );
-                      },
+                      }
                     ),
 
                     Container(

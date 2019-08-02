@@ -184,15 +184,33 @@ class OtherSettingsPageState extends SettingsPageState {
                               children: <Widget>[
                                 RichText(
                                     text: TextSpan(
-                                        children: [
-                                          TextSpan(
-                                              text: "\u2022 Stable: ",
-                                              style: TextStyle(fontWeight: FontWeight.bold)
-                                          ),
-                                          TextSpan(
-                                              text: S.of(context).version_track_stable_description
-                                          )
-                                        ]
+                                      style: TextStyle(fontFamily: 'Futura'),
+                                      children: [
+                                        TextSpan(
+                                            text: "\u2022 Stable: ",
+                                            style: TextStyle(fontWeight: FontWeight.bold)
+                                        ),
+                                        TextSpan(
+                                            text: S.of(context).version_track_stable_description
+                                        )
+                                      ]
+                                    ),
+                                ),
+
+                                Container(margin: EdgeInsets.only(top: 15)),
+
+                                RichText(
+                                    text: TextSpan(
+                                      style: TextStyle(fontFamily: 'Futura'),
+                                      children: [
+                                        TextSpan(
+                                            text: "\u2022 Beta: ",
+                                            style: TextStyle(fontWeight: FontWeight.bold)
+                                        ),
+                                        TextSpan(
+                                            text: S.of(context).version_track_beta_description
+                                        )
+                                      ]
                                     )
                                 ),
 
@@ -200,31 +218,16 @@ class OtherSettingsPageState extends SettingsPageState {
 
                                 RichText(
                                     text: TextSpan(
-                                        children: [
-                                          TextSpan(
-                                              text: "\u2022 Beta: ",
-                                              style: TextStyle(fontWeight: FontWeight.bold)
-                                          ),
-                                          TextSpan(
-                                              text: S.of(context).version_track_beta_description
-                                          )
-                                        ]
-                                    )
-                                ),
-
-                                Container(margin: EdgeInsets.only(top: 15)),
-
-                                RichText(
-                                    text: TextSpan(
-                                        children: [
-                                          TextSpan(
-                                              text: "\u2022 Development: ",
-                                              style: TextStyle(fontWeight: FontWeight.bold)
-                                          ),
-                                          TextSpan(
-                                              text: S.of(context).version_track_development_description
-                                          )
-                                        ]
+                                      style: TextStyle(fontFamily: 'Futura'),
+                                      children: [
+                                        TextSpan(
+                                            text: "\u2022 Development: ",
+                                            style: TextStyle(fontWeight: FontWeight.bold)
+                                        ),
+                                        TextSpan(
+                                            text: S.of(context).version_track_development_description
+                                        )
+                                      ]
                                     )
                                 )
                               ],

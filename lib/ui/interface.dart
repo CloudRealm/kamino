@@ -1,9 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:kamino/animation/transition.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/interface/content/overview.dart';
-import 'package:kamino/interface/search/smart_search.dart';
+import 'package:kamino/interface/search/search.dart';
 import 'package:kamino/main.dart';
 import 'package:kamino/models/content/content.dart';
 import 'package:kamino/ui/elements.dart';
@@ -43,7 +43,9 @@ class Interface {
       tooltip: S.of(context).search,
       icon: Icon(Icons.search),
       color: Theme.of(context).primaryTextTheme.body1.color,
-      onPressed: () => showSearch(context: context, delegate: SmartSearch()),
+      onPressed: () => Navigator.of(context).push(ApolloTransitionRoute(
+        builder: (BuildContext context) => SearchPage()
+      )),
     );
   }
   static void showAlert({@required BuildContext context, @required Widget title, @required List<Widget> content, bool dismissible = false, @required List<Widget> actions}){

@@ -95,11 +95,12 @@ class AdvancedSettingsPageState extends SettingsPageState {
                             !_disableSecurityMessages ? Container(
                               margin: EdgeInsets.symmetric(vertical: 10),
                               child: RichText(text: TextSpan(children: [
-                                TextSpan(text: S.of(context).security_risk, style: TextStyle(fontWeight: FontWeight.bold)),
+                                TextSpan(text: S.of(context).security_risk, style: TextStyle(fontFamily: 'Futura', fontWeight: FontWeight.bold)),
                                 TextSpan(text: " "),
                                 TextSpan(text: S.of(context).using_unofficial_servers_can_expose_your_ip_address)
                               ], style: TextStyle(
-                                  color: Colors.red
+                                color: Colors.red,
+                                fontFamily: 'Futura'
                               ))),
                             ) : Container(),
 
@@ -410,12 +411,13 @@ class AdvancedSettingsPageState extends SettingsPageState {
                 ),
 
                 RichText(text: TextSpan(
-                    children: [
-                      if(!_disableSecurityMessages)
-                        TextSpan(text: "\n" + S.of(context).we_recommend_that_you_do_not_enable_this_option_unless, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red))
-                      else
-                        TextSpan(text: "\n" + S.of(context).security_warnings_have_been_disabled, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red))
-                    ]
+                  style: TextStyle(fontFamily: 'Futura'),
+                  children: [
+                    if(!_disableSecurityMessages)
+                      TextSpan(text: "\n" + S.of(context).we_recommend_that_you_do_not_enable_this_option_unless, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red))
+                    else
+                      TextSpan(text: "\n" + S.of(context).security_warnings_have_been_disabled, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red))
+                  ]
                 ))
               ]),
               value: _disableSecurityMessages,
@@ -427,7 +429,7 @@ class AdvancedSettingsPageState extends SettingsPageState {
 
                     if(!_disableSecurityMessages){
                       _scrollView.animateTo(
-                        _scrollView.offset + 30,
+                        _scrollView.offset + 40,
                         curve: Curves.easeOut,
                         duration: const Duration(milliseconds: 400)
                       );

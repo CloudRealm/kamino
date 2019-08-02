@@ -157,15 +157,6 @@ class _ContentOverviewState extends State<ContentOverview> {
         }
 
         switch(snapshot.connectionState){
-          case ConnectionState.none:
-          case ConnectionState.waiting:
-          case ConnectionState.active:
-            return Scaffold(
-                backgroundColor: Theme.of(context).backgroundColor,
-                body: Center(
-                    child: ApolloLoadingSpinner()
-                )
-            );
           case ConnectionState.done:
             ContentModel content = snapshot.data;
 
@@ -245,7 +236,10 @@ class _ContentOverviewState extends State<ContentOverview> {
                               onNotification: (notification){
                                 if(notification.leading){
                                   notification.disallowGlow();
+                                  return true;
                                 }
+
+                                return false;
                               },
                               child: ListView(
 
@@ -307,6 +301,17 @@ class _ContentOverviewState extends State<ContentOverview> {
                   ],
                 ),
                 floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling
+            );
+
+          case ConnectionState.none:
+          case ConnectionState.waiting:
+          case ConnectionState.active:
+          default:
+            return Scaffold(
+                backgroundColor: Theme.of(context).backgroundColor,
+                body: Center(
+                    child: ApolloLoadingSpinner()
+                )
             );
         }
       }
@@ -581,7 +586,7 @@ class _ContentOverviewState extends State<ContentOverview> {
     if(emptyOnFail && (cast == null || crew == null || cast.isEmpty || crew.isEmpty))
       return Container();
 
-    List<PersonModel> castAndCrew = List.from(crew.length > 3 ? crew.sublist(0, 3) : crew, growable: true);
+    List<CCPersonModel> castAndCrew = List.from(crew.length > 3 ? crew.sublist(0, 3) : crew, growable: true);
     castAndCrew.addAll(cast);
 
     // Remove any with an invalid name, job/character, profile
@@ -650,7 +655,12 @@ class _ContentOverviewState extends State<ContentOverview> {
 
                           // Character or job
                           Text(
-                            castAndCrew[index].role.contains(" / ") ? castAndCrew[index].role.split(" / ")[0] : castAndCrew[index].role,
+                            ((role){
+                              if(role.contains(" / ")) role = role.split(" / ")[0];
+                              if(role.contains(" (")) role = role.split(" (")[0];
+
+                              return role;
+                            })(castAndCrew[index].role),
                             style: TextStyle(
                                 color: Colors.white54
                             ),

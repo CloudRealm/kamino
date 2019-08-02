@@ -72,19 +72,23 @@ class PlaybackSettingsPage extends SettingsPage {
 
                           index--;
                           return ListTile(
+                            isThreeLine: true,
                             title: TitleText(snapshot.data[index]['name']),
-                            subtitle: Text(S.of(context).version_x(snapshot.data[index]['version'])),
-                            leading: ClipRRect(
-                                borderRadius: BorderRadius.circular(48),
-                                child: Image(
-                                  image: MemoryImage(
-                                      Base64Decoder().convert(snapshot.data[index]['icon'].replaceAll('\n', ''))
-                                  ),
-                                  fit: BoxFit.cover,
-                                  alignment: Alignment.center,
-                                  width: 48,
-                                  height: 48,
-                                )
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(snapshot.data[index]['description']),
+                                Text(S.of(context).version_x(snapshot.data[index]['version']))
+                              ],
+                            ),
+                            leading: Image(
+                              image: MemoryImage(
+                                  Base64Decoder().convert(snapshot.data[index]['icon'].replaceAll('\n', ''))
+                              ),
+                              fit: BoxFit.cover,
+                              alignment: Alignment.center,
+                              width: 48,
+                              height: 48,
                             ),
                             enabled: true,
                             onTap: () async {

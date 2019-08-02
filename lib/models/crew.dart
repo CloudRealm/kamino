@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-class PersonModel {
+// CastCrewPersonModel
+class CCPersonModel {
   final int id;
   final String name;
   final String profilePath;
@@ -11,7 +12,7 @@ class PersonModel {
   /// For a [CastMemberModel], role means character.
   final String role;
 
-  PersonModel({
+  CCPersonModel({
     @required this.id,
     @required this.name,
     this.profilePath,
@@ -21,7 +22,7 @@ class PersonModel {
   });
 }
 
-class CrewMemberModel extends PersonModel {
+class CrewMemberModel extends CCPersonModel {
   final String job;
   final String department;
 
@@ -57,7 +58,7 @@ class CrewMemberModel extends PersonModel {
   }
 }
 
-class CastMemberModel extends PersonModel {
+class CastMemberModel extends CCPersonModel {
   final int order;
   final int castId;
   final String character;

@@ -48,7 +48,7 @@ class Launchpad2State extends State<Launchpad2> {
 
   Future<void> load() async {
     return Future.any([
-      Service.get<TMDB>().getList(context, 105604, loadFully: false, useCache: true).then<ContentListModel>((list){
+      Service.get<TMDB>().getList(context, 105604, loadFully: false, useCache: true).then((list){
         if(mounted) setState(() => _topPicksList = list.content);
       }),
 
@@ -105,7 +105,6 @@ class Launchpad2State extends State<Launchpad2> {
             .toList(), watchlists)
     ){
       (() async {
-        //_watchlists = await _watchListMemoizer.runOnce(() async {
         List<ContentListModel> _loadedWatchlists = new List();
         for(String watchlist in watchlists){
           if(!mounted) break;
@@ -115,7 +114,6 @@ class Launchpad2State extends State<Launchpad2> {
                 useCache: true));
           }catch(ex){}
         }
-        //});
 
         if(mounted) setState(() {
           _watchlists = _loadedWatchlists;
@@ -153,12 +151,6 @@ class Launchpad2State extends State<Launchpad2> {
         }
 
         switch(snapshot.connectionState){
-          case ConnectionState.none:
-          case ConnectionState.active:
-          case ConnectionState.waiting:
-            return Center(
-              child: ApolloLoadingSpinner()
-            );
           case ConnectionState.done:
           return ListView(
             children: <Widget>[
@@ -286,37 +278,40 @@ class Launchpad2State extends State<Launchpad2> {
                       child: Stack(
                         fit: StackFit.expand,
                         children: <Widget>[
-                          Container(
-                            margin: EdgeInsets.symmetric(vertical: 10),
-                            child: Card(
-                              child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints){
-                                return Container(
-                                  margin: EdgeInsets.only(left: 107),
-                                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      TitleText(
-                                          _editorsChoice.title,
-                                          fontSize: 24
-                                      ),
-                                      LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints){
-                                        return Container(
-                                          margin: EdgeInsets.only(top: 10, right: 5),
-                                          child: AutoSizeText(
-                                            _editorsChoice.comment,
-                                            overflow: TextOverflow.fade,
-                                            maxLines: 5,
-                                            maxFontSize: 12,
-                                          ),
-                                        );
-                                      })
-                                    ],
-                                  ),
-                                );
-                              })
+                          GestureDetector(
+                            onTap: () => Interface.openOverview(context, _editorsChoice.id, _editorsChoice.type),
+                            child: Container(
+                              margin: EdgeInsets.symmetric(vertical: 10),
+                              child: Card(
+                                child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints){
+                                  return Container(
+                                    margin: EdgeInsets.only(left: 107),
+                                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        TitleText(
+                                            _editorsChoice.title,
+                                            fontSize: 24
+                                        ),
+                                        LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints){
+                                          return Container(
+                                            margin: EdgeInsets.only(top: 10, right: 5),
+                                            child: AutoSizeText(
+                                              _editorsChoice.comment,
+                                              overflow: TextOverflow.fade,
+                                              maxLines: 5,
+                                              maxFontSize: 12,
+                                            ),
+                                          );
+                                        })
+                                      ],
+                                    ),
+                                  );
+                                })
+                              ),
                             ),
                           ),
 
@@ -426,12 +421,17 @@ class Launchpad2State extends State<Launchpad2> {
               )
             ],
           );
+
+          case ConnectionState.none:
+          case ConnectionState.active:
+          case ConnectionState.waiting:
+          default:
+            return Center(
+                child: ApolloLoadingSpinner()
+            );
         }
       }
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 
 }

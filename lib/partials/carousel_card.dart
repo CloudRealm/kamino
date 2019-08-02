@@ -66,9 +66,9 @@ class CarouselCardState extends State<CarouselCard> {
               children: <Widget>[
                 Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: AutoSizeText(widget.model.title, style: TextStyle(fontSize: 25.0, color: Colors.white), maxFontSize: 25.0, minFontSize: 18.0, maxLines: 1, textAlign: TextAlign.center, overflow: TextOverflow.ellipsis)
+                    child: AutoSizeText(widget.model.title, style: TextStyle(fontFamily: 'GlacialIndifference', fontSize: 25.0, color: Colors.white), maxFontSize: 25.0, minFontSize: 18.0, maxLines: 1, textAlign: TextAlign.center, overflow: TextOverflow.ellipsis)
                 ),
-                Text(DateFormat.y("en_US").format(DateTime.parse(widget.model.releaseDate)), style: TextStyle(fontSize: 16, color: Colors.white))
+                Text(DateFormat.y("en_US").format(DateTime.parse(widget.model.releaseDate)), style: TextStyle(fontFamily: 'GlacialIndifference', fontSize: 20, color: Colors.white))
               ],
             ),
 
