@@ -331,11 +331,11 @@
   "real_debrid_n_points": "$points punten",
   "real_debrid_convert_points": "Punten omzetten",
   "converting_realdebrid_fidelity_points": "Real-Debrid \"trouw\" punten omzetten...",
-  "real_debrid_purchase_premium": "Koop Premium"
-  
-  "x_found_in_y": "x_gevonden_in_y",
+  "real_debrid_purchase_premium": "Koop Premium",
+  	
+	"x_found_in_y": "$x gevonden in $y",
 	"submit_request": "Aanvraag indienen",
-	"code_x": "Code_x",
+	"code_x": "Code $code",
 	"you_can_log_into_realdebrid_in_two_ways": "U kunt op twee manieren inloggen in RealDebrid",
 	"if_youre_not_sure_what_these_options_are_just_use_login": "Als u niet zeker bent wat deze twee opties zijn, gebruik de normale login",
 	"use_code": "Gebruik code",
@@ -346,10 +346,13 @@
 	"visit_the_following_url_in_your_browser": "Bezoek de volgende URL in uw browser",
 	"does_nothing_in_release_mode": "Doet niks in release mode",
 	"please_follow_the_instructions_shown_to_log_in_via_your_browser": "Volg alstublieft de instructies om in te loggen via uw browser",
-	"expires_in_x_daysOther": "vervalt_in_x_daysAnders",
-	"expires_in_x_daysOne": "vervalt_in_x_daysOne",
+	"expires_in_x_daysOther": "vervalt in $x dagen",
+	"expires_in_x_daysOne": "vervalt in $x dag",
 	"sorts_by_date_added": "Sorteert bij datum toegevoegd",
 	"date_added": "Datum toegevoegd",
-	"reviews_n": "Beoordelingen_n",
-	"reviews": "Beoordelingen"
+	"reviews_n": "Beoordelingen ($n)",
+	"reviews": "Beoordelingen",	
+	"this_may_take_up_to_n_seconds": "Dat kan nog $n seconden duren.",
+	"downloading_content_suggestions_index": "Downloading content suggesties index.",
+	"people": "Mensen"
 }
