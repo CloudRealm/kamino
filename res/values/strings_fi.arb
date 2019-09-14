@@ -321,7 +321,7 @@
   "x_found_in_y": "$x löytynyt ajassa $y",
   "submit_request": "Lähetä pyyntö",
   "code_x": "Koodi: $code",
-  "you_can_log_into_realdebrid_in_two_ways": "Voit kirjautua Real-Debridiin kahdella tavalla:"
+  "you_can_log_into_realdebrid_in_two_ways": "Voit kirjautua Real-Debridiin kahdella tavalla:",
   "if_youre_not_sure_what_these_options_are_just_use_login": "Jos et ole varma näistä vaihtoehdoista, valitse KIRJAUDU.",
   "use_code": "Käytä koodia",
   "login": "Kirjaudu",

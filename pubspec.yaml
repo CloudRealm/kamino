@@ -98,6 +98,7 @@ flutter:
     - assets/flags/texas.png
     - assets/flags/hebrew.png
     - assets/flags/de.png
+    - assets/flags/el.png
     - assets/flags/es.png
     - assets/flags/fi.png
     - assets/flags/fr.png

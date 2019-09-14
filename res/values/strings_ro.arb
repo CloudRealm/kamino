@@ -122,7 +122,7 @@
   "gathers_useful_information_for_debugging": "Colectează informații utile pentru depanare.",
   "link_copied_to_clipboard": "Link copiat in clipboard.",
   "the_default_configuration_has_been_restored": "Configurare implicita restaurata.",
-  "restore_defaults": "Restaurare implicita,
+  "restore_defaults": "Restaurare implicita",
 
   "select_language": "Selectare limba...",
   "language_settings": "Setari limba",
@@ -194,7 +194,7 @@
   "error_loading_launchpad": "Ei bine, acest lucru este ciudat... A aparut o eroare la încarcarea Launchpad-ului.",
   "error_loading_search": "Ei bine, acest lucru este ciudat... A aparut o eroare in timpul încarcarii rezultatelor cautarii.",
   "be_careful_this_option_could_break_the_app_if_you": "Ai grija! Aceasta optiune ar putea strica aplicatia daca nu stiti ce faceti.",
-  "the_url_must_be_valid_and_include_a_trailing_": "Adresa URL trebuie sa fie valida si sa se termine cu "/".",
+  "the_url_must_be_valid_and_include_a_trailing_": "Adresa URL trebuie sa fie valida si sa se termine cu /.",
   "server_url": "Adresa URL a server-ului",
   "the_key_must_be_32_characters_in_length": "Cheia trebuie sa aiba o lungimea de 32 de caractere.",
   "server_key": "Server Key",
