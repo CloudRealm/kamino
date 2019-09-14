@@ -314,5 +314,32 @@
   "content_suggestions_description": "हमारे क्यूरेट वॉचलिस्ट के साथ अपने अनुभव को दर्जी करें! यदि आप एक क्यूरेटेड सूची में रुचि रखते हैं, तो उस पर टैप करें।",
   "no_sources_found": "कोई सोर्स नहीं मिला",
   "we_couldnt_find_any_sources_for_content": "हम $content के लिए कोई भी सोर्स नहीं खोज सके।",
-  "your_request_has_been_saved": "आपका निवेदन सेव हो गया है।"
+  "your_request_has_been_saved": "आपका निवेदन सेव हो गया है।",
+  
+  "real_debrid_n_points": "$points अंक",
+  "real_debrid_convert_points": "अंक बदलें",
+  "converting_realdebrid_fidelity_points": "Real-Debrid फ़िडेलिटी पोईंत्स कन्वर्ट हो रहे है...",
+  "real_debrid_purchase_premium": "प्रीमीयम ख़रीदे",
+  "x_found_in_y": "$y में $x मिले",
+  "submit_request": "अनुरोध प्रस्तुत करें",
+  "code_x": "कोड: $code",
+  "you_can_log_into_realdebrid_in_two_ways": "आप Real-Debrid में दो तरह से लॉग इन कर सकते है:",
+  "if_youre_not_sure_what_these_options_are_just_use_login": "अगर आप इन विकल्पों को नहीं जानते तो लॉगिन का विकल्प चुने।.",
+  "use_code": "कोड का उपयोग करें",
+  "login": "लॉगिन",
+  "or": "या",
+  "enter_the_following_code": "निम्नलिखित कोड एंटर करें:",
+  "visit_the_following_url_in_your_browser": "इस URL पर अपने ब्राउज़र द्वारा जाये:",
+  "does_nothing_in_release_mode": "रिलीज़ मोड में कुछ नहीं करता।",
+  "please_follow_the_instructions_shown_to_log_in_via_your_browser": "कृपया इन आदेशों का पालन करते हुए अपने ब्राउज़र से लोग इन करें।",
+  "expires_in_x_daysOther": "$days दिनों में समाप्त हो रहा है",
+  "expires_in_x_daysOne": "$days दिनों में समाप्त हो रहा है",
+  "sorts_by_date_added": "तारीख से सॉर्ट करें",
+  "date_added": "तिथि अनुसार",
+
+  "reviews_n": "समीक्षा ($n)",
+  "reviews": "समीक्षा",
+  "this_may_take_up_to_n_seconds": "इस कार्य को पूरा होने में $n सेकंड लग सकते हैं।",
+  "downloading_content_suggestions_index": "कांटेंट सुझाव इंडेक्स डाउनलोड हो रहा है।",
+  "people": "जन"
 }
