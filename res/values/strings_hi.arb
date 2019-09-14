@@ -314,7 +314,7 @@
   "content_suggestions_description": "हमारे क्यूरेट वॉचलिस्ट के साथ अपने अनुभव को दर्जी करें! यदि आप एक क्यूरेटेड सूची में रुचि रखते हैं, तो उस पर टैप करें।",
   "no_sources_found": "कोई सोर्स नहीं मिला",
   "we_couldnt_find_any_sources_for_content": "हम $content के लिए कोई भी सोर्स नहीं खोज सके।",
-  "your_request_has_been_saved": "आपका निवेदन सेव हो गया है।"
+  "your_request_has_been_saved": "आपका निवेदन सेव हो गया है।",
   
   "real_debrid_n_points": "$points अंक",
   "real_debrid_convert_points": "अंक बदलें",
