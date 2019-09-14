@@ -32,15 +32,17 @@ Future<Map> checkUpdate(BuildContext context, bool dismissSnackbar) async {
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
   String buildNumber = packageInfo.buildNumber;
 
-  // Get latest build info from Apollo Houston
+  // Take the current version track in settings.
   String versionTrack = ['stable', 'beta', 'development'][(await Settings.releaseVersionTrack)];
+
+  // Get latest build info from Apollo Houston for the user's track.
   http.Response res = await http.get("https://houston.apollotv.xyz/ota/$versionTrack");
 
   if (res.statusCode == 200) {
     var results = json.decode(res.body);
     if(results['latest'] == null) return {};
 
-    if (int.parse(results["latest"]["buildNumber"]) > int.parse(buildNumber)) {
+    if (double.parse(results["latest"]["buildNumber"]) > double.parse(buildNumber)) {
       //new version is available
       return {
         "title": results["latest"]["title"],
