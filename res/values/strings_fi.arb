@@ -1,14 +1,14 @@
 {
   "$_language_name": "Suomi",
   "$_language_name_english": "Finnish",
-
+ 
   "blog": "Blogi",
   "tv_shows": "TV-sarjat",
   "movies": "Elokuvat",
   "legal": "Lakitiedot",
   "donate": "Lahjoita",
   "settings": "Asetukset",
-
+ 
   "url_copied": "URL kopioitu!",
   "okay": "OK",
   "show_more": "Näytä enemmän...",
@@ -28,12 +28,12 @@
   "next": "SEURAAVA",
   "back": "TAKAISIN",
   "skip": "OHITA",
-
+ 
   "coming_soon": "Tulossa pian",
-
+ 
   "authentication_successful": "Todentaminen onnistui",
   "authentication_unsuccessful": "Todentaminen epäonnistui",
-
+ 
   "trakt_authenticator": "Trakt-todennus",
   "successfully_refreshed_trakt_token": "Trakt-avain päivitetty.",
   "trakt_renewal_failure_detailed": "Trakt-avaimen uusiminen epäonnistui. Tarkista tiedot.",
@@ -43,30 +43,30 @@
   "disconnected_trakt_account": "Trakt-tilin yhteys katkaistu.",
   "trakt_synchronization": "Traktin synkronisaatio...",
   "trakt_favorites_sync_detailed": "Odota, synkronoidaan. Tämä viesti sulkeutuu automaattisesti toiminnon valmistuttua",
-
+ 
   "general_error": "Tapahtui virhe ($error)\nOle hyvä ja ilmoita virheestä.",
-
+ 
   "play_episode": "Toista jakso",
   "play_movie": "Toista elokuva",
   "recommended_movies": "Suositeltuja elokuvia",
   "recommended_tv_shows": "Suositeltuja TV-sarjoja",
-
+ 
   "removed_from_favorites": "Poistettu suosikeista",
   "added_to_favorites": "Lisätty suosikkeihin",
-
+ 
   "n_ratings": "$n arviota",
-
+ 
   "synopsis": "Tiivistelmä",
   "this_x_has_no_synopsis_available": "Ei tiivistelmää kohteelle $x.",
-
+ 
   "seasons_n": "Kaudet ($n)",
   "one_episode": "1 jakso",
   "n_episodes": "$n jaksoa",
-
+ 
   "released": "Julkaistu",
   "ongoing": "Menossa parhaillaan",
   "year": "Vuosi",
-
+ 
   "popularity": "Suosio",
   "air_date": "Julkaisuajankohta",
   "vote_average": "Arvioiden keskiarvo",
@@ -74,12 +74,12 @@
   "sort": "Lajittele",
   "ascending": "Nouseva",
   "descending": "Laskeva",
-
+ 
   "search_tv_shows_and_movies": "Etsi TV-sarjoja ja elokuvia...",
   "favorites": "Suosikit",
-
+ 
   "check_for_updates": "Tarkista päivitykset",
-
+ 
   "make_appname_yours": "Tee $appName:stä näköisesi",
   "appearance": "Ulkoasu",
   "customize_the_theme_and_primary_colors": "Mukauta teemaa ja päävärejä.",
@@ -95,14 +95,14 @@
   "power_user_settings_for_rocket_scientists": "Tehokäyttäjän asetukset rakettitieteilijöille.",
   "with_thanks": "Kiitokset...",
   "appname_was_made_possible_by_all_of_these_amazing_people": "$appName:n mahdollistivat seuraavat upeat ihmiset:",
-
+ 
   "source_autoplay": "Käytä lähteen automaattitoistoa",
   "source_autoplay_description": "Valitsee automaattisesti toistettavan lähteen eikä näytä lähdelistausta.",
-
+ 
   "clear_search_history": "Tyhjennä hakuhistoria",
   "clear_search_history_description": "Poistaa aikasempiin hakuihin perustuvat hakuehdotukset.",
   "search_history_cleared": "Hakuhistoria tyhjennetty.",
-
+ 
   "permission_denied": "Ei käyttöoikeuksia.",
   "downloading_update_file": "Ladataan päivitystä...",
   "updating": "Päivitetään...",
@@ -123,24 +123,24 @@
   "link_copied_to_clipboard": "Linkki kopioitu työpöydälle.",
   "the_default_configuration_has_been_restored": "Oletusasetukset palautettu.",
   "restore_defaults": "Palauta oletusasetukset",
-
+ 
   "select_language": "Valitse kieli",
   "language_settings": "Kieliasetukset",
   "take_screenshot_report_apollotv_discord": "Ole hyvä ja ota ruutukaappaus tästä viestistä ja ota yhteyttä ylläpitäjään ApolloTV Discord-palvelimella.",
   "an_error_occurred": "Tapahtui virhe.",
   "cast_and_crew": "Tekijät",
-
+ 
   "welcome_to_appname": "Tervetuloa $appName:hen",
   "app_tagline": "Yhteisön kehittämä suoratoistosovellus, yhteisölle.",
   "lets_go": "ALOITETAAN",
-
+ 
   "create_profile": "Luo profiili",
   "customize_appearance": "Mukauta ulkoasua",
   "customize_appearance_description": "$appName rakastaa mukautuvuutta. Aloitetaan valitsemalla lempiteemasi!",
   "choose_n_categoriesOther": "Valitse $n kategoriaa...",
   "choose_n_categoriesOne": "Valitse $n kategoria...",
   "choose_n_categories_description": "Lopuksi personoidaan sisältöä. Valitse vähintään 3 kategoriaa saadaksesi sisältösuosituksia!",
-
+ 
   "choose_n_categoriesZero": "Hienoa!",
   "experimental": "Kokeellinen",
   "general_settings": "Yleiset asetukset",
@@ -160,7 +160,7 @@
   "appname_failed_to_connect_to_the_internet": "$appName ei pystynyt yhdistämään verkkoon. Tarkista yhteys.",
   "playback": "Toisto",
   "change_content_playback_settings": "Muuta toistoasetuksia.",
-
+ 
   "up_to_date": "Uusin versio käytössä. Tarkista uudelleen 1-3 viikon päästä.",
   "no_favorites_header": "Ei suosikkeja!",
   "no_favorites_description": "Voit lisätä kohteen suosikkeihin koskettamalla sydänkuvaketta sisällön esittelysivulla.",
@@ -175,17 +175,17 @@
   "connected_real_debrid_account": "Yhdistetty Real-Debrid-tiliin.",
   "disconnected_real_debrid_account": "Katkaistu yhteys Real-Debrid-tiliin.",
   "real_debrid_authenticator": "Real-Debrid-todennus",
-
+ 
   "real_debrid_n_sourcesOne": "Real-Debrid ($n lähde)",
   "real_debrid_n_sourcesOther": "Real-Debrid ($n lähdettä)",
   "standard_n_sourcesOne": "Standard ($n lähde)",
   "standard_n_sourcesOther": "Standard ($n lähdettä)",
   "disconnect_your_realdebrid_account": "Katkaise yhteys Real-Debrid-tiliin",
   "connect_your_realdebrid_account": "Yhdistä Real-Debrid-tili",
-
+ 
   "extensions_description": "Jos käytät näitä kolmannen osapuolen palveluja, voit yhdistää ne $appName:hen.",
   "choose_player": "Valitse mediatoistin...",
-  "change_player": "Mediatoistinta",
+  "change_player": "Mediatoistin",
   "all_genres": "Kaikki lajit",
   "curated": "Koostetut",
   "editors_choice": "Toimittajan valinta",
@@ -220,7 +220,7 @@
   "trakttv": "Trakt.tv",
   "select_player": "Valitse mediatoistin...",
   "version_x": "Versio $version",
-  "apollotv_builtin_player": "ApolloTV sisäänrakennettu mediatoistin.",
+  "apollotv_builtin_player": "ApolloTV:n sisäänrakennettu mediatoistin.",
   "cast_settings": "Cast-asetukset",
   "an_error_occurred_whilst_loading_this_page": "Tapahtui virhe sivua ladattaessa.",
   "success": "Onnistui!",
@@ -313,7 +313,7 @@
   "no_sources_found": "Lähteitä ei löytynyt.",
   "we_couldnt_find_any_sources_for_content": "Emme löytänyt lähteitä kohteelle '$content'.",
   "your_request_has_been_saved": "Pyyntösi on tallennettu.",
-
+  
   "real_debrid_n_points": "$points pistettä",
   "real_debrid_convert_points": "Muunna pisteitä",
   "converting_realdebrid_fidelity_points": "Muunnetaan Real-Debrid fidelity-pisteitä...",
@@ -321,7 +321,7 @@
   "x_found_in_y": "$x löytynyt ajassa $y",
   "submit_request": "Lähetä pyyntö",
   "code_x": "Koodi: $code",
-  "you_can_log_into_realdebrid_in_two_ways": "Voit kirjautua Real-Debridiin kahdella tavalla:",
+  "you_can_log_into_realdebrid_in_two_ways": "Voit kirjautua Real-Debridiin kahdella tavalla:"
   "if_youre_not_sure_what_these_options_are_just_use_login": "Jos et ole varma näistä vaihtoehdoista, valitse KIRJAUDU.",
   "use_code": "Käytä koodia",
   "login": "Kirjaudu",
@@ -334,7 +334,10 @@
   "expires_in_x_daysOne": "tilaus päättyy $days päivän päästä",
   "sorts_by_date_added": "Lajittele lisäyspäivämäärän mukaan.",
   "date_added": "Päiväys",
-
+ 
   "reviews_n": "Arviot ($n)",
-  "reviews": "Arviot"
+  "reviews": "Arviot",
+  "this_may_take_up_to_n_seconds": "Tämä voi kestää $n sekuntia.",
+  "downloading_content_suggestions_index": "Ladataan sisältösuositusten hakemistoa.",
+  "people": "Ihmiset"
 }
