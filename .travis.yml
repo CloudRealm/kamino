@@ -21,7 +21,7 @@ before_install:
   -in key.jks.enc -out /home/travis/key.jks -d
 - "./.travis/0_translations.sh"
 - "./.travis/10_prebuild.sh $WEBHOOK_URL"
-- "./.travis/20_generate_keystore_config.sh $STORE_PASSWORD $KEY_PASSWORD $KEY_ALIAS"
+- "./.travis/20_generate_kstore_config.sh $STORE_PASSWORD $KEY_PASSWORD $KEY_ALIAS"
 before_script:
 - wget https://services.gradle.org/distributions/gradle-4.10.3-bin.zip
 - unzip -qq gradle-4.10.3-bin.zip
