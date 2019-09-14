@@ -94,6 +94,8 @@ abstract class SettingsPageState extends State<SettingsPage> {
             _elevation = elevation;
           });
         }
+
+        return false;
       },
       child: Scaffold(
           key: _scaffoldKey,

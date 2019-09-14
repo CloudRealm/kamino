@@ -11,6 +11,7 @@ import 'package:kamino/models/person.dart';
 import 'package:kamino/partials/content_poster.dart';
 import 'package:kamino/ui/elements.dart';
 import 'package:kamino/ui/interface.dart';
+import 'package:kamino/util/settings.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class SearchPage extends StatefulWidget {
@@ -26,34 +27,54 @@ class SearchPageState extends State<SearchPage> {
   SearchResults results = SearchResults.none();
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
-      body: ListView(children: <Widget>[
-        // Search field
-        SearchFieldWidget(
-          controller: inputController,
+      body: Stack(children: <Widget>[
+        Positioned(
+          top: 20,
+          left: 0,
+          right: 0,
+          child: SearchFieldWidget(
+            color: const Color(0xFF2F3136),
+            controller: inputController,
 
-          leading: ModalRoute.of(context).canPop ? IconButton(
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            icon: Icon(Icons.arrow_back),
-            onPressed: (){
-              Navigator.of(context).pop();
+            leading: ModalRoute.of(context).canPop ? IconButton(
+              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+              icon: Icon(Icons.arrow_back),
+              onPressed: (){
+                Navigator.of(context).pop();
+              },
+            ) : null,
+
+            onUpdate: (String value) async {
+              SearchResults newResults = await Service.get<TMDB>().search(context, value, isAutoComplete: true);
+              if(mounted) setState(() {
+                results = newResults;
+              });
             },
-          ) : null,
+            onSubmit: (String value) async {
+              if(results.query == value){
+                return;
+              }
 
-          onUpdate: (String value) async {
-            SearchResults newResults = await Service.get<TMDB>().search(context, value, isAutoComplete: true);
-            setState(() {
-              results = newResults;
-            });
-          },
-          onSubmit: (String value){
+              setState(() {
+                results = SearchResults.none(query: value);
+              });
 
-          },
+              SearchResults newResults = await Service.get<TMDB>().search(context, value, isAutoComplete: false);
+              setState(() {
+                results = newResults;
+              });
+            },
 
-          /*child: (BuildContext context, String query){
+            /*child: (BuildContext context, String query){
             if(query.isEmpty) return null;
 
             return Column(children: <Widget>[
@@ -64,153 +85,114 @@ class SearchPageState extends State<SearchPage> {
               )
             ]);
           }*/
+          ),
         ),
 
-
-        // BEGIN: Content
-        Container(
-          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-          child: Column(children: <Widget>[
-
-            // People
-            // TODO: Just prepare the lists before setting out tree.
-            if(results.people.where((p) => p.profilePath != null).length > 0) ...[
-              SubtitleText(S.of(context).people, padding: EdgeInsets.only(
-                  top: 10,
-                  bottom: 20,
-                  left: 10,
-                  right: 10
-              )),
-              Container(
-                height: 90,
-                child: NotificationListener<OverscrollIndicatorNotification>(
-                  onNotification: (notification){
-                    notification.disallowGlow();
-                    return false;
-                  },
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: results.people.length,
-                      itemBuilder: (BuildContext context, int index){
-                        PersonModel person = results.people[index];
-
-                        if(person.profilePath == null) return Container();
-
-                        return Container(
-                          margin: EdgeInsets.symmetric(horizontal: 10),
-                          child: Column(children: <Widget>[
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(100),
-                              clipBehavior: Clip.antiAlias,
-                              child: FadeInImage.memoryNetwork(
-                                placeholder: kTransparentImage,
-                                image: TMDB.IMAGE_CDN + person.profilePath,
-                                width: 60,
-                                height: 60,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-
-                            Container(
-                              margin: EdgeInsets.only(top: 10),
-                              child: Text(person.name, textAlign: TextAlign.center),
-                            )
-                          ]),
-                        );
-                      }
-                  ),
-                ),
-              ),
-
-              Container(margin: EdgeInsets.only(bottom: 40))
-            ],
-
-
-            // TV Shows
-            if(results.shows.length > 0) ...[
-              SubtitleText(S.of(context).tv_shows, padding: EdgeInsets.only(
-                top: 10,
-                left: 10,
-                right: 10
-              )),
-              LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints){
-                double idealWidth = 150;
-                double spacing = 10.0;
-
-                return GridView.builder(
-                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: (constraints.maxWidth / idealWidth).round(),
-                      childAspectRatio: 0.67,
-                      mainAxisSpacing: spacing,
-                      crossAxisSpacing: spacing,
-                    ),
-                    itemCount: results.shows.length,
-                    itemBuilder: (BuildContext context, int index){
-                      TVShowContentModel show = results.shows[index];
-
-                      return ContentPoster(
-                        background: show.posterPath,
-                        name: show.title,
-                        releaseDate: show.releaseDate,
-                        mediaType: getRawContentType(ContentType.TV_SHOW),
-                        onTap: () => Interface.openOverview(context, show.id, ContentType.TV_SHOW),
-                      );
-                    }
-                );
-              }),
-
-              Container(margin: EdgeInsets.only(bottom: 10))
-            ],
-
-            // Movies
-            if(results.movies.length > 0) ...[
-              SubtitleText(S.of(context).movies, padding: EdgeInsets.only(
-                  top: 10,
-                  left: 10,
-                  right: 10
-              )),
-              LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints){
-                double idealWidth = 150;
-                double spacing = 10.0;
-
-                return GridView.builder(
-                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: (constraints.maxWidth / idealWidth).round(),
-                      childAspectRatio: 0.67,
-                      mainAxisSpacing: spacing,
-                      crossAxisSpacing: spacing,
-                    ),
-                    itemCount: results.movies.length,
-                    itemBuilder: (BuildContext context, int index){
-                      MovieContentModel movie = results.movies[index];
-
-                      return ContentPoster(
-                        background: movie.posterPath,
-                        name: movie.title,
-                        releaseDate: movie.releaseDate,
-                        mediaType: getRawContentType(ContentType.MOVIE),
-                        onTap: () => Interface.openOverview(context, movie.id, ContentType.MOVIE),
-                      );
-                    }
-                );
-              })
-            ]
-
-
-          ], crossAxisAlignment: CrossAxisAlignment.start),
-        )
-        // END: Content
-
-      ])
+        _generateResultsView(),
+      ].reversed.toList())
     );
 
+  }
+
+  Widget _generateResultsView(){
+    List people = results.people.where((p) => p.profilePath != null).toList();
+
+    return ListView(children: <Widget>[
+
+      Container(
+        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15).copyWith(right: 0),
+        child: Column(children: <Widget>[
+
+          Container(height: 80),
+
+          // People
+          // TODO: Just prepare the lists before setting out tree.
+          if(people.length > 0) ...[
+            SubtitleText(S.of(context).people, padding: EdgeInsets.only(
+                top: 10,
+                bottom: 20,
+                left: 10,
+                right: 10
+            )),
+            Container(
+              height: 90,
+              child: NotificationListener<OverscrollIndicatorNotification>(
+                onNotification: (notification){
+                  notification.disallowGlow();
+                  return false;
+                },
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: people.length + 1,
+                    itemBuilder: (BuildContext context, int index){
+                      if(index == people.length){
+                        return Container(width: 15);
+                      }
+
+                      PersonModel person = people[index];
+                      if(person.profilePath == null) return Container();
+
+                      return Container(
+                        margin: EdgeInsets.symmetric(horizontal: 10),
+                        child: Column(children: <Widget>[
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
+                            clipBehavior: Clip.antiAlias,
+                            child: FadeInImage.memoryNetwork(
+                              placeholder: kTransparentImage,
+                              image: TMDB.IMAGE_CDN + person.profilePath,
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+
+                          Container(
+                            margin: EdgeInsets.only(top: 10),
+                            child: Text(person.name, textAlign: TextAlign.center),
+                          )
+                        ]),
+                      );
+                    }
+                ),
+              ),
+            ),
+
+            Container(margin: EdgeInsets.only(bottom: 20))
+          ],
+
+        ], crossAxisAlignment: CrossAxisAlignment.start),
+      ),
+
+      // TV Shows
+      if(results.shows.length > 0) ...[
+        SubtitleText(S.of(context).tv_shows, padding: EdgeInsets.only(
+            top: 10,
+            left: 20,
+            right: 10
+        )),
+        ResponsiveContentGrid(content: results.shows),
+
+        Container(margin: EdgeInsets.only(bottom: 10))
+      ],
+
+      // Movies
+      if(results.movies.length > 0) ...[
+        SubtitleText(S.of(context).movies, padding: EdgeInsets.only(
+            top: 10,
+            left: 20,
+            right: 10
+        )),
+        ResponsiveContentGrid(
+            content: results.movies,
+            spacing: 10.0,
+            margin: 10.0
+        )
+      ]
+
+
+    ]);
   }
 
 }

@@ -48,7 +48,7 @@ before_script:
   # List sdkmanager packages
   - sdkmanager --list
   # Clone Flutter
-  - git clone https://github.com/flutter/flutter.git -b beta --depth 1
+  - git clone https://github.com/flutter/flutter.git -b stable --depth 1
   - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
   - mkdir -p `pwd`/lib/vendor/dist/
   # Inject build configuration

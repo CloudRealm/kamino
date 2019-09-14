@@ -6,20 +6,15 @@ import 'package:kamino/models/content/content.dart';
 import 'package:flutter/material.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/ui/elements.dart';
+import 'package:kamino/ui/interface.dart';
 import 'package:kamino/util/database_helper.dart';
 
 class ContentCard extends StatefulWidget {
 
-  final int id;
-  final String backdrop;
-  final String name;
+  final ContentModel content;
   final double elevation;
-  final List<String> genre;
-  final String mediaType;
-  final String year;
-  final int ratings;
-  final String overview;
   final bool isFavorite;
+
   final GestureTapCallback onTap;
   final GestureLongPressCallback onLongPress;
 
@@ -29,18 +24,12 @@ class ContentCard extends StatefulWidget {
   );
 
   ContentCard({
-    @required this.id,
-    @required this.backdrop,
-    @required this.name,
-    @required this.genre,
-    @required this.year,
-    @required this.mediaType,
-    @required this.ratings,
-    @required this.overview,
+    @required this.content,
     @required this.elevation,
     @required this.isFavorite,
+
     @required this.onTap,
-    @required this.onLongPress
+    this.onLongPress
   });
 
 }
@@ -80,13 +69,13 @@ class ContentCardState extends State<ContentCard> {
                       child: Stack(
                         fit: StackFit.passthrough,
                         children: <Widget>[
-                          widget.backdrop != null ? Container(
+                          widget.content.backdropPath != null ? Container(
                             color: Colors.black,
                             height: 150,
                             child: Opacity(
                               opacity: 0.6,
                               child: CachedNetworkImage(
-                                imageUrl: TMDB.IMAGE_CDN + widget.backdrop,
+                                imageUrl: TMDB.IMAGE_CDN + widget.content.backdropPath,
                                 fit: BoxFit.cover,
                                 alignment: Alignment.topCenter,
                               ),
@@ -111,7 +100,7 @@ class ContentCardState extends State<ContentCard> {
                             child: Row(
                               children: <Widget>[
                                 Icon(
-                                    widget.mediaType == 'tv'
+                                    widget.content.contentType == ContentType.TV_SHOW
                                         ? Icons.live_tv
                                         : Icons.local_movies
                                 )
@@ -139,7 +128,7 @@ class ContentCardState extends State<ContentCard> {
                           children: <Widget>[
                             Padding(
                               child: TitleText(
-                                widget.name,
+                                widget.content.title,
                                 fontSize: 24,
                                 allowOverflow: true,
                                 textAlign: TextAlign.start,
@@ -148,7 +137,7 @@ class ContentCardState extends State<ContentCard> {
                               padding: EdgeInsets.only(bottom: 5),
                             ),
                             ConcealableText(
-                              widget.overview,
+                              widget.content.overview,
                               revealLabel: S.of(context).show_more,
                               concealLabel: S.of(context).show_less,
                               maxLines: 2,
@@ -174,7 +163,7 @@ class ContentCardState extends State<ContentCard> {
                             shape: CircleBorder(),
                             child: IconButton(
                               padding: EdgeInsets.all(3),
-                              onPressed: () => _toggleFavorite(context),
+                              onPressed: () async => await _toggleFavorite(context),
                               highlightColor: Colors.transparent,
                               icon: isFavorite ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
                               color: isFavorite ? Colors.red : Colors.white,
@@ -194,22 +183,24 @@ class ContentCardState extends State<ContentCard> {
 
   _toggleFavorite(BuildContext context) async {
     if (widget.isFavorite) {
-      DatabaseHelper.removeFavoriteById(widget.id);
+      Interface.showSnackbar(S.of(context).removed_from_favorites, context: context, backgroundColor: Colors.red);
+      DatabaseHelper.removeFavoriteById(widget.content.id);
 
       if(await Service.get<Trakt>().isAuthenticated()) Service.get<Trakt>().removeFavoriteFromTrakt(
         context,
-        type: widget.mediaType == 'tv' ? ContentType.TV_SHOW : ContentType.MOVIE,
-        id: widget.id
+        type: widget.content.contentType,
+        id: widget.content.id
       );
     } else {
-      DatabaseHelper.saveFavoriteById(context, widget.mediaType == 'tv' ? ContentType.TV_SHOW : ContentType.MOVIE, widget.id);
+      Interface.showSnackbar(S.of(context).added_to_favorites, context: context);
+      DatabaseHelper.saveFavoriteById(context, widget.content.contentType, widget.content.id);
 
       if(await Service.get<Trakt>().isAuthenticated()) Service.get<Trakt>().sendFavoriteToTrakt(
           context,
-          id: widget.id,
-          type: widget.mediaType == 'tv' ? ContentType.TV_SHOW : ContentType.MOVIE,
-          title: widget.name,
-          year: widget.year != null ? widget.year.substring(0,4) : null,
+          id: widget.content.id,
+          type: widget.content.contentType,
+          title: widget.content.title,
+          year: widget.content.releaseDate != null ? DateTime.parse(widget.content.releaseDate).year.toString() : null,
       );
     }
 

@@ -7,6 +7,8 @@ import 'package:intl/intl.dart';
 import 'package:kamino/external/ExternalService.dart';
 import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/models/content/content.dart';
+import 'package:kamino/models/content/movie.dart';
+import 'package:kamino/models/content/tv_show.dart';
 import 'package:kamino/models/list.dart';
 import 'package:objectdb/objectdb.dart';
 import 'dart:async';
@@ -474,6 +476,24 @@ class FavoriteDocument {
     savedOn = DateTime.now().toUtc(),
     authority = authority;
 
+  ContentModel toContentModel(){
+    if(contentType == ContentType.TV_SHOW) return new TVShowContentModel(
+      id: tmdbId,
+      title: name,
+      posterPath: imageUrl,
+      releaseDate: "$year-01-01"
+    );
+
+    if(contentType == ContentType.MOVIE) return new MovieContentModel(
+        id: tmdbId,
+        title: name,
+        posterPath: imageUrl,
+        releaseDate: "$year-01-01"
+    );
+
+    return null;
+  }
+
   Map toMap(){
     return {
       "docType": "favorites",
@@ -522,6 +542,30 @@ class EditorsChoice {
       "comment": comment,
       "poster": poster
     };
+  }
+
+  ContentModel toContentModel(){
+    switch(type){
+      case ContentType.TV_SHOW:
+        return TVShowContentModel(
+          id: id,
+          title: title,
+          posterPath: poster
+        );
+      case ContentType.MOVIE:
+        return MovieContentModel(
+          id: id,
+          title: title,
+          posterPath: poster
+        );
+
+      default:
+        return null;
+    }
+  }
+
+  Future<ContentModel> loadFullContent(BuildContext context) async {
+    return await Service.get<TMDB>().getContentInfo(context, type, id);
   }
 
 }

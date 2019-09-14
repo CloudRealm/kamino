@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kamino/external/ExternalService.dart';
+import 'package:kamino/models/person.dart';
 
 abstract class ContentDatabaseService extends Service {
 
@@ -13,32 +14,36 @@ abstract class ContentDatabaseService extends Service {
   );
 
   Future<SearchResults> search(BuildContext context, String query, { bool isAutoComplete });
+  Future<PersonModel> getPerson(BuildContext context, int id);
 
 }
 
 class SearchResults {
 
+  final String query;
   final List people;
   final List movies;
   final List shows;
 
   SearchResults({
+    @required this.query,
     @required this.people,
     @required this.movies,
     @required this.shows
   });
 
-  SearchResults.none()
-      : people = [],
+  SearchResults.none({ String query })
+      : query = query,
+        people = [],
         movies = [],
         shows = [];
 
   @override
   bool operator ==(other) {
-    return people == other.people && movies == other.movies && shows == other.shows;
+    return query == other.query;
   }
 
   @override
-  int get hashCode => (people.hashCode * 10000) + (movies.hashCode * 100) + shows.hashCode;
+  int get hashCode => query.hashCode;
 
 }

@@ -23,7 +23,7 @@ class ApolloTransitionRoute extends PageRouteBuilder {
         Animation<double> secondaryAnimation
       ) => builder(context),
       settings: settings,
-      transitionDuration: Duration(milliseconds: 250),
+      transitionDuration: Duration(milliseconds: 200),
   );
 
   @override
@@ -33,29 +33,27 @@ class ApolloTransitionRoute extends PageRouteBuilder {
     Animation<double> secondaryAnimation,
     Widget child
   ){
-
-    return new FadeTransition(
-        opacity: CurvedAnimation(
+    return new ScaleTransition(
+        scale: new Tween<double>(
+            begin: 0.90,
+            end: 1
+        ).animate(CurvedAnimation(
             parent: animation,
-            curve: Interval(0.3, 0.7, curve: animationCurve)
-        ),
-        child: ScaleTransition(
-            scale: new Tween<double>(
-                begin: 0.93,
-                end: 1
-            ).animate(CurvedAnimation(
-                parent: animation,
-                curve: animationCurve
-            )),
-            child: buildSecondaryTransitions(
-                context,
-                animation,
-                secondaryAnimation,
-                child
-            )
+            curve: animationCurve
+        )),
+        child: FadeTransition(
+          opacity: CurvedAnimation(
+              parent: animation,
+              curve: Interval(0.2, 0.9, curve: animationCurve)
+          ),
+          child: buildSecondaryTransitions(
+              context,
+              animation,
+              secondaryAnimation,
+              child
+          )
         )
     );
-
   }
 
   Widget buildSecondaryTransitions(
@@ -67,7 +65,7 @@ class ApolloTransitionRoute extends PageRouteBuilder {
     return ScaleTransition(
       scale: new Tween<double>(
           begin: 1,
-          end: 1.05
+          end: 1.04
       ).animate(CurvedAnimation(
           parent: secondaryAnimation,
           curve: animationCurve

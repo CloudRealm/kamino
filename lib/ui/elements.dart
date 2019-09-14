@@ -1,10 +1,15 @@
 import 'package:dart_chromecast/casting/cast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:intl/intl.dart';
 import 'package:kamino/cast/cast_devices_dialog.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/main.dart';
+import 'package:kamino/models/content/content.dart';
+import 'package:kamino/partials/content_card.dart';
+import 'package:kamino/partials/content_poster.dart';
 import 'package:kamino/ui/loading.dart';
+import 'package:kamino/util/settings.dart';
 
 import 'interface.dart';
 
@@ -111,36 +116,38 @@ class ConcealableTextState extends State<ConcealableText> {
           textPainter.layout(maxWidth: size.maxWidth);
           var exceeded = textPainter.didExceedMaxLines;
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text.rich(
-                textSpan,
-                overflow: widget.overflowType,
-                maxLines: (isConcealed ? widget.maxLines : null)
-              ),
+          return GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            excludeFromSemantics: true,
+            onTap: exceeded ? (){
+              setState((){
+                isConcealed = !isConcealed;
+              });
+            } : null,
+            onLongPress: (){},
+            child: Container(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text.rich(
+                        textSpan,
+                        overflow: widget.overflowType,
+                        maxLines: (isConcealed ? widget.maxLines : null)
+                    ),
 
-              (exceeded ?
-                GestureDetector(
-                  onTap: (){
-                    setState((){
-                      isConcealed = !isConcealed;
-                    });
-                  },
-                  child: Padding(
-                    padding: isConcealed ? EdgeInsets.only(top: 5.0) : EdgeInsets.only(top: 10.0),
-                    child: Text(
-                      isConcealed ? widget.revealLabel : widget.concealLabel,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: widget.revealLabelColor
-                      )
+                    if(exceeded) Padding(
+                        padding: isConcealed ? EdgeInsets.only(top: 5.0) : EdgeInsets.only(top: 10.0),
+                        child: Text(
+                            isConcealed ? widget.revealLabel : widget.concealLabel,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: widget.revealLabelColor
+                            )
+                        )
                     )
-                  ),
-                )
-                : Container()
-              )
-            ]
+                  ]
+              ),
+            ),
           );
         })
       ],
@@ -519,21 +526,25 @@ class SearchFieldWidget extends StatefulWidget {
   final Widget leading;
   final bool disableClearButton;
   final Function(BuildContext, String) child;
+  final Color color;
 
   final Function(String) onUpdate;
   final Function(String) onSubmit;
 
   final TextEditingController controller;
+  final bool autofocus;
 
   SearchFieldWidget({
     this.leading,
     this.disableClearButton = false,
     this.child,
+    this.color,
 
     this.onUpdate,
     this.onSubmit,
 
-    this.controller
+    this.controller,
+    this.autofocus = true,
   });
 
   @override
@@ -567,17 +578,6 @@ class SearchFieldWidgetState extends State<SearchFieldWidget> with SingleTickerP
       inputController.addListener(disableClearButtonListener);
     }
 
-    if(widget.onUpdate != null){
-      var onUpdateListener = (){
-        widget.onUpdate(inputController.text);
-      };
-
-      registeredListeners.add(onUpdateListener);
-      inputController.addListener(onUpdateListener);
-    };
-
-    print("#onSubmit not implemented!!!");
-
     super.initState();
   }
 
@@ -601,7 +601,7 @@ class SearchFieldWidgetState extends State<SearchFieldWidget> with SingleTickerP
         child: Material(
           elevation: 4,
           clipBehavior: Clip.antiAlias,
-          color: Theme.of(context).cardColor,
+          color: widget.color != null ? widget.color : Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(10),
           child: AnimatedSize(
             vsync: this,
@@ -613,6 +613,9 @@ class SearchFieldWidgetState extends State<SearchFieldWidget> with SingleTickerP
                   Container(
                     margin: EdgeInsets.only(bottom: child != null ? 10 : 0),
                     child: TextField(
+                      autofocus: widget.autofocus,
+                      onChanged: widget.onUpdate,
+                      onSubmitted: widget.onSubmit,
                       focusNode: inputFocusNode,
                       controller: inputController,
                       decoration: InputDecoration(
@@ -674,6 +677,142 @@ class SearchFieldWidgetState extends State<SearchFieldWidget> with SingleTickerP
             ]),
           ),
         )
+    );
+  }
+
+}
+
+class ResponsiveContentGrid extends StatelessWidget {
+
+  final List<ContentModel> content;
+  final double idealItemWidth;
+  final double spacing;
+  final double margin;
+
+  ResponsiveContentGrid({
+    @required this.content,
+
+    this.idealItemWidth = 150,
+    this.spacing = 10.0,
+    this.margin = 10.0
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(future: new Future(() async {
+      return await Settings.detailedContentInfoEnabled;
+    }), builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
+      if(!snapshot.hasData) return Container(
+        margin: EdgeInsets.symmetric(vertical: 20),
+        child: Center(
+          child: ApolloLoadingSpinner(),
+        ),
+      );
+
+      bool cardView = snapshot.data;
+
+      return Container(
+        margin: EdgeInsets.symmetric(horizontal: margin),
+        child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints){
+
+          int postersPerRow = cardView ? 1 : (constraints.maxWidth / idealItemWidth).ceil();
+          int totalRows = (content.length / postersPerRow).ceil();
+
+          double posterWidth = idealItemWidth - (spacing * 2) - (margin * 2);
+          double posterHeight = (3 / 2) * posterWidth;
+
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: List.generate(
+              totalRows,
+              (int row) => Container(
+                margin: EdgeInsets.symmetric(vertical: spacing),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: List.generate(
+                        postersPerRow,
+                        (int col) => Builder(builder: (BuildContext context){
+
+                          bool isFirst = col == 0;
+                          bool isLast = (col + 1) == postersPerRow;
+
+                          int index = (row * postersPerRow) + col;
+                          ContentModel item = index < content.length
+                              ? content[index]
+                              : null;
+
+                          if(item == null) return Container(
+                            width: posterWidth,
+                            margin: EdgeInsets.only(
+                                left: isFirst ? 0 : spacing,
+                                right: isLast ? 0 : spacing
+                            )
+                          );
+
+                          if(cardView) return Expanded(
+                              child: ContentCard(
+                                  content: item,
+                                  onTap: () => Interface.openOverview(context, item.id, item.contentType),
+                                  elevation: 4,
+                                  isFavorite: false
+                              )
+                          );
+
+                          return Container(
+                              margin: EdgeInsets.only(
+                                  left: isFirst ? 0 : spacing,
+                                  right: isLast ? 0 : spacing
+                              ),
+                              child: ContentPoster(
+                                height: posterHeight,
+                                content: item,
+                                onTap: () => Interface.openOverview(context, item.id, item.contentType),
+                              ),
+                          );
+                        })
+                    )
+                ),
+              )
+            )
+          );
+        }),
+      );
+    });
+  }
+
+}
+
+class ScrollableRow extends StatelessWidget {
+
+  final List<Widget> children;
+
+  ScrollableRow({
+    @required this.children
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        NotificationListener<OverscrollIndicatorNotification>(
+          onNotification: (OverscrollIndicatorNotification notification){
+            notification.disallowGlow();
+            return true;
+          },
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: children,
+            )
+          ),
+        )
+      ]
     );
   }
 

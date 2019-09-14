@@ -1,41 +1,34 @@
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:kamino/external/api/tmdb.dart';
-import 'package:kamino/res/bottom_gradient.dart';
-import 'package:kamino/ui/elements.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-
-import 'package:kamino/ui/loading.dart';
+import 'package:flutter/material.dart';
+import 'package:kamino/external/api/tmdb.dart';
+import 'package:kamino/models/content/content.dart';
+import 'package:kamino/res/bottom_gradient.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ContentPoster extends StatefulWidget {
 
-  final String background;
-  final String name;
-  final String releaseYear;
-  final String releaseDate;
-  final String mediaType;
-  final double height, width;
-  final BoxFit imageFit;
-  final bool hideIcon;
-  final bool showGradient;
+  final ContentModel content;
+  final double height;
+
+  final EdgeInsetsGeometry padding;
   final double elevation;
   final GestureTapCallback onTap;
   final GestureLongPressCallback onLongPress;
 
+  final bool showLabel;
+  final bool showGradient;
+
   ContentPoster({
-    @required this.background,
-    this.name,
-    this.releaseYear,
-    this.releaseDate,
-    this.mediaType,
-    this.width = 500,
-    this.height = 750,
-    this.imageFit = BoxFit.cover,
-    this.hideIcon = false,
-    this.showGradient = true,
+    @required this.content,
+    @required this.height,
+
+    this.padding = EdgeInsets.zero,
     this.elevation = 0,
     this.onTap,
-    this.onLongPress
+    this.onLongPress,
+
+    this.showLabel = true,
+    this.showGradient = true
   });
 
   @override
@@ -47,103 +40,37 @@ class ContentPosterState extends State<ContentPoster> {
 
   @override
   Widget build(BuildContext context) {
-    var releaseYear = "";
-    if(widget.releaseYear != null) releaseYear = widget.releaseYear;
-    if(widget.releaseDate != null){
-      try {
-        releaseYear = new DateFormat.y("en_US").format(
-            DateTime.parse(widget.releaseDate)
-        );
-      }catch(ex){
-        releaseYear = "Unknown";
-      }
-    }
 
-    Widget imageWidget = Container();
-    if(widget.background != null) {
-      imageWidget = new CachedNetworkImage(
-        errorWidget: (BuildContext context, String url, error) => new Icon(Icons.error),
-        imageUrl: "${TMDB.IMAGE_CDN_POSTER}/${widget.background}",
-        fit: widget.imageFit,
-        placeholder: (BuildContext context, String url) => Center(
-            child: ApolloLoadingSpinner(),
-        ),
-        height: widget.height,
-        width: widget.width,
-      );
-    }else{
-      imageWidget = Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          Container(
-            color: Colors.black,
-            height: widget.height,
-            width: widget.width,
+    return buildBase(Material(
+        elevation: widget.elevation,
+        clipBehavior: Clip.antiAlias,
+        borderRadius: BorderRadius.circular(5),
+        child: Stack(fit: StackFit.expand, children: <Widget>[
+
+          // Poster
+          CachedNetworkImage(
+            errorWidget: (BuildContext context, String url, error) => new Icon(Icons.error),
+            imageUrl: "${TMDB.IMAGE_CDN_POSTER}/${widget.content.posterPath}",
+            fit: BoxFit.cover,
+            placeholder: (BuildContext context, String url) => Center(
+              child: Shimmer.fromColors(
+                baseColor: const Color(0x8F000000),
+                highlightColor: const Color(0x4F000000),
+                child: Container(color: const Color(0x8F000000)),
+              ),
+            ),
           ),
 
-          Center(child: TitleText("No Image", textColor: const Color(0xBFFFFFFF)))
-        ],
-      );
-    }
-
-    return Material(
-      elevation: widget.elevation,
-      clipBehavior: Clip.antiAlias,
-      borderRadius: BorderRadius.circular(5),
-      child: Stack(
-        fit: StackFit.expand,
-
-        children: <Widget>[
-          imageWidget,
-          widget.showGradient ? Positioned.fill(
+          // Gradient
+          /*if(widget.showGradient) Positioned.fill(
             top: -1,
             left: -1,
             right: -1,
             bottom: -1,
             child: BottomGradient(finalStop: 0.025),
-          ) : Container(),
-          Align(
-              alignment: Alignment.bottomCenter,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  new Padding(
-                      padding: EdgeInsets.only(bottom: 2, left: 10, right: 10),
-                      child: widget.name != null ? TitleText(
-                        widget.name,
-                        fontSize: 16,
-                      ) : Container()
-                  ),
+          ),*/
 
-                  Padding(
-                      padding: EdgeInsets.only(
-                          top: 0,
-                          bottom: 10,
-                          left: 10,
-                          right: 10
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          releaseYear != null ? Text(
-                              releaseYear,
-                              style: TextStyle(
-                                fontSize: 12,
-                              )
-                          ) : Container(),
-
-                          widget.hideIcon == false && widget.mediaType != null ? Icon(
-                            widget.mediaType == 'tv' ? Icons.tv : Icons.local_movies,
-                            size: 16,
-                          ) : Container()
-                        ],
-                      )
-                  )
-                ],
-              )
-          ),
-
+          // Tap Handler
           Material(
             color: Colors.transparent,
             child: InkWell(
@@ -152,11 +79,69 @@ class ContentPosterState extends State<ContentPoster> {
               child: Container()
             ),
           )
-        ],
+
+        ])
       ),
+      widget.showLabel
+          ? Container(
+            child: Text(
+              widget.content.title ?? "Unknown",
+              textAlign: TextAlign.start,
+              maxLines: 2,
+              softWrap: true,
+            ),
+            margin: EdgeInsets.only(top: 5),
+          ) : Container()
     );
+
   }
 
+  Widget buildBase(Widget child, Widget footer){
 
+    return Padding(
+      padding: widget.padding,
+      child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints){
+        if(!widget.showLabel) return child;
+        const double aspectRatio = 2 / 3;
+
+        return Container(
+          child: Column(
+            children: <Widget>[
+              Container(
+                height: widget.height,
+                child: AspectRatio(
+                  aspectRatio: aspectRatio,
+                  child: child,
+                ),
+              ),
+
+              Container(
+                width: aspectRatio
+                    * widget.height,
+                child: footer,
+              )
+            ]
+          )
+          /*child: Stack(children: <Widget>[
+            Positioned(
+              top: 0,
+              height: height,
+              child:
+            ),
+
+            Positioned(
+              child: Container(
+                width: width,
+                child: footer
+              ),
+              top: height,
+              bottom: 0,
+            )
+          ]),*/
+        );
+      })
+    );
+
+  }
 
 }

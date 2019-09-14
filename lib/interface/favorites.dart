@@ -172,12 +172,17 @@ class FavoritesPageState extends State<FavoritesPage>
   }
 
   Widget _buildSection(ContentType type) {
-    var sectionList = favorites[getRawContentType(type)];
+    List<FavoriteDocument> sectionList = favorites[getRawContentType(type)];
+    List<ContentModel> content = sectionList.map((FavoriteDocument document) => document.toContentModel()).toList();
 
-    double idealWidth = 150;
-    double spacing = 10.0;
+    return ResponsiveContentGrid(
+      idealItemWidth: 150,
+      spacing: 10.0,
+      margin: 10.0,
+      content: content,
+    );
 
-    return Container(
+    /*return Container(
       child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints){
         return GridView.builder(
           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
@@ -192,18 +197,15 @@ class FavoritesPageState extends State<FavoritesPage>
           itemCount: sectionList.length,
           itemBuilder: (BuildContext context, int index) {
             var favorite = sectionList[index];
-            return ContentPoster(
-              background: favorite.imageUrl,
-              name: favorite.name,
-              releaseYear: favorite.year,
-              mediaType: getRawContentType(type),
+            return Container()/*ContentPoster(
+              content: favorite,
               onTap: () => Interface.openOverview(context, favorite.tmdbId, type),
               elevation: 4,
               hideIcon: true,
-            );
+            )*/;
           });
       }),
-    );
+    );*/
   }
 
   Widget noFavoritesWidget() {
