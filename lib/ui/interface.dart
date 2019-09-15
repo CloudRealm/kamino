@@ -123,8 +123,8 @@ class Interface {
     try {
       var snackbar = SnackBar(
         duration: Duration(milliseconds: 1500),
-        content: TitleText(text),
-        backgroundColor: backgroundColor,
+        content: TitleText(text, textColor: Colors.white),
+        backgroundColor: backgroundColor
       );
 
       if(context != null) { Scaffold.of(context).showSnackBar(snackbar); return; }

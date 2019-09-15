@@ -10,6 +10,7 @@ import 'package:kamino/external/ExternalService.dart';
 import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/external/api/trakt.dart';
 import 'package:kamino/generated/i18n.dart';
+import 'package:kamino/interface/search/discover.dart';
 import 'package:kamino/main.dart';
 import 'package:kamino/models/content/content.dart';
 import 'package:kamino/models/crew.dart';
@@ -19,7 +20,6 @@ import 'package:kamino/partials/content_poster.dart';
 import 'package:kamino/res/bottom_gradient.dart';
 import 'package:kamino/ui/elements.dart';
 import 'package:kamino/ui/interface.dart';
-import 'package:kamino/interface/search/genre_search.dart';
 import 'package:kamino/interface/content/movie_layout.dart';
 import 'package:kamino/interface/content/tv_show_layout.dart';
 import 'package:kamino/ui/loading.dart';
@@ -358,7 +358,7 @@ class _ContentOverviewState extends State<ContentOverview> {
                   starCount: 5,
                 ),
                 Text(
-                  "  \u2022  ${S.of(context).n_ratings(content.voteCount.toString())}",
+                  " (${((content.rating * 10).round())}%) \u2022  ${S.of(context).n_ratings(content.voteCount.toString())}",
                   style: TextStyle(
                       color: Colors.grey,
                       fontWeight: FontWeight.bold
@@ -415,10 +415,11 @@ class _ContentOverviewState extends State<ContentOverview> {
           context,
           ApolloTransitionRoute(
               builder: (context) =>
-                  GenreSearch(
-                      contentType: "tv",
-                      genreID: id,
-                      genreName: genreName )
+                DiscoverPage(
+                  type: ContentType.TV_SHOW,
+                  genreId: id,
+                  title: genreName
+                )
           )
       );
     } else if (mediaType == "movie"){
@@ -426,10 +427,11 @@ class _ContentOverviewState extends State<ContentOverview> {
           context,
           ApolloTransitionRoute(
               builder: (context) =>
-                  GenreSearch(
-                      contentType: "movie",
-                      genreID: id,
-                      genreName: genreName )
+                DiscoverPage(
+                  type: ContentType.MOVIE,
+                  genreId: id,
+                  title: genreName
+                )
           )
       );
     }
@@ -738,36 +740,24 @@ class _ContentOverviewState extends State<ContentOverview> {
                         )
                     ),
 
-                  SizedBox(
-                    height: 200,
-                    child: ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: model.recommendations.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 5)
-                                  .copyWith(left: index == 0 ? 25 : 5, top: 0),
-                              child: AspectRatio(
-                                aspectRatio: 2 / 3,
-                                child: ContentPoster(
-                                    onTap: () => Navigator.push(
-                                        context,
-                                        ApolloTransitionRoute(
-                                          builder: (context) => ContentOverview(
-                                              contentId: model.recommendations[index].id,
-                                              contentType: model.contentType
-                                          ),
-                                        )
-                                    ),
-                                    mediaType: getRawContentType(model.contentType),
-                                    name: model.recommendations[index].title,
-                                    background: model.recommendations[index].posterPath,
-                                    releaseDate: model.recommendations[index].releaseDate
-                                ),
+                    Container(
+                      margin: EdgeInsets.only(left: 10),
+                      child: ScrollableRow(
+                        children: List.generate(model.recommendations.length, (int index){
+                          return ContentPoster(
+                              height: 150,
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              content: model.recommendations[index],
+                              onTap: () => Navigator.of(context).push(
+                                ApolloTransitionRoute(
+                                  builder: (context) => ContentOverview(
+                                      contentId: model.recommendations[index].id,
+                                      contentType: model.contentType
+                                  ),
+                                )
                               )
                           );
-                        }
+                        }),
                       )
                     )
                   ],

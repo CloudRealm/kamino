@@ -12,7 +12,7 @@ import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/external/api/trakt.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/interface/content/overview.dart';
-import 'package:kamino/interface/search/curated_search.dart';
+import 'package:kamino/interface/search/list.dart';
 import 'package:kamino/main.dart';
 import 'package:kamino/models/content/content.dart';
 import 'package:kamino/models/list.dart';
@@ -57,7 +57,7 @@ class Launchpad2State extends State<Launchpad2> {
         if (mounted) DatabaseHelper.selectRandomEditorsChoice().then(
                 (EditorsChoice editorsChoice){
               if(mounted) setState(() =>
-              _editorsChoice = editorsChoice
+                _editorsChoice = editorsChoice
               );
             }
         );
@@ -321,10 +321,11 @@ class Launchpad2State extends State<Launchpad2> {
                             bottom: 0,
                             width: 107,
                             child: ContentPoster(
-                              elevation: 4,
+                              content: _editorsChoice.toContentModel(),
                               onTap: () => Interface.openOverview(context, _editorsChoice.id, _editorsChoice.type),
-                              background: _editorsChoice.poster,
+                              elevation: 4,
                               showGradient: false,
+                              showLabel: false,
                             ),
                           )
                         ],
@@ -359,10 +360,8 @@ class Launchpad2State extends State<Launchpad2> {
                                     padding: EdgeInsets.symmetric(vertical: 0, horizontal: 15),
                                     child: Text(S.of(context).see_all, style: TextStyle(color: Theme.of(context).primaryTextTheme.body1.color)),
                                     onPressed: () => Navigator.of(context).push(
-                                        ApolloTransitionRoute(builder: (BuildContext context) => CuratedSearch(
-                                          listName: watchlist.name,
-                                          listID: watchlist.id,
-                                          contentType: getRawContentType(watchlist.content[0].contentType)
+                                        ApolloTransitionRoute(builder: (BuildContext context) => ContentListPage(
+                                          list: watchlist
                                         ))
                                     )
                                 )
@@ -373,42 +372,28 @@ class Launchpad2State extends State<Launchpad2> {
                             Padding(
                               padding: EdgeInsets.only(top: 5, bottom: 5),
                               child: Container(
-                                  height: 150,
-                                  child: ListView.builder(
-                                      shrinkWrap: false,
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount: watchlist.content.length,
-                                      itemBuilder: (BuildContext context, int index) {
-                                        ContentModel content = watchlist.content[index];
+                                child: ScrollableRow(
+                                  children: List.generate(watchlist.content.length, (int index){
+                                    ContentModel content = watchlist.content[index];
 
-                                        return Container(
-                                          margin: EdgeInsets.symmetric(horizontal: 5),
-                                          child: InkWell(
-                                            onTap: (){
-                                              Navigator.push(
-                                                  context,
-                                                  ApolloTransitionRoute(
-                                                      builder: (context) => ContentOverview(
-                                                          contentId: content.id,
-                                                          contentType: content.contentType
-                                                      )
-                                                  )
-                                              );
-                                            },
-                                            onLongPress: (){},
-                                            child: Container(
-                                              width: 100.5,
-                                              child: new ContentPoster(
-                                                  name: content.title,
-                                                  background: content.posterPath,
-                                                  mediaType: getRawContentType(content.contentType),
-                                                  releaseDate: content.releaseDate
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                  )
+                                    return Container(
+                                      margin: EdgeInsets.symmetric(horizontal: 5),
+                                      child: ContentPoster(
+                                          height: 150,
+                                          content: content,
+                                          onTap: (){
+                                            Navigator.push(context,
+                                                ApolloTransitionRoute(
+                                                    builder: (context) => ContentOverview(
+                                                        contentId: content.id,
+                                                        contentType: content.contentType
+                                                    )
+                                                )
+                                            );
+                                          }),
+                                    );
+                                  }),
+                                )
                               ),
                             )
                           ],

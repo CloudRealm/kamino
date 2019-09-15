@@ -13,6 +13,9 @@ class ContentListModel {
   String creatorName;
   bool public;
   List<ContentModel> content;
+  int revenue;
+  double averageRating;
+  int runtime;
 
   bool fullyLoaded;
   int totalPages;
@@ -27,7 +30,10 @@ class ContentListModel {
     this.public,
     this.content,
     @required this.fullyLoaded,
-    @required this.totalPages
+    @required this.totalPages,
+    this.revenue,
+    this.averageRating,
+    this.runtime
   });
 
   static ContentListModel fromJSON(Map json){
@@ -46,7 +52,11 @@ class ContentListModel {
             )
           : ((json["stored"] as List).map((entry) => ContentModel.fromStoredMap(entry))).toList(),
       totalPages: json["total_pages"],
-      fullyLoaded: json["fully_loaded"] != null ? json["fully_loaded"] : false
+      fullyLoaded: json["fully_loaded"] != null ? json["fully_loaded"] : false,
+
+      revenue: json["revenue"] != null ? json["revenue"] : null,
+      averageRating: json["average_rating"] != null ? json["average_rating"] : null,
+      runtime: json["runtime"] != null ? json["runtime"] : null,
     );
   }
 
@@ -63,7 +73,10 @@ class ContentListModel {
       "public": public,
       "stored": content != null ? content.map((ContentModel model) => model.toStoredMap()).toList() : [],
       "total_pages": totalPages,
-      "fullyLoaded": fullyLoaded
+      "fullyLoaded": fullyLoaded,
+      "revenue": revenue,
+      "average_rating": averageRating,
+      "runtime": runtime
     };
   }
 

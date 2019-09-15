@@ -2,16 +2,15 @@ import 'dart:convert' as Convert;
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:kamino/external/ExternalService.dart';
 import 'package:kamino/external/struct/content_database.dart';
 import 'package:kamino/main.dart';
 import 'package:kamino/models/content/content.dart';
-import 'package:kamino/models/crew.dart';
 import 'package:kamino/models/list.dart';
 import 'package:kamino/models/content/movie.dart';
 import 'package:kamino/models/content/tv_show.dart';
 import 'package:kamino/models/person.dart';
 import 'package:kamino/util/database_helper.dart';
+import 'package:kamino/util/settings.dart';
 
 class TMDB extends ContentDatabaseService {
 
@@ -166,6 +165,7 @@ class TMDB extends ContentDatabaseService {
       return listModel;
     }catch(ex){
       print("Error whilst fetching list #$id");
+      print(ex);
       throw ex;
     }
   }
@@ -219,7 +219,9 @@ class TMDB extends ContentDatabaseService {
     return result;
   }
 
-  Future<SearchResults> search(BuildContext context, String query, { bool isAutoComplete }) async {
+  Future<SearchResults> search(BuildContext context, String query, { bool isAutoComplete = false, bool forceShowAll = false }) async {
+    bool hideUnreleasedPartialContent = (await Settings.hideUnreleasedPartialContent) && !forceShowAll;
+
     final String url = "${TMDB.ROOT_URL}/search/multi"
         "${getDefaultArguments(context)}"
         "&query=$query"
@@ -238,18 +240,48 @@ class TMDB extends ContentDatabaseService {
     });
 
     results?.where((result) => result['media_type'] == getRawContentType(ContentType.TV_SHOW))?.forEach((show){
-      shows.add(TVShowContentModel.fromJSON(show));
+      TVShowContentModel showModel = TVShowContentModel.fromJSON(show);
+      if(!isPartialUnreleasedContent(showModel) || !hideUnreleasedPartialContent) shows.add(showModel);
     });
 
     results?.where((result) => result['media_type'] == getRawContentType(ContentType.MOVIE))?.forEach((movie){
-      movies.add(MovieContentModel.fromJSON(movie));
+      MovieContentModel movieModel = MovieContentModel.fromJSON(movie);
+      if(!isPartialUnreleasedContent(movieModel) || !hideUnreleasedPartialContent) movies.add(movieModel);
     });
     
     return SearchResults(
+      query: query,
       people: people,
       movies: movies,
       shows: shows
     );
+  }
+
+  Future<PersonModel> getPerson(BuildContext context, int id) async {
+    final String url = "${TMDB.ROOT_URL}/person/$id${getDefaultArguments(context)}"
+        "&include_adult=false";
+
+    Map json = Convert.jsonDecode((await http.get(url)).body);
+    return PersonModel.fromJSON(json);
+  }
+
+}
+
+bool isPartialUnreleasedContent(ContentModel resultItem){
+
+  // It is partial if the year, backdrop or poster are missing.
+  if([
+    resultItem.releaseDate,
+    resultItem.backdropPath,
+    resultItem.posterPath
+  ].contains(null)) return true;
+
+  // It is unreleased if the date is beyond now.
+  try {
+    return (DateTime.parse(resultItem.releaseDate).compareTo(DateTime.now()) > 0);
+  }catch(ex){
+    // Invalid date format, so we'll consider it 'bad' content.
+    return true;
   }
 
 }
