@@ -297,10 +297,10 @@
   "waiting_for_input": "Wachten op invoer...",
 
   "security": "Veiligheid",
-  "disable_security_warnings": "Schakel Veiligheidswaarschuwingingen Uit",
+  "disable_security_warnings": "Schakel Veiligheids waarschuwingingen Uit",
   "this_disables_all_warnings_regarding_potential_security_concerns": "Dit schakelt alle veligheidswaarschuwingen uit.",
   "we_recommend_that_you_do_not_enable_this_option_unless": "Wij bevelen aan dat u deze optie niet inschakeld tenzij u weet wat u aan het doen ben.",
-  "security_warnings_have_been_disabled": "Veiligheidswaarschuwingen zijn uitgezet!",
+  "security_warnings_have_been_disabled": "Veiligheids waarschuwingen zijn uitgezet!",
   "security_risk": "VEILIGHEIDSRISICO:",
   "using_unofficial_servers_can_expose_your_ip_address": "Het gebruik van onofficiële servers kan uw IP adres blootstellen. Als dit een probleem is, gebruik dan een VPN.",
   "discord": "Discord",
