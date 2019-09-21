@@ -36,7 +36,7 @@ Future<Map> checkUpdate(BuildContext context, bool dismissSnackbar) async {
 
   // Get the build info
   try {
-    var buildData = await json.decode(await DefaultAssetBundle.of(context).loadString(".travis/state/dev.json"));
+    var buildData = await json.decode(await DefaultAssetBundle.of(context).loadString("assets/state/dev.json"));
     bool isDevBuild = buildData['isDevelopmentBuild'];
 
     if(isDevBuild != null && isDevBuild){
