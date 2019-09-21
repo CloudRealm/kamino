@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/ui/elements.dart';
 import 'package:kamino/ui/interface.dart';
@@ -11,14 +11,16 @@ import 'package:kamino/ui/loading.dart';
 import 'package:kamino/util/settings.dart';
 import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class OTAHelper {
-  static const platform = const MethodChannel('xyz.apollotv.kamino/ota');
+  static const platform = {
+    "ota": const MethodChannel('xyz.apollotv.kamino/ota'),
+    "permission": const MethodChannel('xyz.apollotv.kamino/permission')
+  };
 
   static Future<void> installOTA(String path) async {
     try {
-      await platform.invokeMethod('install', <String, dynamic>{
+      await platform['ota'].invokeMethod('install', <String, dynamic>{
         "path": path
       });
     } on PlatformException catch (e) {
@@ -28,9 +30,23 @@ class OTAHelper {
 }
 
 Future<Map> checkUpdate(BuildContext context, bool dismissSnackbar) async {
-  // Get the build info
+  // Get the package info
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
   String buildNumber = packageInfo.buildNumber;
+
+  // Get the build info
+  try {
+    var buildData = await json.decode(await DefaultAssetBundle.of(context).loadString("assets/state/dev.json"));
+    bool isDevBuild = buildData['isDevelopmentBuild'];
+
+    if(isDevBuild != null && isDevBuild){
+      int devCode = buildData['devCode'];
+      buildNumber += "." + devCode.toString();
+    }
+  // Catching an inevitable missing file in the event someone does not read
+  // the instructions in the file.
+  }catch(ex){}
+
 
   // Take the current version track in settings.
   String versionTrack = ['stable', 'beta', 'development'][(await Settings.releaseVersionTrack)];
@@ -61,18 +77,6 @@ Future<Map> checkUpdate(BuildContext context, bool dismissSnackbar) async {
 ///
 updateApp(BuildContext context, bool dismissSnackbar) async {
   if(!Platform.isAndroid) return;
-
-  bool permissionStatus = [PermissionStatus.granted, PermissionStatus.restricted].contains(await PermissionHandler().checkPermissionStatus(PermissionGroup.storage));
-  if(!permissionStatus) [PermissionStatus.granted, PermissionStatus.restricted].contains(await PermissionHandler().requestPermissions([PermissionGroup.storage]));
-  if(!permissionStatus && dismissSnackbar) return;
-
-  if(permissionStatus) {
-    final downloadDir = new Directory(
-        (await getExternalStorageDirectory()).path + "/.apollo");
-    if (!await downloadDir.exists()) await downloadDir.create();
-    final downloadFile = new File("${downloadDir.path}/update.apk");
-    if (await downloadFile.exists()) await downloadFile.delete();
-  }
 
   // TODO: Show network connection error message.
   Map data;
@@ -124,8 +128,25 @@ runInstallProcedure (context, data) async {
   try {
     Navigator.of(context).pop();
 
-    bool permissionStatus = [PermissionStatus.granted, PermissionStatus.restricted].contains(await PermissionHandler().checkPermissionStatus(PermissionGroup.storage));
-    if(!permissionStatus) [PermissionStatus.granted, PermissionStatus.restricted].contains(await PermissionHandler().requestPermissions([PermissionGroup.storage]));
+    bool permissionStatus = await OTAHelper.platform['permission'].invokeMethod('checkStorage');
+    bool shouldShowPermissionRationale = await OTAHelper.platform['permission'].invokeMethod('shouldShowRationaleStorage');
+
+    if(shouldShowPermissionRationale){
+      await Interface.showAlert(
+          context: context,
+          title: TitleText("Permission required..."),
+          content: [
+            Text("ApolloTV needs permission to continue..."),
+            Container(margin: EdgeInsets.only(bottom: 10)),
+            Text("In order to download and install the update, you must grant ApolloTV access to device storage."),
+          ],
+          actions: [
+            FlatButton(child: Text("Next"), onPressed: () => Navigator.of(context).pop())
+          ]
+      );
+    }
+
+    if(!permissionStatus) permissionStatus = await OTAHelper.platform['permission'].invokeMethod('requestStorage');
     if(!permissionStatus) throw new FileSystemException(S.of(context).permission_denied);
 
     final downloadDir = new Directory((await getExternalStorageDirectory()).path + "/.apollo");
@@ -133,11 +154,15 @@ runInstallProcedure (context, data) async {
     final downloadFile = new File("${downloadDir.path}/update.apk");
     if(await downloadFile.exists()) await downloadFile.delete();
 
-    showLoadingDialog(context, S.of(context).updating, Text(S.of(context).downloading_update_file));
     http.Client client = new http.Client();
-    var req = await client.get(data["url"]);
-    var bytes = req.bodyBytes;
-    await downloadFile.writeAsBytes(bytes);
+    http.StreamedResponse response = await client.send(
+      http.Request("GET", Uri.parse(data["url"]))
+    );
+
+    var downloadFileSink = downloadFile.openWrite();
+    showDownloadingDialog(context, S.of(context).updating, downloadFile, response.contentLength);
+    await response.stream.pipe(downloadFileSink);
+    await downloadFileSink.close();
 
     Navigator.of(context).pop();
     OTAHelper.installOTA(downloadFile.path);
@@ -171,27 +196,84 @@ runInstallProcedure (context, data) async {
   }
 }
 
-void showLoadingDialog(BuildContext context, String title, Widget content){
+class DownloadingDialog extends StatefulWidget {
+
+  final String title;
+  final File file;
+  final int length;
+
+  DownloadingDialog({
+    @required this.title,
+    @required this.file,
+    @required this.length
+  });
+
+  @override
+  State<StatefulWidget> createState() => DownloadingDialogState();
+
+}
+
+class DownloadingDialogState extends State<DownloadingDialog> {
+
+  double downloadedMB;
+  double totalMB;
+  double progress;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.doWhile(() async {
+      int downloaded = await widget.file.length();
+      if(mounted) setState(() {
+        downloadedMB = (downloaded / 100000).round() / 10;
+        totalMB = (widget.length / 100000).round() / 10;
+
+        progress = downloaded / widget.length;
+      });
+
+      return downloaded != widget.length;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    int progressPercent = ((progress ?? 0) * 100).round();
+
+    return AlertDialog(
+      title: TitleText(widget.title),
+      content: SingleChildScrollView(
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            Container(
+                padding: EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 20),
+                child: new ApolloLoadingSpinner()
+            ),
+            Expanded(child: Text(
+              "${S.of(context).downloading_update_file}\n"
+                  "$progressPercent%: $downloadedMB MB / $totalMB MB",
+              softWrap: true
+            ))
+          ],
+        ),
+      ),
+    );
+  }
+
+}
+
+void showDownloadingDialog(BuildContext context, String title, File file, int length){
   showDialog(
       barrierDismissible: false,
       context: context,
       builder: (_){
         return WillPopScope(
           onWillPop: () async => false,
-          child: AlertDialog(
-            title: TitleText(title),
-            content: SingleChildScrollView(
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  Container(
-                      padding: EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 20),
-                      child: new ApolloLoadingSpinner()
-                  ),
-                  Center(child: content)
-                ],
-              ),
-            ),
+          child: DownloadingDialog(
+            title: title,
+            file: file,
+            length: length
           )
         );
       }

@@ -116,9 +116,9 @@ class TVShowLayout{
     Navigator.push(
         context,
         ApolloTransitionRoute(builder: (context) => EpisodePicker(
-            contentId: _data.id,
-            show: _data,
-            seasonIndex: _data.seasons[index]["season_number"]
+          contentId: _data.id,
+          show: _data,
+          seasonIndex: _data.seasons[index]["season_number"]
         ))
     );
   }
