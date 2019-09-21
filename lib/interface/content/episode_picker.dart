@@ -107,9 +107,9 @@ class _EpisodePickerState extends State<EpisodePicker> {
                             TitleText(season.name, textAlign: TextAlign.start),
                             Text(S.of(context).n_episodes(
                                 episodeCount.toString()
-                            ) + " \u2022 " + new DateFormat.yMMMMd(Locale.cachedLocaleString).format(
+                            ) + " \u2022 " + (season.airDate != null ? new DateFormat.yMMMMd(Locale.cachedLocaleString).format(
                                 DateTime.parse(season.airDate)
-                            ))
+                            ) : "Ongoing"))
                           ],
                         ),
                       )),
