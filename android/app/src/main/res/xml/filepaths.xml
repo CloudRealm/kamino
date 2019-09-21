@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- The APK is currently downloaded to the /storage/emulated/0/Download/ folder. -->
     <external-path name=".apollo" path=".apollo/"/>
+    <external-path name=".apollo" path="Android/data/xyz.apollotv.kamino/files/.apollo/"/>
 </paths>

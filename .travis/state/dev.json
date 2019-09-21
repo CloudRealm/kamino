@@ -1,0 +1,11 @@
+{
+  "NOTE": [
+    "Developers, you should leave this file blank but YOU SHOULD NOT DELETE THIS FILE.",
+    "This will be overwritten by Travis to specify the 'Travis version code' for the OTA",
+    "system to identify the full version number of development builds.",
+    "Otherwise, this file will be ignored and you can move on with your day."
+  ],
+
+  "isDevelopmentBuild": false,
+  "devCode": null
+}

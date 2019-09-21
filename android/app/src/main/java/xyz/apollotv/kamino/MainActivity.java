@@ -1,5 +1,6 @@
 package xyz.apollotv.kamino;
 
+import android.Manifest;
 import android.app.UiModeManager;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -9,24 +10,21 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.drawable.AdaptiveIconDrawable;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +34,8 @@ import io.flutter.plugins.GeneratedPluginRegistrant;
 import xyz.apollotv.kamino.share.ClipboardShareActivity;
 
 public class MainActivity extends FlutterActivity {
+
+  private MethodChannel.Result permissionRequestResult;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +78,56 @@ public class MainActivity extends FlutterActivity {
         }
 
         result.notImplemented();
+    });
+
+    new MethodChannel(getFlutterView(), "xyz.apollotv.kamino/permission").setMethodCallHandler((methodCall, result) -> {
+
+        /*
+         * As we only need to check permissions for storage, I have not bothered to engineer
+         * a check method for any permission, rather I have implemented this specifically for
+         * storage.
+         *
+         * If you want to implement a check for another permission DO NOT simply add methods for
+         * the permission you want to check. Clean each of the method call handlers up to deal
+         * with a permission by name.
+         */
+
+        if(methodCall.method.equals("checkStorage")){
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                result.success(false);
+                return;
+            }
+
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                result.success(false);
+                return;
+            }
+
+            result.success(true);
+        }
+
+        if(methodCall.method.equals("shouldShowRationaleStorage")){
+            try {
+
+                result.success(
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
+                            ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                );
+
+            } catch(Exception ex) {
+                result.success(false);
+            }
+        }
+
+        if(methodCall.method.equals("requestStorage")){
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+            }, 0x91519);
+
+            permissionRequestResult = result;
+        }
+
     });
 
     new MethodChannel(getFlutterView(), "xyz.apollotv.kamino/playThirdParty").setMethodCallHandler((methodCall, result) -> {
@@ -259,6 +309,24 @@ public class MainActivity extends FlutterActivity {
           System.out.println(ex.getMessage());
           return false;
       }
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
+      // If the request code is 0x91519, this is a result for the storage check permission.
+      if(requestCode == 0x91519){
+          if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+              permissionRequestResult.success(
+              true
+              );
+              return;
+          }
+
+          permissionRequestResult.success(false);
+          permissionRequestResult = null;
+      }
+
+
   }
 
 

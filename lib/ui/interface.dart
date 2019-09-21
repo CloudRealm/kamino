@@ -48,8 +48,9 @@ class Interface {
       )),
     );
   }
-  static void showAlert({@required BuildContext context, @required Widget title, @required List<Widget> content, bool dismissible = false, @required List<Widget> actions}){
-    showDialog(
+
+  static Future<void> showAlert({@required BuildContext context, @required Widget title, @required List<Widget> content, bool dismissible = false, @required List<Widget> actions}){
+    return showDialog(
       context: context,
       barrierDismissible: dismissible,
       builder: (BuildContext responseContext) {
@@ -65,11 +66,11 @@ class Interface {
     );
   }
 
-  static Future<void> showSimpleSuccessDialog(BuildContext context, {String title, String message, FlatButton alternativeAction}) async {
+  static Future<void> showSimpleSuccessDialog(BuildContext context, {String title, String message, FlatButton alternativeAction}) {
     if(title == null) title = S.of(context).success;
     if(message == null) message = S.of(context).action_completed_successfully;
     
-    Interface.showAlert(
+    return Interface.showAlert(
         context: context,
         title: TitleText(title), // Title
         content: <Widget>[
@@ -92,11 +93,11 @@ class Interface {
     );
   }
 
-  static Future<void> showSimpleErrorDialog(BuildContext context, {String title, String reason, FlatButton alternativeAction}) async {
+  static Future<void> showSimpleErrorDialog(BuildContext context, {String title, String reason, FlatButton alternativeAction}) {
     if(title == null) title = S.of(context).an_error_occurred;
     if(reason == null) reason = S.of(context).unable_to_determine_reason;
     
-    Interface.showAlert(
+    return Interface.showAlert(
         context: context,
         title: TitleText(title), // Title
         content: <Widget>[

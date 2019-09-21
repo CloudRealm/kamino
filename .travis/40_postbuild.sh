@@ -33,10 +33,6 @@ WEBHOOK_DATA='{
         "name": "Branch",
         "value": "'"[$TRAVIS_BRANCH](https://github.com/$TRAVIS_REPO_SLUG/tree/$TRAVIS_BRANCH)"'",
         "inline": true
-      },
-      {
-        "name": "Files",
-        "value": "'"[Download APK]($BUILD_OUTPUT_URL)"'"
       }
     ],
     "timestamp": "'"$TIMESTAMP"'"
