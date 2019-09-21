@@ -200,7 +200,7 @@ class _SettingsViewState extends State<SettingsView> {
                       color: Theme.of(context).backgroundColor,
                       child: ListTile(
                         title: TitleText("ApolloTV Houston"),
-                        subtitle: Text("Manage services offered by ApolloTV."),
+                        subtitle: Text(S.of(context).manage_services_offered_by_apollotv),
                         leading: Icon(IconData(0xE90F, fontFamily: "apollotv-icons")),
                         enabled: false
                       ),

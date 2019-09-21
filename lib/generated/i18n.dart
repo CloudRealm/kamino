@@ -45,6 +45,7 @@ class S implements WidgetsLocalizations {
   String get back => "BACK";
   String get be_careful_this_option_could_break_the_app_if_you => "Be careful! This option could break the app if you don't know what you're doing.";
   String get begins_the_initial_setup_procedure_that_is_displayed_when_the => "Begins the initial setup procedure that is displayed when the app is opened for the first time.";
+  String get beta => "Beta";
   String get blog => "Blog";
   String get boost_your_experience => "BOOST YOUR EXPERIENCE";
   String get cancel => "Cancel";
@@ -95,6 +96,7 @@ class S implements WidgetsLocalizations {
   String get debug_only_logs_the_application_preferences_in_the_console => "(Debug only) Logs the application preferences in the console.";
   String get default_ => "Default";
   String get descending => "Descending";
+  String get development => "Development";
   String get diagnostics => "DIAGNOSTICS";
   String get disable_security_warnings => "Disable Security Warnings";
   String get disconnect => "Disconnect";
@@ -150,6 +152,7 @@ class S implements WidgetsLocalizations {
   String get loading => "Loading...";
   String get localization => "Localization";
   String get login => "Login";
+  String get manage_services_offered_by_apollotv => "Manage services offered by ApolloTV.";
   String get manage_third_party_integrations => "Manage third party integrations.";
   String get manually_override_the_default_content_server => "Manually override the default content server.";
   String get miscellaneous => "MISCELLANEOUS";
@@ -205,6 +208,7 @@ class S implements WidgetsLocalizations {
   String get scraping_failed => "Scraping failed...";
   String get search => "Search";
   String get search_history_cleared => "Search history cleared.";
+  String get search_people_movies_and_shows => "Search People, Movies and Shows...";
   String get search_tv_shows_and_movies => "Search TV shows and movies...";
   String get searching_for_cast_devices => "Searching for Cast devices...";
   String get security => "Security";
@@ -231,7 +235,9 @@ class S implements WidgetsLocalizations {
   String get sorts_by_the_time_the_server_took_to_respond => "Sorts by the time the server took to respond.";
   String get source_autoplay => "Enable Source Autoplay";
   String get source_autoplay_description => "Automatically selects a source to play instead of showing a dialog containing the source list.";
+  String get stable => "Stable";
   String get submit_request => "Submit Request";
+  String get subtitles => "Subtitles";
   String get success => "Success!";
   String get successfully_refreshed_trakt_token => "Successfully refreshed Trakt token.";
   String get sync => "Sync";

@@ -47,17 +47,20 @@ class ContentListPageState extends State<ContentListPage> {
           ];
         },
 
-        body: ListView(
-          children: <Widget>[
-            ResponsiveContentGrid(
-              idealItemWidth: 150,
-              spacing: 10.0,
-              margin: 10.0,
-              content: list.content,
-            ),
+        body: ResponsiveContentGrid(
+          idealItemWidth: 150,
+          spacing: 10.0,
+          margin: 10.0,
+          content: list.content,
+          withLazyLoad: true,
+          loadNextPage: (){
+            if(list.canLoadNextPage) return () async {
+              await list.loadNextPage();
+              return list.content;
+            };
 
-            Container(height: 20)
-          ],
+            return null;
+          },
         ),
       ),
     );
@@ -161,7 +164,7 @@ class _ListPageBarDelegate extends SliverPersistentHeaderDelegate {
                         child: Icon(getListTypeIcon(), size: 18),
                         margin: EdgeInsets.only(right: 5),
                       ),
-                      Text(list.content.length.toString()),
+                      Text(list.items.toString()),
 
                       Spacer(),
 

@@ -283,7 +283,7 @@ class SourceSelectionViewState extends State<SourceSelectionView> {
                 isFullscreenDialog: true
               ));
             },
-            label: TitleText("Subtitles", style: TextStyle(
+            label: TitleText(S.of(context).subtitles, style: TextStyle(
               letterSpacing: 0
             ), fontSize: 18),
             icon: Icon(Icons.subtitles)

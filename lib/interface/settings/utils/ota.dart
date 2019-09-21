@@ -134,11 +134,9 @@ runInstallProcedure (context, data) async {
     if(shouldShowPermissionRationale){
       await Interface.showAlert(
           context: context,
-          title: TitleText("Permission required..."),
+          title: TitleText("ApolloTV needs permission to continue..."),
           content: [
-            Text("ApolloTV needs permission to continue..."),
-            Container(margin: EdgeInsets.only(bottom: 10)),
-            Text("In order to download and install the update, you must grant ApolloTV access to device storage."),
+            Text("In order for ApolloTV's auto-updater to download and install this update, you must grant ApolloTV access to device storage."),
           ],
           actions: [
             FlatButton(child: Text("Next"), onPressed: () => Navigator.of(context).pop())

@@ -68,48 +68,53 @@ class DiscoverPageState extends State<DiscoverPage> {
           centerTitle: true,
         ),
 
-        body: ListView(
-          children: <Widget>[
-            FutureBuilder(future: loadGenre(widget.type, widget.genreId), builder: (BuildContext context, AsyncSnapshot snapshot){
-              if(!snapshot.hasData && !snapshot.hasError) return Container(
-                margin: EdgeInsets.only(top: 30),
-                child: Center(child: ApolloLoadingSpinner()),
+        body: FutureBuilder<DiscoverResultsModel>(
+          future: loadGenre(widget.type, widget.genreId),
+          builder: (BuildContext context, AsyncSnapshot<DiscoverResultsModel> snapshot){
+            if(!snapshot.hasData && !snapshot.hasError) return Container(
+              child: Center(child: ApolloLoadingSpinner()),
+            );
+
+            if(snapshot.hasError) {
+              print(snapshot.error);
+
+              return Container(
+                  margin: EdgeInsets.only(top: 30),
+                  child: ErrorLoadingMixin(
+                    partialForm: true,
+                  )
               );
+            }
 
-              if(snapshot.hasError) {
-                print(snapshot.error);
+            return ResponsiveContentGrid(
+              idealItemWidth: 150,
+              spacing: 10.0,
+              margin: 10.0,
+              content: snapshot.data.content,
+              withLazyLoad: true,
+              loadNextPage: (){
+                if(snapshot.data.canLoadNextPage) return () async {
+                  await snapshot.data.loadNextPage();
+                  return snapshot.data.content;
+                };
 
-                return Container(
-                    margin: EdgeInsets.only(top: 30),
-                    child: ErrorLoadingMixin(
-                      partialForm: true,
-                    )
-                );
-              }
-
-              return ResponsiveContentGrid(
-                idealItemWidth: 150,
-                spacing: 10.0,
-                margin: 10.0,
-                content: snapshot.data,
-              );
-            }),
-
-            Container(height: 20)
-          ],
-        ),
+                return null;
+              },
+            );
+          }
+        )
       ),
     );
   }
 
-  Future<List<ContentModel>> loadGenre(ContentType type, int genreId) async {
+  Future<DiscoverResultsModel> loadGenre(ContentType type, int genreId, { int page = 1 }) async {
     String url = "${TMDB.ROOT_URL}/discover/${getRawContentType(type)}"
         "${Service.get<TMDB>().getDefaultArguments(context)}&"
         "sort_by=popularity.desc&include_adult=false"
-        "&include_video=false&with_genres=$genreId";
+        "&include_video=false&with_genres=$genreId&page=$page";
 
-    List results = (Convert.jsonDecode((await get(url)).body))['results'];
-    return results.map((result){
+    Map response = Convert.jsonDecode((await get(url)).body);
+    List results = response['results'].map((result){
       if(type == ContentType.TV_SHOW){
         return TVShowContentModel.fromJSON(result);
       }
@@ -119,7 +124,44 @@ class DiscoverPageState extends State<DiscoverPage> {
       }
 
       return null;
-    }).toList();
+    }).toList().cast<ContentModel>();
+
+    return new DiscoverResultsModel(
+      content: results,
+      loadedUntil: 1,
+      totalPages: response['total_pages'],
+      fullyLoaded: response['total_pages'] == 1,
+      loadNextPage: (DiscoverResultsModel results, int _page) async {
+        results.content.addAll((await loadGenre(type, genreId, page: _page)).content);
+      }
+    );
   }
+
+}
+
+class DiscoverResultsModel {
+
+  List<ContentModel> content;
+  int loadedUntil;
+  int totalPages;
+  bool fullyLoaded;
+
+  Function(DiscoverResultsModel, int page) _loadNextPage;
+  bool get canLoadNextPage => _loadNextPage != null && !fullyLoaded;
+
+  Future<void> loadNextPage () async {
+    this.loadedUntil++;
+
+    if(_loadNextPage != null) await _loadNextPage(this, loadedUntil);
+    this.fullyLoaded = loadedUntil >= totalPages;
+  }
+
+  DiscoverResultsModel({
+    @required this.content,
+    @required this.loadedUntil,
+    @required this.totalPages,
+    @required this.fullyLoaded,
+    Function(DiscoverResultsModel, int page) loadNextPage
+  }) : this._loadNextPage = loadNextPage;
 
 }

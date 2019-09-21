@@ -247,26 +247,29 @@ class _PrimaryColorChooserState extends State<PrimaryColorChooser> {
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             children: <Widget>[
-              if(!_isAdvancedMode) MaterialColorPicker(
-                  onColorChange: (Color color) => setState(() => _activeColor = color),
-                  selectedColor: _activeColor,
-                  colors: () {
-                    // Return list of colors including the current primary color
-                    List<ColorSwatch<dynamic>> _anonymousColors = new List();
-                    _anonymousColors.addAll(materialColors);
+              if(!_isAdvancedMode) Container(
+                height: 200,
+                child: MaterialColorPicker(
+                    onColorChange: (Color color) => setState(() => _activeColor = color),
+                    selectedColor: _activeColor,
+                    colors: () {
+                      // Return list of colors including the current primary color
+                      List<ColorSwatch<dynamic>> _anonymousColors = new List();
+                      _anonymousColors.addAll(materialColors);
 
-                    // Replace Material Design purple with ApolloTV purple.
-                    _anonymousColors.insert(0, ColorSwatch(0xFF8147FF, {500: const Color(0xFF8147FF)}));
-                    _anonymousColors.remove(Colors.deepPurple);
+                      // Replace Material Design purple with ApolloTV purple.
+                      _anonymousColors.insert(0, ColorSwatch(0xFF8147FF, {500: const Color(0xFF8147FF)}));
+                      _anonymousColors.remove(Colors.deepPurple);
 
-                    if(_findMainColor(_activeColor, _anonymousColors) == null) {
-                      _anonymousColors.add(
-                          ColorSwatch(_activeColor.value, <int, Color>{
-                            500: _activeColor
-                          }));
-                    }
-                    return _anonymousColors;
-                  }()
+                      if(_findMainColor(_activeColor, _anonymousColors) == null) {
+                        _anonymousColors.add(
+                            ColorSwatch(_activeColor.value, <int, Color>{
+                              500: _activeColor
+                            }));
+                      }
+                      return _anonymousColors;
+                    }()
+                ),
               ),
 
               if(_isAdvancedMode) Container(

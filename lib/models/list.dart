@@ -20,6 +20,21 @@ class ContentListModel {
   bool fullyLoaded;
   int totalPages;
 
+  int items;
+  /// This is the greatest page index of the list that has been loaded.
+  /// e.g. if only the first page was loaded, this will be 0.
+  int loadedUntil;
+
+  Function(ContentListModel, int page) _loadNextPage;
+  bool get canLoadNextPage => _loadNextPage != null && !fullyLoaded;
+
+  Future<void> loadNextPage () async {
+    this.loadedUntil++;
+
+    if(_loadNextPage != null) await _loadNextPage(this, loadedUntil);
+    this.fullyLoaded = loadedUntil >= totalPages;
+  }
+
   ContentListModel({
     @required this.id,
     this.name,
@@ -33,10 +48,14 @@ class ContentListModel {
     @required this.totalPages,
     this.revenue,
     this.averageRating,
-    this.runtime
-  });
+    this.runtime,
+    @required this.items,
+    this.loadedUntil,
 
-  static ContentListModel fromJSON(Map json){
+    Function(ContentListModel, int page) loadNextPage
+  }) : this._loadNextPage = loadNextPage;
+
+  static ContentListModel fromJSON(Map json, { Function(ContentListModel, int page) loadNextPage }){
     return new ContentListModel(
       id: json["id"],
       name: json["name"],
@@ -57,6 +76,10 @@ class ContentListModel {
       revenue: json["revenue"] != null ? json["revenue"] : null,
       averageRating: json["average_rating"] != null ? json["average_rating"] : null,
       runtime: json["runtime"] != null ? json["runtime"] : null,
+      items: json["total_results"] != null ? json["total_results"] : null,
+      loadedUntil: json["loaded_pages"] != null ? json["loaded_pages"] : 1,
+
+      loadNextPage: loadNextPage
     );
   }
 
@@ -76,7 +99,9 @@ class ContentListModel {
       "fullyLoaded": fullyLoaded,
       "revenue": revenue,
       "average_rating": averageRating,
-      "runtime": runtime
+      "runtime": runtime,
+      "total_results": items,
+      "loaded_pages": loadedUntil
     };
   }
 

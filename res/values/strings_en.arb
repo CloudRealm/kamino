@@ -339,5 +339,11 @@
   "reviews": "Reviews",
   "this_may_take_up_to_n_seconds": "This may take up to $n seconds.",
   "downloading_content_suggestions_index": "Downloading content suggestions index.",
-  "people": "People"
+  "people": "People",
+  "search_people_movies_and_shows": "Search People, Movies and Shows...",
+  "subtitles": "Subtitles",
+  "manage_services_offered_by_apollotv": "Manage services offered by ApolloTV.",
+  "stable": "Stable",
+  "beta": "Beta",
+  "development": "Development"
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/ui/elements.dart';
 
 class SubtitleSelectionView extends StatefulWidget {
@@ -12,7 +13,7 @@ class SubtitleSelectionViewState extends State<SubtitleSelectionView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: TitleText("Subtitles"),
+        title: TitleText(S.of(context).subtitles),
       ),
     );
   }

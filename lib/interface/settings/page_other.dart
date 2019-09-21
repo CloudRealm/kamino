@@ -187,7 +187,7 @@ class OtherSettingsPageState extends SettingsPageState {
                                       style: TextStyle(fontFamily: 'Futura'),
                                       children: [
                                         TextSpan(
-                                            text: "\u2022 Stable: ",
+                                            text: "\u2022 ${S.of(context).stable}: ",
                                             style: TextStyle(fontWeight: FontWeight.bold)
                                         ),
                                         TextSpan(
@@ -204,7 +204,7 @@ class OtherSettingsPageState extends SettingsPageState {
                                       style: TextStyle(fontFamily: 'Futura'),
                                       children: [
                                         TextSpan(
-                                            text: "\u2022 Beta: ",
+                                            text: "\u2022 ${S.of(context).beta}: ",
                                             style: TextStyle(fontWeight: FontWeight.bold)
                                         ),
                                         TextSpan(
@@ -221,7 +221,7 @@ class OtherSettingsPageState extends SettingsPageState {
                                       style: TextStyle(fontFamily: 'Futura'),
                                       children: [
                                         TextSpan(
-                                            text: "\u2022 Development: ",
+                                            text: "\u2022 ${S.of(context).development}: ",
                                             style: TextStyle(fontWeight: FontWeight.bold)
                                         ),
                                         TextSpan(

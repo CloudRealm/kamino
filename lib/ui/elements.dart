@@ -6,6 +6,7 @@ import 'package:kamino/cast/cast_devices_dialog.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/main.dart';
 import 'package:kamino/models/content/content.dart';
+import 'package:kamino/models/list.dart';
 import 'package:kamino/partials/content_card.dart';
 import 'package:kamino/partials/content_poster.dart';
 import 'package:kamino/ui/loading.dart';
@@ -627,7 +628,7 @@ class SearchFieldWidgetState extends State<SearchFieldWidget> with SingleTickerP
                           ),
                           border: InputBorder.none,
                           fillColor: Theme.of(context).cardColor,
-                          hintText: "Search People, Movies and Shows...",
+                          hintText: S.of(context).search_people_movies_and_shows,
                           hintStyle: TextStyle(
                               fontSize: 16,
                               height: 1
@@ -682,23 +683,99 @@ class SearchFieldWidgetState extends State<SearchFieldWidget> with SingleTickerP
 
 }
 
-class ResponsiveContentGrid extends StatelessWidget {
+class ResponsiveContentGrid extends StatefulWidget {
 
   final List<ContentModel> content;
   final double idealItemWidth;
   final double spacing;
   final double margin;
 
+  final bool withLazyLoad;
+  /// A future that will load the next page, or null if there is no
+  /// next page.
+  final Function loadNextPage;
+
   ResponsiveContentGrid({
     @required this.content,
 
     this.idealItemWidth = 150,
     this.spacing = 10.0,
-    this.margin = 10.0
+    this.margin = 10.0,
+
+    this.withLazyLoad = false,
+    this.loadNextPage
   });
 
   @override
+  State<StatefulWidget> createState() => ResponsiveContentGridState();
+
+}
+
+class ResponsiveContentGridState extends State<ResponsiveContentGrid> {
+
+  List<ContentModel> content;
+
+  bool loading = false;
+  bool rendered = false;
+  int totalRows;
+  double posterWidth;
+  double posterHeight;
+
+  @override
+  void initState() {
+    content = widget.content;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if(!widget.withLazyLoad) return buildGrid(context);
+    if(widget.loadNextPage == null) throw new FlutterError("A loadNextPage function must be provided to ResponsiveContentGrid if withLazyLoad is true.");
+
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification notification){
+        if(loading) return false;
+        if(totalRows == null) return false;
+
+        ScrollMetrics metrics = notification.metrics;
+        // Weird hacky way of triggering the next page load because the
+        // NestedScrollView just makes all of the extents go weird.
+        if(metrics.extentAfter <= posterHeight + (widget.spacing * 4)){
+
+          Function loadNextPage = widget.loadNextPage();
+          if(loadNextPage != null){
+            if(mounted) setState(() {
+              loading = true;
+            });
+
+            loadNextPage().then((List<ContentModel> _content){
+              if(mounted) setState(() {
+                this.content = _content;
+                loading = false;
+              });
+            });
+          }
+
+        }
+        return false;
+      },
+      child: ListView(
+        children: <Widget>[
+          buildGrid(context),
+          Container(height: 20),
+          new Container(
+            height: loading ? 64 : 0,
+            margin: loading ? EdgeInsets.symmetric(vertical: 20).copyWith(bottom: 40) : EdgeInsets.zero,
+            child: Center(
+              child: ApolloLoadingSpinner()
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget buildGrid(BuildContext context) {
     return FutureBuilder<bool>(future: new Future(() async {
       return await Settings.detailedContentInfoEnabled;
     }), builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
@@ -712,14 +789,14 @@ class ResponsiveContentGrid extends StatelessWidget {
       bool cardView = snapshot.data;
 
       return Container(
-        margin: EdgeInsets.symmetric(horizontal: margin),
+        margin: EdgeInsets.symmetric(horizontal: widget.margin),
         child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints){
+          int postersPerRow = cardView ? 1 : (constraints.maxWidth / widget.idealItemWidth).ceil();
+          totalRows = (content.length / postersPerRow).ceil();
 
-          int postersPerRow = cardView ? 1 : (constraints.maxWidth / idealItemWidth).ceil();
-          int totalRows = (content.length / postersPerRow).ceil();
-
-          double posterWidth = idealItemWidth - (spacing * 2) - (margin * 2);
-          double posterHeight = (3 / 2) * posterWidth;
+          posterWidth = (constraints.maxWidth / postersPerRow) - (widget.spacing * 2);
+          posterHeight = (3 / 2) * posterWidth;
+          rendered = true;
 
           return Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -727,7 +804,7 @@ class ResponsiveContentGrid extends StatelessWidget {
             children: List.generate(
               totalRows,
               (int row) => Container(
-                margin: EdgeInsets.symmetric(vertical: spacing),
+                margin: EdgeInsets.symmetric(vertical: widget.spacing),
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -746,8 +823,8 @@ class ResponsiveContentGrid extends StatelessWidget {
                           if(item == null) return Container(
                             width: posterWidth,
                             margin: EdgeInsets.only(
-                                left: isFirst ? 0 : spacing,
-                                right: isLast ? 0 : spacing
+                                left: isFirst ? 0 : widget.spacing,
+                                right: isLast ? 0 : widget.spacing
                             )
                           );
 
@@ -762,8 +839,8 @@ class ResponsiveContentGrid extends StatelessWidget {
 
                           return Container(
                               margin: EdgeInsets.only(
-                                  left: isFirst ? 0 : spacing,
-                                  right: isLast ? 0 : spacing
+                                  left: isFirst ? 0 : widget.spacing,
+                                  right: isLast ? 0 : widget.spacing
                               ),
                               child: ContentPoster(
                                 height: posterHeight,
