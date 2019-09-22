@@ -262,6 +262,49 @@ class TMDB extends ContentDatabaseService {
     return PersonModel.fromJSON(json);
   }
 
+  Future<List<ContentModel>> loadCreditsFor(BuildContext context, ContentType type, PersonModel person) async {
+    bool hideUnreleasedPartialContent = await Settings.hideUnreleasedPartialContent;
+
+    String creditType = getRawContentType(type);
+
+    final String url = "${TMDB.ROOT_URL}/person/${person.id}/${creditType}_credits${getDefaultArguments(context)}"
+        "&include_adult=false";
+    Map json = Convert.jsonDecode((await http.get(url)).body);
+
+    Function fromJSON = (element){
+      if(type == ContentType.MOVIE){
+        return MovieContentModel.fromJSON(element);
+      }
+
+      if(type == ContentType.TV_SHOW){
+        return TVShowContentModel.fromJSON(element);
+      }
+
+      return null;
+    };
+
+    List<ContentModel> results = [];
+    json['crew']?.forEach((element){
+      ContentModel model = fromJSON(element);
+      if(hideUnreleasedPartialContent){
+        if(isPartialUnreleasedContent(model)) return;
+      }
+
+      results.add(model);
+    });
+
+    json['cast']?.forEach((element){
+      ContentModel model = fromJSON(element);
+      if(hideUnreleasedPartialContent){
+        if(isPartialUnreleasedContent(model)) return;
+      }
+
+      results.add(model);
+    });
+
+    return results;
+  }
+
 }
 
 bool isPartialUnreleasedContent(ContentModel resultItem){

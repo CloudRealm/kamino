@@ -1,17 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:kamino/animation/transition.dart';
 import 'package:kamino/external/ExternalService.dart';
 import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/external/struct/content_database.dart';
 import 'package:kamino/generated/i18n.dart';
-import 'package:kamino/models/content/content.dart';
-import 'package:kamino/models/content/movie.dart';
-import 'package:kamino/models/content/tv_show.dart';
+import 'package:kamino/interface/search/person.dart';
 import 'package:kamino/models/person.dart';
-import 'package:kamino/partials/content_poster.dart';
 import 'package:kamino/ui/elements.dart';
-import 'package:kamino/ui/interface.dart';
-import 'package:kamino/util/settings.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class SearchPage extends StatefulWidget {
@@ -73,18 +69,6 @@ class SearchPageState extends State<SearchPage> {
                 results = newResults;
               });
             },
-
-            /*child: (BuildContext context, String query){
-            if(query.isEmpty) return null;
-
-            return Column(children: <Widget>[
-              Container(
-                child: ListTile(
-                  title: Text(query),
-                ),
-              )
-            ]);
-          }*/
           ),
         ),
 
@@ -106,7 +90,6 @@ class SearchPageState extends State<SearchPage> {
           Container(height: 80),
 
           // People
-          // TODO: Just prepare the lists before setting out tree.
           if(people.length > 0) ...[
             SubtitleText(S.of(context).people, padding: EdgeInsets.only(
                 top: 10,
@@ -136,16 +119,37 @@ class SearchPageState extends State<SearchPage> {
                       return Container(
                         margin: EdgeInsets.symmetric(horizontal: 10),
                         child: Column(children: <Widget>[
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            clipBehavior: Clip.antiAlias,
-                            child: FadeInImage.memoryNetwork(
-                              placeholder: kTransparentImage,
-                              image: TMDB.IMAGE_CDN + person.profilePath,
-                              width: 60,
-                              height: 60,
-                              fit: BoxFit.cover,
-                            ),
+                          Container(
+                            width: 60,
+                            height: 60,
+                            child: Stack(fit: StackFit.expand, children: <Widget>[
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(100),
+                                clipBehavior: Clip.antiAlias,
+                                child: FadeInImage.memoryNetwork(
+                                  placeholder: kTransparentImage,
+                                  image: TMDB.IMAGE_CDN + person.profilePath,
+                                  width: 60,
+                                  height: 60,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+
+                              Material(
+                                type: MaterialType.transparency,
+                                borderRadius: BorderRadius.circular(60),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(60),
+                                  onTap: (){
+                                    Navigator.of(context).push(ApolloTransitionRoute(
+                                        builder: (BuildContext context) => PersonPage(
+                                          person: person
+                                        )
+                                    ));
+                                  },
+                                )
+                              )
+                            ]),
                           ),
 
                           Container(

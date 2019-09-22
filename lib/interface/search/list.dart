@@ -6,6 +6,7 @@ import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/models/content/content.dart';
 import 'package:kamino/models/list.dart';
 import 'package:kamino/ui/elements.dart';
+import 'package:kamino/ui/interface.dart';
 import 'package:kamino/ui/loading.dart';
 
 class ContentListPage extends StatefulWidget {
@@ -134,7 +135,12 @@ class _ListPageBarDelegate extends SliverPersistentHeaderDelegate {
                     Spacer(),
                     Container(
                       margin: EdgeInsets.only(right: 20),
-                      child: Icon(list.public ? Icons.public : Icons.lock),
+                      child: IconButton(
+                        icon: Icon(list.public ? Icons.public : Icons.lock),
+                        onPressed: () async {
+                          await Interface.launchURL("https://www.themoviedb.org/list/${list.id}");
+                        },
+                      ),
                     )
                   ]
               ),
@@ -186,7 +192,7 @@ class _ListPageBarDelegate extends SliverPersistentHeaderDelegate {
 
   String getRuntime(){
     Duration runTime = Duration(minutes: list.runtime);
-    return "${runTime.inHours.remainder(60).toString().padLeft(2, '0')}h ${runTime.inMinutes.remainder(60).toString().padLeft(2, '0')}m";
+    return "${runTime.inHours.toString().padLeft(2, '0')}h ${runTime.inMinutes.remainder(60).toString().padLeft(2, '0')}m";
   }
 
   IconData getListTypeIcon(){

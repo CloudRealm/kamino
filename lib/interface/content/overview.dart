@@ -11,6 +11,7 @@ import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/external/api/trakt.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/interface/search/discover.dart';
+import 'package:kamino/interface/search/person.dart';
 import 'package:kamino/main.dart';
 import 'package:kamino/models/content/content.dart';
 import 'package:kamino/models/crew.dart';
@@ -636,13 +637,34 @@ class _ContentOverviewState extends State<ContentOverview> {
                                 child: ClipRRect(
                                     borderRadius: BorderRadius.circular(100),
                                     child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
-                                      return CachedNetworkImage(
+                                      return Container(
                                         height: constraints.maxHeight,
                                         width: constraints.maxHeight,
-                                        placeholder: (BuildContext context, String url) => Image.memory(kTransparentImage),
-                                        imageUrl: TMDB.IMAGE_CDN +
-                                            castAndCrew[index].profilePath,
-                                        fit: BoxFit.cover,
+                                        child: Stack(fit: StackFit.expand, children: <Widget>[
+                                          CachedNetworkImage(
+                                            height: constraints.maxHeight,
+                                            width: constraints.maxHeight,
+                                            placeholder: (BuildContext context, String url) => Image.memory(kTransparentImage),
+                                            imageUrl: TMDB.IMAGE_CDN +
+                                                castAndCrew[index].profilePath,
+                                            fit: BoxFit.cover,
+                                          ),
+
+                                          Material(
+                                              type: MaterialType.transparency,
+                                              borderRadius: BorderRadius.circular(60),
+                                              child: InkWell(
+                                                borderRadius: BorderRadius.circular(60),
+                                                onTap: (){
+                                                  Navigator.of(context).push(ApolloTransitionRoute(
+                                                    builder: (BuildContext context) => PersonPage(
+                                                      person: castAndCrew[index]
+                                                    )
+                                                  ));
+                                                },
+                                              )
+                                          )
+                                        ]),
                                       );
                                     })
                                 ),

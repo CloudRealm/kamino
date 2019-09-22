@@ -8,7 +8,7 @@ class PersonModel {
   final String name;
   final String profilePath;
   final String gender;
-  final List<ContentModel> knownFor;
+  //final List<ContentModel> knownFor;
   final List<String> alsoKnownAs;
 
   final String knownForDepartment;
@@ -27,7 +27,7 @@ class PersonModel {
     @required this.profilePath,
 
     @required this.gender,
-    @required this.knownFor,
+    //@required this.knownFor,
     this.alsoKnownAs,
 
     this.knownForDepartment,
@@ -44,8 +44,8 @@ class PersonModel {
   List<String> get aliases => this.alsoKnownAs;
 
   static PersonModel fromJSON(Map json, { bool alsoConvertKnownFor = false }){
-    List<ContentModel> knownFor = new List();
-    if(alsoConvertKnownFor) json['known_for'].forEach((entry){
+    /*List<ContentModel> knownFor = new List();
+    if(alsoConvertKnownFor) (json['known_for']).forEach((entry){
       if(getContentTypeFromRawType(entry['media_type']) == ContentType.MOVIE){
         knownFor.add(MovieContentModel.fromJSON(entry));
       }
@@ -53,16 +53,16 @@ class PersonModel {
       if(getContentTypeFromRawType(entry['media_type']) == ContentType.TV_SHOW){
         knownFor.add(TVShowContentModel.fromJSON(entry));
       }
-    });
+    });*/
 
     return new PersonModel(
       id: json['id'],
       name: json['name'],
       profilePath: json['profile_path'],
 
-      gender: json['gender'] is int ? _convertGender(json['gender']) : json['gender'],
-      knownFor: knownFor,
-      alsoKnownAs: json['also_known_as'],
+      gender: json['gender'] is int ? convertGender(json['gender']) : json['gender'],
+      //knownFor: knownFor,
+      alsoKnownAs: json['also_known_as'] != null ? json['also_known_as'].cast<String>() as List<String> : [],
 
       knownForDepartment: json['known_for_department'],
       birthday: json['birthday'],
@@ -81,7 +81,7 @@ class PersonModel {
   /// in future, if we use another provider silly enough to implement gender
   /// as a numerical system, this should allow a provider to be passed to it.
   ///
-  static String _convertGender(int numericalGender){
+  static String convertGender(int numericalGender){
     switch(numericalGender){
       case 1:
         return "female";

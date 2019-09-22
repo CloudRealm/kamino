@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:kamino/models/person.dart';
 
 // CastCrewPersonModel
-class CCPersonModel {
-  final int id;
-  final String name;
-  final String profilePath;
-  final int gender;
+class CCPersonModel extends PersonModel {
   final String creditId;
 
   /// For a [CrewMemberModel], role means job.
@@ -13,13 +10,18 @@ class CCPersonModel {
   final String role;
 
   CCPersonModel({
-    @required this.id,
-    @required this.name,
-    this.profilePath,
-    this.gender,
+    int id,
+    String name,
+    String profilePath,
+    String gender,
     this.creditId,
     this.role
-  });
+  }) : super(
+    id: id,
+    name: name,
+    profilePath: profilePath,
+    gender: gender
+  );
 }
 
 class CrewMemberModel extends CCPersonModel {
@@ -38,7 +40,7 @@ class CrewMemberModel extends CCPersonModel {
   }) : super(
       id: id,
       name: name,
-      gender: gender,
+      gender: PersonModel.convertGender(gender),
       creditId: creditId,
       profilePath: profilePath,
       role: job
@@ -76,7 +78,7 @@ class CastMemberModel extends CCPersonModel {
   }) : super(
     id: id,
     name: name,
-    gender: gender,
+    gender: PersonModel.convertGender(gender),
     creditId: creditId,
     profilePath: profilePath,
     role: character
