@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/main.dart';
 import 'package:kamino/models/content/content.dart';
-import 'package:kamino/partials/content_poster.dart';
 import 'package:kamino/ui/elements.dart';
-import 'package:kamino/ui/interface.dart';
 import 'package:kamino/ui/loading.dart';
 import 'package:kamino/util/database_helper.dart';
 import 'package:kamino/util/settings.dart';
@@ -70,26 +68,6 @@ class FavoritesPageState extends State<FavoritesPage>
 
     // If every sublist in favorites is empty, the user has no favorites.
     bool favoritesEmpty = favorites.values.every((List subList) => subList.isEmpty);
-    favorites.forEach((String type, List<FavoriteDocument> favoriteList){
-      // Sort
-      switch(sortMethod){
-        case 'name':
-          favorites[type].sort((FavoriteDocument left, FavoriteDocument right){
-            return left.name.compareTo(right.name);
-          });
-          break;
-
-        // Default sort by date.
-        case 'date':
-        default:
-        favorites[type].sort((FavoriteDocument left, FavoriteDocument right){
-            return left.savedOn.compareTo(right.savedOn);
-          });
-      }
-
-      if(sortReversed) favorites[type] = favorites[type].reversed.toList();
-    });
-
     return Scaffold(
       floatingActionButton: favoritesEmpty ? null : FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
@@ -139,7 +117,7 @@ class FavoritesPageState extends State<FavoritesPage>
                               Icon(tvExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down)
                             ], mainAxisAlignment: MainAxisAlignment.spaceBetween),
                           ), onTap: () => setState(() => tvExpanded = !tvExpanded)),
-                          tvExpanded ? _buildSection(ContentType.TV_SHOW) : Container(),
+                          tvExpanded ? _buildSection(ContentType.TV_SHOW, sortMethod, sortReversed) : Container(),
 
                           Container(margin: EdgeInsets.symmetric(vertical: 10)),
                         ],
@@ -156,7 +134,7 @@ class FavoritesPageState extends State<FavoritesPage>
                               Icon(movieExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down)
                             ], mainAxisAlignment: MainAxisAlignment.spaceBetween),
                           ), onTap: () => setState(() => movieExpanded = !movieExpanded)),
-                          movieExpanded ? _buildSection(ContentType.MOVIE) : Container(),
+                          movieExpanded ? _buildSection(ContentType.MOVIE, sortMethod, sortReversed) : Container(),
 
                           Container(margin: EdgeInsets.symmetric(vertical: 10)),
                         ],
@@ -171,41 +149,30 @@ class FavoritesPageState extends State<FavoritesPage>
     );
   }
 
-  Widget _buildSection(ContentType type) {
+  Widget _buildSection(ContentType type, String sortMethod, bool sortReversed) {
     List<FavoriteDocument> sectionList = favorites[getRawContentType(type)];
-    List<ContentModel> content = sectionList.map((FavoriteDocument document) => document.toContentModel()).toList();
+    switch(sortMethod){
+      case 'name':
+        sectionList.sort((FavoriteDocument left, FavoriteDocument right){
+          return left.name.compareTo(right.name);
+        });
+        break;
 
+      case 'date':
+      default:
+        sectionList.sort((FavoriteDocument left, FavoriteDocument right){
+          return left.savedOn.compareTo(right.savedOn);
+        });
+    }
+    if(sortReversed) sectionList = sectionList.reversed.toList();
+
+    List<ContentModel> content = sectionList.map((FavoriteDocument document) => document.toContentModel()).toList();
     return ResponsiveContentGrid(
       idealItemWidth: 150,
       spacing: 10.0,
       margin: 10.0,
       content: content,
     );
-
-    /*return Container(
-      child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints){
-        return GridView.builder(
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-          physics: new NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: (constraints.maxWidth / idealWidth).round(),
-            childAspectRatio: 0.67,
-            mainAxisSpacing: spacing,
-            crossAxisSpacing: spacing,
-          ),
-          itemCount: sectionList.length,
-          itemBuilder: (BuildContext context, int index) {
-            var favorite = sectionList[index];
-            return Container()/*ContentPoster(
-              content: favorite,
-              onTap: () => Interface.openOverview(context, favorite.tmdbId, type),
-              elevation: 4,
-              hideIcon: true,
-            )*/;
-          });
-      }),
-    );*/
   }
 
   Widget noFavoritesWidget() {

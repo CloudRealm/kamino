@@ -44,17 +44,6 @@ class PersonModel {
   List<String> get aliases => this.alsoKnownAs;
 
   static PersonModel fromJSON(Map json, { bool alsoConvertKnownFor = false }){
-    /*List<ContentModel> knownFor = new List();
-    if(alsoConvertKnownFor) (json['known_for']).forEach((entry){
-      if(getContentTypeFromRawType(entry['media_type']) == ContentType.MOVIE){
-        knownFor.add(MovieContentModel.fromJSON(entry));
-      }
-
-      if(getContentTypeFromRawType(entry['media_type']) == ContentType.TV_SHOW){
-        knownFor.add(TVShowContentModel.fromJSON(entry));
-      }
-    });*/
-
     return new PersonModel(
       id: json['id'],
       name: json['name'],

@@ -531,6 +531,7 @@ class SearchFieldWidget extends StatefulWidget {
 
   final Function(String) onUpdate;
   final Function(String) onSubmit;
+  final Function onClear;
 
   final TextEditingController controller;
   final bool autofocus;
@@ -543,6 +544,7 @@ class SearchFieldWidget extends StatefulWidget {
 
     this.onUpdate,
     this.onSubmit,
+    this.onClear,
 
     this.controller,
     this.autofocus = true,
@@ -657,6 +659,7 @@ class SearchFieldWidgetState extends State<SearchFieldWidget> with SingleTickerP
                             icon: Icon(Icons.clear),
                             onPressed: (){
                               inputController.text = "";
+                              if(widget.onClear != null) widget.onClear();
                             },
                           ),
                         ),
@@ -713,7 +716,7 @@ class ResponsiveContentGrid extends StatefulWidget {
 
 class ResponsiveContentGridState extends State<ResponsiveContentGrid> {
 
-  List<ContentModel> content;
+  List<ContentModel> lazyLoadedContent;
 
   bool loading = false;
   bool rendered = false;
@@ -723,13 +726,13 @@ class ResponsiveContentGridState extends State<ResponsiveContentGrid> {
 
   @override
   void initState() {
-    content = widget.content;
+    lazyLoadedContent = widget.content;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    if(!widget.withLazyLoad) return buildGrid(context);
+    if(!widget.withLazyLoad) return buildGrid(context, widget.content);
     if(widget.loadNextPage == null) throw new FlutterError("A loadNextPage function must be provided to ResponsiveContentGrid if withLazyLoad is true.");
 
     return NotificationListener<ScrollNotification>(
@@ -748,9 +751,9 @@ class ResponsiveContentGridState extends State<ResponsiveContentGrid> {
               loading = true;
             });
 
-            loadNextPage().then((List<ContentModel> _content){
+            loadNextPage().then((List<ContentModel> content){
               if(mounted) setState(() {
-                this.content = _content;
+                lazyLoadedContent = content;
                 loading = false;
               });
             });
@@ -761,7 +764,7 @@ class ResponsiveContentGridState extends State<ResponsiveContentGrid> {
       },
       child: ListView(
         children: <Widget>[
-          buildGrid(context),
+          buildGrid(context, lazyLoadedContent),
           Container(height: 20),
           new Container(
             height: loading ? 64 : 0,
@@ -775,7 +778,7 @@ class ResponsiveContentGridState extends State<ResponsiveContentGrid> {
     );
   }
 
-  Widget buildGrid(BuildContext context) {
+  Widget buildGrid(BuildContext context, List<ContentModel> content) {
     return FutureBuilder<bool>(future: new Future(() async {
       return await Settings.detailedContentInfoEnabled;
     }), builder: (BuildContext context, AsyncSnapshot<bool> snapshot){

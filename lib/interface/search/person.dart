@@ -95,14 +95,15 @@ class PersonPageState extends State<PersonPage> {
           );
 
           String age = "-";
-          if(person.birthday != null) age = (DateTime.now().difference(DateTime.parse(person.birthday)).inDays / 365.2422).round().toString();
+          if(person.birthday != null) age = (
+              (person.deathday != null ? DateTime.parse(person.deathday) : DateTime.now()).difference(DateTime.parse(person.birthday)).inDays / 365.2422).round().toString();
           if(person.name == "Keanu Reeves") age = "\u221E";
 
           return ListView(
             padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
             children: <Widget>[
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
 
@@ -128,7 +129,6 @@ class PersonPageState extends State<PersonPage> {
                   ),
 
                   Expanded(child: Container(
-                    height: 96,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,

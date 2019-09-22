@@ -49,12 +49,23 @@ class SearchPageState extends State<SearchPage> {
               },
             ) : null,
 
+            onClear: () {
+              setState(() {
+                results = SearchResults.none(query: "");
+              });
+            },
+
             onUpdate: (String value) async {
+              setState(() {
+                results = SearchResults.none(query: value);
+              });
+
               SearchResults newResults = await Service.get<TMDB>().search(context, value, isAutoComplete: true);
               if(mounted) setState(() {
                 results = newResults;
               });
             },
+
             onSubmit: (String value) async {
               if(results.query == value){
                 return;
@@ -72,22 +83,33 @@ class SearchPageState extends State<SearchPage> {
           ),
         ),
 
-        _generateResultsView(),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 100),
+          transitionBuilder: (Widget child, Animation<double> animation){
+            return FadeTransition(child: child, opacity: CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeInOut
+            ));
+          },
+          child: _generateResultsView(
+            key: ValueKey<SearchResults>(results)
+          )
+        )
       ].reversed.toList())
     );
 
   }
 
-  Widget _generateResultsView(){
+  Widget _generateResultsView({ Key key }){
     List people = results.people.where((p) => p.profilePath != null).toList();
 
-    return ListView(children: <Widget>[
+    return ListView(key: key, children: <Widget>[
 
       Container(
         margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15).copyWith(right: 0),
         child: Column(children: <Widget>[
 
-          Container(height: 80),
+          Container(height: people.length > 0 ? 80 : 60),
 
           // People
           if(people.length > 0) ...[
@@ -98,7 +120,7 @@ class SearchPageState extends State<SearchPage> {
                 right: 10
             )),
             Container(
-              height: 90,
+              height: 110,
               child: NotificationListener<OverscrollIndicatorNotification>(
                 onNotification: (notification){
                   notification.disallowGlow();
@@ -155,6 +177,14 @@ class SearchPageState extends State<SearchPage> {
                           Container(
                             margin: EdgeInsets.only(top: 10),
                             child: Text(person.name, textAlign: TextAlign.center),
+                          ),
+
+                          Container(
+                            child: Text(
+                              person.knownForDepartment,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.caption,
+                            ),
                           )
                         ]),
                       );
@@ -193,9 +223,11 @@ class SearchPageState extends State<SearchPage> {
             spacing: 10.0,
             margin: 10.0
         )
-      ]
+      ],
 
-
+      Container(
+        margin: EdgeInsets.only(bottom: 20)
+      )
     ]);
   }
 

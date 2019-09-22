@@ -290,6 +290,11 @@ class TMDB extends ContentDatabaseService {
         if(isPartialUnreleasedContent(model)) return;
       }
 
+      // If the model has already been added, don't add it again.
+      if(results.where(
+          (ContentModel result) => result.id == model.id && result.contentType == model.contentType
+      ).length > 0) return;
+
       results.add(model);
     });
 
@@ -298,6 +303,11 @@ class TMDB extends ContentDatabaseService {
       if(hideUnreleasedPartialContent){
         if(isPartialUnreleasedContent(model)) return;
       }
+
+      // If the model has already been added, don't add it again.
+      if(results.where(
+              (ContentModel result) => result.id == model.id && result.contentType == model.contentType
+      ).length > 0) return;
 
       results.add(model);
     });
