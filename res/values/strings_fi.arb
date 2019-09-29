@@ -339,5 +339,11 @@
   "reviews": "Arviot",
   "this_may_take_up_to_n_seconds": "Tämä voi kestää $n sekuntia.",
   "downloading_content_suggestions_index": "Ladataan sisältösuositusten hakemistoa.",
-  "people": "Ihmiset"
+  "people": "Ihmiset",
+  "search_people_movies_and_shows": "Etsi ihmisiä, elokuvia ja sarjoja......",
+  "subtitles": "Tekstitykset",
+  "manage_services_offered_by_apollotv": "Hallinnoi ApolloTV:n palveluita.",
+  "stable": "Stable",
+  "beta": "Beta",
+  "development": "Development"
 }
