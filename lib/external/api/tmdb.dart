@@ -2,6 +2,7 @@ import 'dart:convert' as Convert;
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kamino/database/collections/playlist_cache.dart';
 import 'package:kamino/external/struct/content_database.dart';
 import 'package:kamino/main.dart';
 import 'package:kamino/models/content/content.dart';
@@ -9,7 +10,6 @@ import 'package:kamino/models/list.dart';
 import 'package:kamino/models/content/movie.dart';
 import 'package:kamino/models/content/tv_show.dart';
 import 'package:kamino/models/person.dart';
-import 'package:kamino/util/database_helper.dart';
 import 'package:kamino/util/settings.dart';
 
 class TMDB extends ContentDatabaseService {
@@ -109,10 +109,11 @@ class TMDB extends ContentDatabaseService {
   Future<dynamic> getList(BuildContext context, int id, { bool loadFully = false, bool raw = false, bool useCache = false }) async {
     try {
       if (useCache) {
-        if (await DatabaseHelper.playlistInCache(id)) {
+        if (await PlaylistCacheCollection.contains(id)) {
           // If the list is empty, MISS the cache.
-          ContentListModel listModel = await DatabaseHelper.getCachedPlaylist(
-              id);
+          ContentListModel listModel = await PlaylistCacheCollection.select(
+              id
+          );
           if (listModel.content.length > 0) return listModel;
         }
       }
@@ -157,7 +158,7 @@ class TMDB extends ContentDatabaseService {
       }
 
       if (useCache) {
-        DatabaseHelper.cachePlaylist(listModel);
+        PlaylistCacheCollection.write(listModel);
       }
       return listModel;
     }catch(ex){

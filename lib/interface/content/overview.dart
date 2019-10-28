@@ -6,6 +6,8 @@ import 'package:flutter_rating/flutter_rating.dart';
 
 import 'package:flutter/material.dart';
 import 'package:kamino/animation/transition.dart';
+import 'package:kamino/database/collections/editors_choice.dart';
+import 'package:kamino/database/collections/favorites.dart';
 import 'package:kamino/external/ExternalService.dart';
 import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/external/api/trakt.dart';
@@ -25,7 +27,6 @@ import 'package:kamino/interface/content/movie_layout.dart';
 import 'package:kamino/interface/content/tv_show_layout.dart';
 import 'package:kamino/ui/loading.dart';
 
-import 'package:kamino/util/database_helper.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
@@ -72,7 +73,7 @@ class _ContentOverviewState extends State<ContentOverview> {
 
   // Load the data from the source.
   Future<ContentModel> fetchOverviewData() async {
-    isFavorite = await DatabaseHelper.isFavorite(widget.contentId);
+    isFavorite = await FavoritesCollection.isFavorite(widget.contentId);
 
     ContentModel contentInfo = await Service.get<TMDB>().getContentInfo(
         context,
@@ -101,7 +102,7 @@ class _ContentOverviewState extends State<ContentOverview> {
     if (isFavorite) {
 
       //remove the show from the database
-      DatabaseHelper.removeFavoriteById(widget.contentId);
+      FavoritesCollection.removeFavoriteById(widget.contentId);
 
       if(await Service.get<Trakt>().isAuthenticated()) Service.get<Trakt>().removeFavoriteFromTrakt(
         context,
@@ -119,7 +120,7 @@ class _ContentOverviewState extends State<ContentOverview> {
     } else if (isFavorite == false){
 
       //add the show to the database
-      DatabaseHelper.saveFavorite(content);
+      FavoritesCollection.saveFavorite(content);
 
       if(await Service.get<Trakt>().isAuthenticated()) Service.get<Trakt>().sendFavoriteToTrakt(
         context,
@@ -703,12 +704,12 @@ class _ContentOverviewState extends State<ContentOverview> {
 
   Widget _generateEditorsChoice(){
     return FutureBuilder(
-      future: DatabaseHelper.selectEditorsChoice(widget.contentId),
+      future: EditorsChoiceCollection.select(widget.contentId),
       builder: (BuildContext context, AsyncSnapshot snapshot){
         if(snapshot.hasError || !snapshot.hasData || snapshot.data == null)
           return Container();
 
-        EditorsChoice editorsChoice = snapshot.data;
+        EditorsChoiceDocument editorsChoice = snapshot.data;
         return Container(
           margin: EdgeInsets.all(20).copyWith(bottom: 0),
           child: Card(

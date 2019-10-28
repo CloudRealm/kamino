@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:kamino/models/content/content.dart';
-import 'package:kamino/models/content/movie.dart';
-import 'package:kamino/models/content/tv_show.dart';
 
 class PersonModel {
   final int id;

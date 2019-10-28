@@ -1,12 +1,10 @@
 import 'package:dart_chromecast/casting/cast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:intl/intl.dart';
 import 'package:kamino/cast/cast_devices_dialog.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/main.dart';
 import 'package:kamino/models/content/content.dart';
-import 'package:kamino/models/list.dart';
 import 'package:kamino/partials/content_card.dart';
 import 'package:kamino/partials/content_poster.dart';
 import 'package:kamino/ui/loading.dart';

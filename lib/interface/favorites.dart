@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:kamino/database/collections/favorites.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/main.dart';
 import 'package:kamino/models/content/content.dart';
 import 'package:kamino/ui/elements.dart';
 import 'package:kamino/ui/loading.dart';
-import 'package:kamino/util/database_helper.dart';
 import 'package:kamino/util/settings.dart';
 
 class FavoritesPage extends KaminoAppPage {
@@ -30,7 +30,7 @@ class FavoritesPageState extends State<FavoritesPage>
   bool sortReversed;
 
   _getFavorites() async {
-    favorites = await DatabaseHelper.getAllFavorites();
+    favorites = await FavoritesCollection.getAllFavorites();
     favorites.values.forEach((favoritesList) => favoritesList.removeWhere(
         (FavoriteDocument favorite) => favorite.name == null || favorite.tmdbId == null
     ));
