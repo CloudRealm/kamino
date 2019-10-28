@@ -1,9 +1,8 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:kamino/database/database.dart';
 import 'package:kamino/external/ExternalService.dart';
 import 'package:kamino/external/struct/paste.dart';
 import 'package:kamino/generated/i18n.dart';
@@ -13,7 +12,6 @@ import 'package:kamino/ui/elements.dart';
 import 'package:kamino/ui/interface.dart';
 import 'package:kamino/interface/settings/page.dart';
 import 'package:device_info/device_info.dart';
-import 'package:kamino/util/database_helper.dart';
 import 'package:kamino/util/settings.dart';
 
 
@@ -140,6 +138,7 @@ class AdvancedSettingsPageState extends SettingsPageState {
                                   const String serverURLRegex = r"^(http|https):\/\/(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])(:[0-9]+)?\/$";
                                   bool isValid = new RegExp(serverURLRegex, caseSensitive: false).hasMatch(arg);
                                   if(!isValid && arg.length > 0) return S.of(context).the_url_must_be_valid_and_include_a_trailing_;
+                                  return null;
                                 },
                                 controller: _serverURLController,
                                 keyboardType: TextInputType.url,
@@ -156,6 +155,7 @@ class AdvancedSettingsPageState extends SettingsPageState {
                                 validator: (String arg){
                                   if(arg.length != 32 && arg.length > 0)
                                     return S.of(context).the_key_must_be_32_characters_in_length;
+                                  return null;
                                 },
                                 maxLength: 32,
                                 maxLengthEnforced: true,
@@ -339,7 +339,7 @@ class AdvancedSettingsPageState extends SettingsPageState {
             enabled: true,
             onTap: () async {
               Interface.showLoadingDialog(context, title: S.of(context).wiping_database);
-              await DatabaseHelper.wipe();
+              await Database.wipe();
               Navigator.of(context).pop();
             },
           ),
@@ -392,7 +392,7 @@ class AdvancedSettingsPageState extends SettingsPageState {
             title: TitleText(S.of(context).dump_database),
             subtitle: Text(S.of(context).debug_only_logs_the_application_database_in_the_console),
             enabled: true,
-            onTap: () => DatabaseHelper.dump(),
+            onTap: () => Database.dump(),
           ),
         ) : Container(),
 

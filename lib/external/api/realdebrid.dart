@@ -110,9 +110,9 @@ class RealDebrid extends PremiumHostService {
     return rdCredentials != null && rdCredentials.isValid();
   }
 
-  Future<Map> _getSecret(String device_code) async {
+  Future<Map> _getSecret(String deviceCode) async {
     String url = REAL_DEBRID_OAUTH_ENDPOINT + "/device"
-        "/credentials?client_id=${RealDebrid.identity.clientId}&code=$device_code";
+        "/credentials?client_id=${RealDebrid.identity.clientId}&code=$deviceCode";
 
     http.Response res = await http.get(url);
 

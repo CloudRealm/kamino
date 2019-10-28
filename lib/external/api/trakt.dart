@@ -5,6 +5,8 @@ import 'dart:io';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:kamino/database/collections/favorites.dart';
+import 'package:kamino/database/collections/watch_progress.dart';
 import 'package:kamino/external/ExternalService.dart';
 import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/external/struct/content_tracker.dart';
@@ -13,7 +15,6 @@ import 'package:kamino/main.dart';
 import 'package:kamino/models/content/content.dart';
 import 'package:kamino/ui/elements.dart';
 import 'package:kamino/ui/interface.dart';
-import 'package:kamino/util/database_helper.dart';
 import 'package:kamino/util/settings.dart';
 
 class Trakt extends ContentTrackerService {
@@ -150,7 +151,7 @@ class Trakt extends ContentTrackerService {
     /* SYNCHRONIZE FAVORITES */
 
     // Pre-Step 1 -> Purge favorites where authority is Trakt.
-    DatabaseHelper.purgeFavoritesByAuthority(FavoriteAuthority.TRAKT);
+    FavoritesCollection.purgeFavoritesByAuthority(FavoriteAuthority.TRAKT);
 
     // Step 1 -> Fetch favorites and store in array.
     if(!silent) Interface.showLoadingDialog(context, title: S.of(context).downloading_trakt_data, canCancel: false);
@@ -190,7 +191,7 @@ class Trakt extends ContentTrackerService {
 
     Map data = {};
 
-    Map<String, List<FavoriteDocument>> storedFavorites = await DatabaseHelper.getAllFavorites();
+    Map<String, List<FavoriteDocument>> storedFavorites = await FavoritesCollection.getAllFavorites();
     storedFavorites.forEach((String type, List<FavoriteDocument> documents){
       String traktMediaType = (type == 'movie') ? "movies" : "shows";
       data[traktMediaType] = [];
@@ -233,7 +234,7 @@ class Trakt extends ContentTrackerService {
       await for (int id in Stream.fromIterable(data)){
 
         // Don't bother writing if already a favorite.
-        if(!await DatabaseHelper.isFavorite(id)) {
+        if(!await FavoritesCollection.isFavorite(id)) {
           ContentModel model = await Service.get<TMDB>().getContentInfo(
               context,
               mediaType == 'shows' ? ContentType.TV_SHOW : ContentType.MOVIE,
@@ -244,7 +245,7 @@ class Trakt extends ContentTrackerService {
 
       }
 
-      DatabaseHelper.saveFavorites(documents);
+      FavoritesCollection.saveFavorites(documents);
     }
 
     Future.wait(favoriteSyncDelegate);
@@ -331,7 +332,7 @@ class Trakt extends ContentTrackerService {
               (await http.get("$TRAKT_API_ENDPOINT/shows/$slug/seasons/$season/episodes/$episode/?extended=full", headers: headers)).body
           )["runtime"]).inMilliseconds;
 
-          DatabaseHelper.setWatchProgressById(
+          WatchProgressCollection.setWatchProgressById(
             context,
             ContentType.TV_SHOW,
             contentId,
@@ -348,7 +349,7 @@ class Trakt extends ContentTrackerService {
           String slug = entry["movie"]["ids"]["slug"];
           int totalDuration = Duration(minutes: jsonDecode((await http.get("$TRAKT_API_ENDPOINT/movies/$slug?extended=full", headers: headers)).body)["runtime"]).inMilliseconds;
 
-          DatabaseHelper.setWatchProgress(
+          WatchProgressCollection.setWatchProgress(
             await Service.get<TMDB>().getContentInfo(context, ContentType.MOVIE, contentId),
             millisecondsWatched: totalDuration,
             totalMilliseconds: totalDuration,

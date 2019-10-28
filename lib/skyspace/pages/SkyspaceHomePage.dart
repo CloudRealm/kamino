@@ -3,7 +3,6 @@ import 'package:kamino/external/ExternalService.dart';
 import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/models/content/content.dart';
-import 'package:kamino/models/list.dart';
 import 'package:kamino/partials/carousel_card.dart';
 import 'package:kamino/skyspace/widgets/SkyspaceCarousel.dart';
 import 'package:kamino/ui/elements.dart';

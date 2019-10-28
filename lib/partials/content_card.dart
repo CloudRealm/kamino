@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:kamino/database/collections/favorites.dart';
 import 'package:kamino/external/ExternalService.dart';
 import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/external/api/trakt.dart';
@@ -7,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/ui/elements.dart';
 import 'package:kamino/ui/interface.dart';
-import 'package:kamino/util/database_helper.dart';
 
 class ContentCard extends StatefulWidget {
 
@@ -184,7 +184,7 @@ class ContentCardState extends State<ContentCard> {
   _toggleFavorite(BuildContext context) async {
     if (widget.isFavorite) {
       Interface.showSnackbar(S.of(context).removed_from_favorites, context: context, backgroundColor: Colors.red);
-      DatabaseHelper.removeFavoriteById(widget.content.id);
+      FavoritesCollection.removeFavoriteById(widget.content.id);
 
       if(await Service.get<Trakt>().isAuthenticated()) Service.get<Trakt>().removeFavoriteFromTrakt(
         context,
@@ -193,7 +193,7 @@ class ContentCardState extends State<ContentCard> {
       );
     } else {
       Interface.showSnackbar(S.of(context).added_to_favorites, context: context);
-      DatabaseHelper.saveFavoriteById(context, widget.content.contentType, widget.content.id);
+      FavoritesCollection.saveFavoriteById(context, widget.content.contentType, widget.content.id);
 
       if(await Service.get<Trakt>().isAuthenticated()) Service.get<Trakt>().sendFavoriteToTrakt(
           context,

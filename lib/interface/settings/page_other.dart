@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:kamino/database/collections/search_history.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/ui/elements.dart';
 import 'package:kamino/ui/interface.dart';
 import 'package:kamino/interface/settings/page.dart';
-import 'package:kamino/util/database_helper.dart';
 
 import 'package:kamino/util/settings.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -133,7 +133,7 @@ class OtherSettingsPageState extends SettingsPageState {
             subtitle: Text(S.of(context).clear_search_history_description),
             enabled: true,
             onTap: () async {
-              await DatabaseHelper.clearSearchHistory();
+              await SearchHistoryCollection.clear();
               Interface.showSnackbar(S.of(context).search_history_cleared, context: context);
             },
           ),

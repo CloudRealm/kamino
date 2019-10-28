@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:kamino/animation/transition.dart';
+import 'package:kamino/database/collections/editors_choice.dart';
 import 'package:kamino/external/ExternalService.dart';
 import 'package:kamino/external/api/tmdb.dart';
 import 'package:kamino/external/api/trakt.dart';
@@ -21,7 +22,6 @@ import 'package:kamino/partials/content_poster.dart';
 import 'package:kamino/ui/elements.dart';
 import 'package:kamino/ui/interface.dart';
 import 'package:kamino/ui/loading.dart';
-import 'package:kamino/util/database_helper.dart';
 import 'package:kamino/util/settings.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:simple_moment/simple_moment.dart';
@@ -39,7 +39,7 @@ class Launchpad2State extends State<Launchpad2> {
   AsyncMemoizer _launchpadMemoizer = new AsyncMemoizer();
   AsyncMemoizer _traktMemoizer = new AsyncMemoizer();
 
-  EditorsChoice _editorsChoice;
+  EditorsChoiceDocument _editorsChoice;
   List<ContentModel> _topPicksList;
   List<ContentModel> _continueWatchingList;
 
@@ -53,9 +53,9 @@ class Launchpad2State extends State<Launchpad2> {
       }),
 
       // Load editor's choice without preventing homepage from being displayed.
-      DatabaseHelper.refreshEditorsChoice(context).then((_) {
-        if (mounted) DatabaseHelper.selectRandomEditorsChoice().then(
-                (EditorsChoice editorsChoice){
+      EditorsChoiceCollection.updateStore(context).then((_) {
+        if (mounted) EditorsChoiceCollection.loadRandom().then(
+                (EditorsChoiceDocument editorsChoice){
               if(mounted) setState(() =>
                 _editorsChoice = editorsChoice
               );
