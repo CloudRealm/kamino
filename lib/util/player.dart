@@ -7,15 +7,22 @@ import 'package:flutter/services.dart';
 import 'package:kamino/animation/transition.dart';
 import 'package:kamino/generated/i18n.dart';
 import 'package:kamino/main.dart';
+import 'package:kamino/models/content/content.dart';
 import 'package:kamino/ui/interface.dart';
 import 'package:kamino/util/settings.dart';
+import 'package:kamino/vendor/struct/VendorService.dart';
 
 class PlayerHelper {
 
   static Future<void> play(BuildContext context, {
     @required String title,
     @required String url,
-    @required String mimeType
+    @required String mimeType,
+    @required VendorService service,
+
+    @required ContentModel content,
+    @required int season,
+    @required int episode
   }) async {
 
     KaminoAppState application = context.ancestorStateOfType(const TypeMatcher<KaminoAppState>());
@@ -44,9 +51,14 @@ class PlayerHelper {
           context,
           ApolloTransitionRoute(builder: (context) =>
             CPlayer(
-                  title: title,
-                  url: url,
-                  mimeType: mimeType
+                title: title,
+                url: url,
+                mimeType: mimeType,
+                vendorService: service,
+
+                content: content,
+                season: season,
+                episode: episode
               )
           )
       );

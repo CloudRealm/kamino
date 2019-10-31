@@ -7,7 +7,9 @@ import 'package:cplayer/ui/cplayer_interrupt.dart';
 import 'package:cplayer/ui/cplayer_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kamino/database/collections/watch_progress.dart';
 import 'package:kamino/generated/i18n.dart';
+import 'package:kamino/models/content/content.dart';
 import 'package:kamino/ui/interface.dart';
 import 'package:kamino/ui/loading.dart';
 import 'package:screen/screen.dart';
@@ -20,6 +22,10 @@ import 'package:auto_orientation/auto_orientation.dart';
 class CPlayer extends StatefulWidget {
 
   final VendorService vendorService;
+  final ContentModel content;
+  final int season;
+  final int episode;
+
   final String mimeType;
   final String title;
   final String url;
@@ -30,6 +36,10 @@ class CPlayer extends StatefulWidget {
   CPlayer({
     Key key,
     @required this.vendorService,
+    @required this.content,
+    @required this.season,
+    @required this.episode,
+
     @required this.mimeType,
     @required this.title,
     @required this.url,
@@ -74,8 +84,16 @@ class CPlayerState extends State<CPlayer> {
         return;
       }
       
-      if(_controller.value.initialized)
+      if(_controller.value.initialized) {
         lastValidPosition = _controller.value.position;
+
+        // If the controller is initialized, but not playing, it means
+        // the user has paused the content.
+        if(!_controller.value.isPlaying){
+          saveProgress();
+        }
+      }
+
 
       try {
         /* buffering check */
@@ -183,6 +201,9 @@ class CPlayerState extends State<CPlayer> {
 
   @override
   void dispose() {
+    // Save the player progress
+    saveProgress();
+
     // Set the screen orientation to portrait
     AutoOrientation.portraitUpMode();
 
@@ -203,6 +224,16 @@ class CPlayerState extends State<CPlayer> {
 
     // Pass to super
     super.dispose();
+  }
+
+  void saveProgress(){
+    WatchProgressCollection.setWatchProgress(
+        widget.content,
+        millisecondsWatched: _controller.value.position.inMilliseconds,
+        totalMilliseconds: _controller.value.duration.inMilliseconds,
+        season: widget.season,
+        episode: widget.episode
+    );
   }
 
   @override

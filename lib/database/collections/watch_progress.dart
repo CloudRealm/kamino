@@ -42,36 +42,47 @@ class WatchProgressCollection {
 
     ObjectDB database = await Database.open();
 
-    if(model.contentType == ContentType.TV_SHOW){
-      if(season == null) throw new Exception("Season must not be null.");
-      if(episode == null) throw new Exception("Episode must not be null.");
+    if(lastUpdated == null) lastUpdated = new DateTime.now();
+    if(model.contentType == ContentType.TV_SHOW) {
+      if (season == null) throw new Exception("Season must not be null.");
+      if (episode == null) throw new Exception("Episode must not be null.");
+    }
 
-      // If TV show exists in database.
+      // If content exists in database, simply update it rather than
+      // creating a new entry.
       List<Map> results = await database.find({
         "docType": "watchProgress",
         "type": getRawContentType(model.contentType),
         "id": model.id
       });
 
-      if(results.length > 0){
-        await database.update({
-          "docType": "watchProgress",
-          "type": getRawContentType(model.contentType),
-          "id": model.id
-        }, {
+    if(results.length > 0){
+      await database.update({
+        "docType": "watchProgress",
+        "type": getRawContentType(model.contentType),
+        "id": model.id
+      }, {
+        "progress": model.contentType == ContentType.TV_SHOW ? {
           "seasons": {
             season.toString(): {
               episode.toString(): {
+                "lastUpdated": lastUpdated.toString(),
                 "watched": millisecondsWatched,
-                "total": totalMilliseconds
+                "total": totalMilliseconds,
+                "isFinished": isFinished
               }
             }
           }
-        });
+        } : {
+          "lastUpdated": lastUpdated.toString(),
+          "watched": millisecondsWatched,
+          "total": totalMilliseconds,
+          "isFinished": isFinished
+        }
+      });
 
-        await database.close();
-        return;
-      }
+      await database.close();
+      return;
     }
 
     await database.insert({
@@ -92,7 +103,7 @@ class WatchProgressCollection {
         "seasons": {
           season.toString(): {
             episode.toString(): {
-              "lastUpdated": lastUpdated != null ? lastUpdated.toString() : new DateTime.now().toString(),
+              "lastUpdated": lastUpdated.toString(),
               "watched": millisecondsWatched,
               "total": totalMilliseconds,
               "isFinished": isFinished
@@ -100,7 +111,7 @@ class WatchProgressCollection {
           }
         }
       } : {
-        "lastUpdated": lastUpdated != null ? lastUpdated.toString() : new DateTime.now().toString(),
+        "lastUpdated": lastUpdated.toString(),
         "watched": millisecondsWatched,
         "total": totalMilliseconds,
         "isFinished": isFinished

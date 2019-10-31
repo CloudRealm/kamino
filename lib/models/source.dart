@@ -1,4 +1,10 @@
+import 'package:kamino/models/content/content.dart';
+
 class SourceModel {
+
+  final ContentModel content;
+  final int season;
+  final int episode;
 
   final SourceFile file;
   final bool isResultOfScrape;
@@ -7,15 +13,21 @@ class SourceModel {
   bool operator ==(o) => o is SourceModel && o.file.data == file.data; // if URL is the same, we can say it's the same thing
   int get hashCode => file.data.hashCode;
 
-  SourceModel.fromJSON(Map json)
+  SourceModel.fromJSON(Map json, ContentModel content, { int season, int episode })
       : file = SourceFile.fromJSON(json["file"]),
         isResultOfScrape = json["isResultOfScrape"],
-        metadata = SourceMetadata.fromJSON(json["metadata"]);
+        metadata = SourceMetadata.fromJSON(json["metadata"]),
+        content = content,
+        season = season,
+        episode = episode;
 
-  SourceModel.fromRDJSON(Map json)
+  SourceModel.fromRDJSON(Map json, ContentModel content, { int season, int episode })
       : file = SourceFile.fromRDJSON(json),
         isResultOfScrape = true,
-        metadata = SourceMetadata.fromRDJSON(json);
+        metadata = SourceMetadata.fromRDJSON(json),
+        content = content,
+        season = season,
+        episode = episode;
 }
 
 class SourceFile {

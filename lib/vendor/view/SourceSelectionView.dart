@@ -199,7 +199,10 @@ class SourceSelectionViewState extends State<SourceSelectionView> {
                 onNotification: (notification){
                   if(notification.leading){
                     notification.disallowGlow();
+                    return true;
                   }
+
+                  return false;
                 },
                 child: (widget.service.status == VendorServiceStatus.DONE && sourceList.length == 0) ?
                 ErrorLoadingMixin(
@@ -329,7 +332,11 @@ class SourceSelectionViewState extends State<SourceSelectionView> {
 
 
           var source = sourceList[index];
-          return _SourceLink(source: source, title: widget.title);
+          return _SourceLink(
+            source: source,
+            title: widget.title,
+            service: widget.service,
+          );
         }
       );
   }
@@ -574,10 +581,12 @@ class _SourceLink extends StatefulWidget {
 
   final String title;
   final SourceModel source;
+  final VendorService service;
 
   _SourceLink({
     @required this.title,
-    @required this.source
+    @required this.source,
+    @required this.service
   });
 
   @override
@@ -752,7 +761,11 @@ class _SourceLinkState extends State<_SourceLink> {
                           context,
                           title: widget.title,
                           url: widget.source.file.data,
-                          mimeType: 'video/*'
+                          mimeType: 'video/*',
+                          service: widget.service,
+                          content: widget.source.content,
+                          season: widget.source.season,
+                          episode: widget.source.episode
                       );
                     },
                     onLongPress: () {

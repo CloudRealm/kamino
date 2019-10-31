@@ -250,7 +250,9 @@ class ClawsVendorService extends VendorService {
         endpointURL,
         data,
         show,
-        displayTitle: displayTitle
+        displayTitle: displayTitle,
+        seasonNumber: seasonNumber,
+        episodeNumber: episodeNumber
       ),
       onError: (error, StackTrace stacktrace){
         print("Error whilst searching TV show: ${error.toString()}");
@@ -265,7 +267,7 @@ class ClawsVendorService extends VendorService {
   ///
   _beginProcessing(
       BuildContext context, String url, String data, ContentModel model,
-      {@required String displayTitle}) async {
+      {@required String displayTitle, int seasonNumber, int episodeNumber}) async {
     // Prepare to process the information.
     if (displayTitle == null) displayTitle = model.title;
     this.setStatus(context, VendorServiceStatus.PROCESSING,
@@ -382,7 +384,7 @@ class ClawsVendorService extends VendorService {
           ///
           case 'RDScrape':
             var rdResult = await Service.get<RealDebrid>().unrestrictLink(event['target']);
-            SourceModel rdModel = new SourceModel.fromRDJSON(rdResult);
+            SourceModel rdModel = new SourceModel.fromRDJSON(rdResult, model, season: seasonNumber, episode: episodeNumber);
             var splitParts = rdModel.file.data.split('.');
             var fileExtension =  splitParts[splitParts.length - 1].toLowerCase();
             if (fileExtension == 'mkv' || fileExtension == 'mp4' || fileExtension == 'avi') {
@@ -495,7 +497,7 @@ class ClawsVendorService extends VendorService {
 
             // Finally, add the data to the source and add the source to the
             // list of found content.
-            SourceModel source = SourceModel.fromJSON(event);
+            SourceModel source = SourceModel.fromJSON(event, model, season: seasonNumber, episode: episodeNumber);
             source.metadata.contentLength = contentLength;
 
             addSource(source);
